@@ -5,7 +5,6 @@ var userRouter		=	require('./routes/userRouter.js');
 var authRouter		=	require('./routes/auth.js');
 var aspirasiRouter	=	require('./routes/aspirasiRouter.js');
 var produksiRouter	=	require('./routes/produksiRouter.js');
-
 var multer	 		= 	require('multer');
 var mongoose		=	require('mongoose');
 var bodyParser		=	require('body-parser');
@@ -14,10 +13,12 @@ var fs 				=	require('fs');
 var jwt    			= 	require('jsonwebtoken');
 var config 			= 	require('./config');
 
+
 var port = process.env.PORT || 5000; // used to create, sign, and verify tokens
 var secureRoutes 	=	express.Router();
 
 mongoose.connect(config.connect);
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -38,45 +39,59 @@ app.use('/api',authRouter);
 // --- JWT Validaltion ---
 app.use(function(req,res,next){
 	if(req.headers.token){
-		// mobile login
-		if(req.headers.login_type==1)
-		{
-			 jwt.verify(req.headers.token, config.secret, function(err, decoded) {      
-					    if (err) 
-					    {
-		        			return res.json({ success: false, message: 'Failed to authenticate token.' });    
-		    	  		}		 
-		    	  		else 
-		    	  		{
-		    	  			next();	
-		    	  		}
-		    	})
-			}
-		    
-		else if(req.headers.login_type==0)
-		{
-			// website login 
-			jwt.verify(req.headers.token, config.secret, function(err, decoded) {     
-			console.log(decoded.id); 
-					    if (err) 
-					    {
-		        			return res.json({ success: false, message: 'Failed to authenticate token.' });    
-		    	  		}		 
-		    	  		else 
-		    	  		{
+		if(req.headers.login_type!=null)
+		{	
+				// mobile login
+				if(req.headers.login_type==1)
+					{
+						 jwt.verify(req.headers.token, config.secret, function(err, decoded) {      
 
-		    	  			req.token=jwt.sign({id:decoded.id,username:decoded.username,time:decoded.time},config.secret, {
-		                    expiresIn : 60*60// expires in 24 hours
-		                    });
-		    	  			next();	
-		    	  		}
-		    	});
+								    if (err) 
+								    {
+					        			return res.json({ success: false, message: 'Failed to authenticate token.' });    
+					    	  		}		 
+					    	  		else 
+					    	  		{	
+					    	  			req.token='-';
+					    	  			req.role = decoded.role;
+					    	  			//console.log(decoded);
+					    	  			next();	
+					    	  		}
+					    	})
+						}
+					    
+					else if(req.headers.login_type==0)
+					{
+						// website login 
+						jwt.verify(req.headers.token, config.secret, function(err, decoded) {     
+						//console.log(decoded);
+						req.role = decoded.role; 
+								    if (err) 
+								    {
+					        			return res.json({ success: false, message: 'Failed to authenticate token.' });    
+					    	  		}		 
+					    	  		else 
+					    	  		{
+					    	  			
+					      	  			req.token=jwt.sign({id:decoded.id,username:decoded.username,time:decoded.time,role:decoded.role},config.secret, {
+					                    expiresIn : 60*60// expires in 24 hours
+					                    });
+					    	  			next();	
+					    	  		}
+					    	});
+					}
+			
 		}
+		else
+		{
+			return res.json({ success: false, message: 'Please send login_type' }); 
+		}
+		// mobile login
 	}
 	else
-		    {
-		    	return res.json({ success: false, message: 'Please send token' }); 
-		    }
+    {
+    	return res.json({ success: false, message: 'Please send token' }); 
+    }
 
 
 });
@@ -124,7 +139,39 @@ app.post('/user/upload_photo',upload.any(),function(req,res,next){
 		})
 		
 	});
-
+app.post('/user/upload_photo1',function(req,res,next){
+		
+		var ImageSaver = require('image-saver-nodejs/lib')
+    	var imageSaver = new ImageSaver()
+    	
+    	User.findOne({us_id:req.body.us_id},function(err,user){
+				if(user){
+					if(user.prof_pict!=null){
+					fs.unlinkSync('../public_html/'+user.prof_pict);
+					}
+					user.prof_pict='uploads/prof_pict/pp_'+user.username+".jpg";
+					user.save(function(err){
+						if(!err){
+							imageSaver.saveFile("../public_html/uploads/prof_pict/pp_"+user.username+".jpg", req.body.string64).then((data)=>{
+	    					res.json({status:200,message:'Change profile picture success'});
+    						})
+    						.catch((err)=>{
+					        	res.json({status:400,message:err});
+					    	})
+						}
+						else
+						{
+							res.json({status:400,message:err});
+						}
+					});
+				}
+				else
+				{
+					res.json({status:404,message:'User is not found'});
+				}
+			})
+    	
+ });
 // -----------------------------------------
 
 app.use('/produksi',produksiRouter);

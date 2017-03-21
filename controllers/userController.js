@@ -51,37 +51,59 @@ var getAllUser = function(req,res){
 }
 
 var addUser = function(req,res){
-	var user = new User(req.body);
-	
-	generated_hash = require('crypto')
-	.createHash('md5')
-	.update(req.body.password+'portalharga', 'utf8')
-	.digest('hex');
-	user.password = generated_hash;
-	// console.log(req.body);
-	if(req.body.name == "" && req.body.password == "" && req.body.email == "" && req.body.username == "" )
-	{
-			res.json({"status":"400","message":"Bad Request"});
-	}
-	else
-	{
-	user.save(function(err){
-		if(err)
-		{
-			res.json({"status":"500","message": "Add Failed"});	
+	User.findOne({username:req.body.username},function(err,usercheck){
+		if(usercheck!=null){
+			res.json({status:500,message:"Create failed, username is already exist"});
 		}
-		else
-		{
-			var dt = new Date();
-            var utcDate = dt.toGMTString();
-			var token = jwt.sign(user._id+utcDate+user.username,codeSecret.secret, {
-            expiresIn : 60*60*24// expires in 24 hours
-            });	
-			res.json({"status":"200","message": "Create User Success",data:user,token:token});	
+		else{
+
+			var user = new User(req.body);
+			
+			generated_hash = require('crypto')
+			.createHash('md5')
+			.update(req.body.password+'portalharga', 'utf8')
+			.digest('hex');
+			user.password = generated_hash;
+			// console.log(req.body);
+			if(req.body.name == "" && req.body.password == "" && req.body.email == "" && req.body.username == "" )
+			{
+					res.json({"status":"400","message":"Bad Request"});
+			}
+			else
+			{
+			user.save(function(err){
+				if(err)
+				{
+					res.json({"status":"500","message": "Create failed",error:err});	
+				}
+				else
+				{
+					if(req.headers.login_type==0){
+
+					var dt = new Date();
+		            var utcDate = dt.toGMTString();
+					var token = jwt.sign({id:user._id,username:user.username,time:utcDate,role:user.role}, {
+		            expiresIn : 60*60// expires in 24 hours
+		            });	
+					res.json({"status":"200","message": "Create User Success",data:user,token:token});	
+				
+					}
+					else if(req.headers.login_type==1){
+
+					var dt = new Date();
+		            var utcDate = dt.toGMTString();
+					var token = jwt.sign({id:user._id,username:user.username,time:utcDate,role:user.role},codeSecret.secret, {
+		            // expires in 24 hours
+		            });	
+					res.json({"status":"200","message": "Create User Success",data:user,token:token});	
+				
+					} 
+				}
+			});
+			
+			}		
 		}
-	});
-	
-	}
+	})
 }
 
 var delId = function(req,res){

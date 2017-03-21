@@ -1,8 +1,9 @@
-var express     = require('express');
-var codeSecret  = require('./../config');
-var apiRoutes   = express.Router(); 
-var jwt         = require('jsonwebtoken');
-var User=require('./../models/userModel');
+var express   =   require('express');
+var codeSecret=   require('./../config');
+var apiRoutes =   express.Router(); 
+var jwt       =   require('jsonwebtoken');
+var User      =   require('./../models/userModel');
+var fs        =   require('fs');
 
 // route to authenticate a user (POST http://localhost:8080/api/authenticate)
 apiRoutes.post('/auth', function(req, res) {
@@ -39,21 +40,53 @@ apiRoutes.post('/auth', function(req, res) {
                 // for website
                 if(req.headers.login_type==0)
                 {
-                  var token = jwt.sign({id:user._id,username:user.username,time:user.last_login},codeSecret.secret, {
+                  var token = jwt.sign({id:user._id,username:user.username,time:user.last_login,role:user.role},codeSecret.secret, {
                     expiresIn : 60*60// expires in 24 hours
                     });
-                  User.findOne({username: req.body.username}, '-_id -__v -password',function(err, result){
-                       res.json({success: true,status:200,message: 'Login Success',data : result,token: token});    
+                      User.findOne({username: req.body.username}, '-_id -__v -password',function(err, result){
+                       if(result.prof_pict!=null){
+
+                         fs.readFile(result.prof_pict, 'utf8', function (err,data) {
+                          if (err) 
+                            {
+                              return console.log(err);
+                            }
+                            else 
+                            {
+                              res.json({success: true,status:200,message: 'Login Success',data : result,token: token,prof_pict:data});    
+                            }
+                          });
+                         }
+                       else
+                       {
+                            res.json({success: true,status:200,message: 'Login Success',data : result,token: token,prof_pict:null});    
+                       }   
                     });
                 }
 
                 // for mobile
                 else if(req.headers.login_type==1)
                 {
-                  var token = jwt.sign({id:user._id,username:user.username,time:user.last_login},codeSecret.secret,{});
+                  var token = jwt.sign({id:user._id,username:user.username,time:user.last_login,role:user.role},codeSecret.secret,{});
                    User.findOne({username: req.body.username}, '-_id -__v -password',function(err, result){
-                       res.json({success: true,status:200,message: 'Login Success',data : result,token: token});    
-                    });
+                    if(result.prof_pict!=null){
+
+                         fs.readFile(result.prof_pict, 'utf8', function (err,data) {
+                          if (err) 
+                            {
+                              return console.log(err);
+                            }
+                            else 
+                            {
+                              res.json({success: true,status:200,message: 'Login Success',data : result,token: token,prof_pict:data});    
+                            }
+                          });
+                         }
+                       else
+                       {
+                            res.json({success: true,status:200,message: 'Login Success',data : result,token: token,prof_pict:null});    
+                       }
+                  });
                 }
                   
                     // return the information including token as JSON

@@ -14,6 +14,7 @@
     "fromnow": "^2.2.1",
     "fs": "0.0.1-security",
     "http": "0.0.0",
+    "image-saver-nodejs": "^1.0.3",
     "jsonwebtoken": "^7.3.0",
     "moment": "^2.17.1",
     "moment-timezone": "^0.5.11",
