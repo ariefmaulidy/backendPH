@@ -13,6 +13,11 @@ var fs 				=	require('fs');
 var jwt    			= 	require('jsonwebtoken');
 var config 			= 	require('./config');
 
+//modul 3 & 4
+var masy 			=	require('./routes/masyarakat/masyRouter');
+//nyoba sendgrid
+var sendgrid 		= 	require('./routes/sendgridRouter');
+
 
 var port = process.env.PORT || 5000; // used to create, sign, and verify tokens
 var secureRoutes 	=	express.Router();
@@ -35,6 +40,12 @@ console.log('Server start at http://localhost:' + port);
 
 app.use('/user',userRouter);
 app.use('/api',authRouter);
+
+
+//untuk masyarakat
+app.use('/masy',masy);
+
+app.use('/sendgrid',sendgrid);
 
 // --- JWT Validaltion ---
 app.use(function(req,res,next){
