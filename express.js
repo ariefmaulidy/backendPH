@@ -16,7 +16,7 @@ var config 			= 	require('./config');
 //modul 3 & 4
 var masy 			=	require('./routes/masyarakat/masyRouter');
 //nyoba sendgrid
-var sendgrid 		= 	require('./routes/sendgridRouter');
+//var smtp 		= 	require('./routes/smtp2Router');
 
 
 var port = process.env.PORT || 5000; // used to create, sign, and verify tokens
@@ -45,7 +45,7 @@ app.use('/api',authRouter);
 //untuk masyarakat
 app.use('/masy',masy);
 
-app.use('/sendgrid',sendgrid);
+//app.use('/smtp',smtp);
 
 // --- JWT Validaltion ---
 app.use(function(req,res,next){
