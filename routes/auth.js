@@ -45,21 +45,18 @@ apiRoutes.post('/auth', function(req, res) {
                     });
                       User.findOne({username: req.body.username}, '-_id -__v -password',function(err, result){
                        if(result.prof_pict!=null){
-
-                         fs.readFile(result.prof_pict, 'utf8', function (err,data) {
-                          if (err) 
+                           if (err) 
                             {
                               return console.log(err);
                             }
                             else 
                             {
-                              res.json({success: true,status:200,message: 'Login Success',data : result,token: token,prof_pict:data});    
+                              res.json({success: true,status:200,message: 'Login Success',data : result,token: token});    
                             }
-                          });
                          }
                        else
                        {
-                            res.json({success: true,status:200,message: 'Login Success',data : result,token: token,prof_pict:null});    
+                            res.json({success: true,status:200,message: 'Login Success',data : result,token: token});    
                        }   
                     });
                 }
@@ -70,21 +67,18 @@ apiRoutes.post('/auth', function(req, res) {
                   var token = jwt.sign({id:user._id,username:user.username,time:user.last_login,role:user.role},codeSecret.secret,{});
                    User.findOne({username: req.body.username}, '-_id -__v -password',function(err, result){
                     if(result.prof_pict!=null){
-
-                         fs.readFile(result.prof_pict, 'utf8', function (err,data) {
-                          if (err) 
+                            if (err) 
                             {
                               return console.log(err);
                             }
                             else 
                             {
-                              res.json({success: true,status:200,message: 'Login Success',data : result,token: token,prof_pict:data});    
+                              res.json({success: true,status:200,message: 'Login Success',data : result,token: token});    
                             }
-                          });
                          }
                        else
                        {
-                            res.json({success: true,status:200,message: 'Login Success',data : result,token: token,prof_pict:null});    
+                            res.json({success: true,status:200,message: 'Login Success',data : result,token: token});    
                        }
                   });
                 }

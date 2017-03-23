@@ -8,11 +8,8 @@ userRouter.route('/del_id/:id')
 	.get(userController.delId);
 userRouter.route('/update')
 	.post(userController.updateUser);
-
-userRouter.route('/login_check')
-	.post(userController.login_user);
+userRouter.route('/updatePassword')
+	.post(userController.updatePassword);
 userRouter.route('/all')
 	.get(userController.getAllUser);
-userRouter.route('/inputUser')
-	.post(userController.addUser);
 module.exports=userRouter; 
