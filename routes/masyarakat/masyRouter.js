@@ -18,7 +18,7 @@ masyRouter.route('/deleteMasy/:us_id')
 //untuk komoditas
 masyRouter.route('/addKom')
 	.post(masyController.addKom);
-masyRouter.route('/allKom')
+masyRouter.route('/allKom')  //kalau nggak dipakai
 	.get(masyController.allKom);
 masyRouter.route('/todayKom')
 	.post(masyController.todayKom);

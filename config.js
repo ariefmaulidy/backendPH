@@ -1,6 +1,7 @@
 module.exports = {
 
     'secret': 'enakmantepportal',
-   'connect': 'mongodb://localhost/PortalHarga'
+   'connect': 'mongodb://localhost/PortalHarga',
+	'secretKey':	'enakmantepportal'
 
 };

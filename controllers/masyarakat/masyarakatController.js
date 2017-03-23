@@ -20,7 +20,6 @@ var addKomoditas = function(req,res){
 	var time = moment();
 	var now = moment(new Date());
 	newKom.datePost =now.format("D MMM YYYY");
-	//console.log(newKom);
 	newKom.save(function(err){
 		if(err){
 			throw err;
@@ -106,7 +105,7 @@ var addMasy=function(req,res){
 						console.log(newUser);
 						res.json({"status":"404","message":"can't save"})
 					}else {
-						var token = jwt.sign(newUser,config.secretKey,{
+						var token = jwt.sign(/*newUser*/{us_id:newUser.us_id,role:newUser.role,username:newUser.username},config.secretKey,{
 							expiresIn:60*60})
 						res.status(201);
 					  	res.json({
@@ -188,25 +187,26 @@ var addoperasiPasar =function(req,res){
 			throw err;
 		}else{
 			res.json({data:operasi});
-			var helper = require('sendgrid').mail;
-			from_email = new helper.Email("nugrohoac96@gmail.com");
-			to_email = new helper.Email(req.body.email)/*("nugrohoac96@gmail.com")*/;
-			console.log(req.body.email);
-			subject = "lowercase saja";
-			content = new helper.Content("text/plain", 'Thanks for mr/s for the participation on Portal Harga'+ req.body.pesan);
-			mail = new helper.Mail(from_email, subject, to_email, content);
-
-			var sg = require('sendgrid')('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')/*(process.env.SENDGRID_API_KEY)*/;
-			var request = sg.emptyRequest({
-				method: 'POST',
-				path: '/v3/mail/send',
-				body: mail.toJSON()
-			});
-			sg.API(request, function(error, response) {
-				console.log(response.statusCode);
-				console.log(response.body);
-				console.log(response.headers);
-			})
+			//failed sendgrid
+//			var helper = require('sendgrid').mail;
+//			from_email = new helper.Email("nugrohoac96@gmail.com");
+//			to_email = new helper.Email(req.body.email)/*("nugrohoac96@gmail.com")*/;
+//			console.log(req.body.email);
+//			subject = "lowercase saja";
+//			content = new helper.Content("text/plain", 'Thanks for mr/s for the participation on Portal Harga'+ req.body.pesan);
+//			mail = new helper.Mail(from_email, subject, to_email, content);
+//
+//			var sg = require('sendgrid')('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')/*(process.env.SENDGRID_API_KEY)*/;
+//			var request = sg.emptyRequest({
+//				method: 'POST',
+//				path: '/v3/mail/send',
+//				body: mail.toJSON()
+//			});
+//			sg.API(request, function(error, response) {
+//				console.log(response.statusCode);
+//				console.log(response.body);
+//				console.log(response.headers);
+//			})
 
 		}
 	});

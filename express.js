@@ -43,7 +43,7 @@ app.use('/api',authRouter);
 
 
 //untuk masyarakat
-app.use('/masy',masy);
+app.use('/masyarakat',masy);
 
 //app.use('/smtp',smtp);
 
