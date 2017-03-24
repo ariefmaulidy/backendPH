@@ -13,8 +13,37 @@ var fs 				=	require('fs');
 var jwt    			= 	require('jsonwebtoken');
 var config 			= 	require('./config');
 
+//buat mailgun
+
+/*var nodemailer = require('nodemailer');
+var transporter = nodemailer.createTransport('smtps://portalharga.ipb@gmail.com:portalharga1234@smtp.gmail.com');
+
+app.get('/test/kirim', function(req, res) {
+ var mailOptions = {
+	from: '"[SIMETA-ILKOM]" <simeta@apps.cs.ipb.ac.id>',
+	to: 'nugrohoac96@gmail.com',
+	subject: 'Log Bimbingan SIMETA - ',
+	html:
+	'Yth. Bapak/Ibu/Sdr Pembimbing Tugas Akhir dari mahasiswa berikut :<br><br>'
+  };
+
+
+  transporter.sendMail(mailOptions, function(error, info){
+	  if(error){
+		  return console.log(error);
+	  }
+	  else {
+		console.log('Message sent: ' + info.response);
+	  }
+  });
+	console.log('success');
+})*/
+
 //modul 3 & 4
 var masy 			=	require('./routes/masyarakat/masyRouter');
+var email			=	require('./routes/mailgun');
+var setKomoditas	=	require('./routes/pemerintah/setKomoditasRouter');
+var forgetPassword	=	require('./routes/forgetPasswordRouter');
 //nyoba sendgrid
 //var smtp 		= 	require('./routes/smtp2Router');
 
@@ -42,8 +71,13 @@ app.use('/user',userRouter);
 app.use('/api',authRouter);
 
 
+//Forget Password
+app.use('/forgetPassword',forgetPassword);
+
 //untuk masyarakat
 app.use('/masyarakat',masy);
+app.use('/mailgun',email);
+app.use('/pemerintah',setKomoditas);
 
 //app.use('/smtp',smtp);
 

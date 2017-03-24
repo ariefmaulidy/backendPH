@@ -10,7 +10,10 @@ var komoditasModel = new Schema({
 	jenis:String,		//jenis komoditasnya misal bawang cabai
 	us_id:String,
 	harga:Number,		//dalam satuan kg
-	lokasi:String,		//lokasi di mana post komoditas
+	lokasi:[				//lokasi di mana post komoditas
+		{latitude:String,
+		longitude:String}
+	],		
 	datePost:String,
 	pathPictLocKOm:String	//path picture lokasi komoditas
 });

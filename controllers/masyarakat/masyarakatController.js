@@ -16,6 +16,7 @@ var date = require('date-utils');;
 
 var addKomoditas = function(req,res){
 	var newKom = new komoditas(req.body);
+	newKom.lokasi.push({latitude:req.body.latitude,longitude:req.body.longitude});/*push lokasi latitude dan longitude (Number)*/
 	//newKom.jenis = req.body.jenis;
 	var time = moment();
 	var now = moment(new Date());
@@ -24,7 +25,10 @@ var addKomoditas = function(req,res){
 		if(err){
 			throw err;
 		}else{
-			res.json({data:newKom});
+			res.json({
+				data:newKom,
+				message:"succes"
+			});
 		}
 	})
 };
@@ -34,7 +38,10 @@ var allKomoditas = function(req,res){
 		if(err){
 			throw err;
 		}else{
-			res.json({data:kom});
+			res.json({
+				data:kom,
+				message:"succes"
+			});
 		}
 	})
 };
@@ -67,7 +74,8 @@ var todayKomoditas =function(req,res){
 								data:komo,
 								minimum:min,
 								ratarata:mean,	
-								makasimum:mak
+								makasimum:mak,
+								message:"succes"
 							});
 						}
 					}
@@ -179,6 +187,8 @@ var findMasy=function(req,res){
 
 var addoperasiPasar =function(req,res){
 	var operasi = new op(req.body);
+	console.log(req.body.longitude);
+	operasi.lokasi.push({latitude:req.body.latitude,longitude:req.body.longitude});/*push lokasi latitude dan longitude (Number)*/
 	var now = moment(new Date());
 	operasi.datePost = now.format("D MMM YYYY");
 	//console.log(sekarang);
@@ -186,28 +196,9 @@ var addoperasiPasar =function(req,res){
 		if(err){
 			throw err;
 		}else{
-			res.json({data:operasi});
-			//failed sendgrid
-//			var helper = require('sendgrid').mail;
-//			from_email = new helper.Email("nugrohoac96@gmail.com");
-//			to_email = new helper.Email(req.body.email)/*("nugrohoac96@gmail.com")*/;
-//			console.log(req.body.email);
-//			subject = "lowercase saja";
-//			content = new helper.Content("text/plain", 'Thanks for mr/s for the participation on Portal Harga'+ req.body.pesan);
-//			mail = new helper.Mail(from_email, subject, to_email, content);
-//
-//			var sg = require('sendgrid')('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')/*(process.env.SENDGRID_API_KEY)*/;
-//			var request = sg.emptyRequest({
-//				method: 'POST',
-//				path: '/v3/mail/send',
-//				body: mail.toJSON()
-//			});
-//			sg.API(request, function(error, response) {
-//				console.log(response.statusCode);
-//				console.log(response.body);
-//				console.log(response.headers);
-//			})
-
+			res.json({data:operasi,
+					 message:"succes"
+					 });
 		}
 	});
 };

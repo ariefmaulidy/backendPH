@@ -9,7 +9,10 @@ autoIncrement.initialize(connection);
 var operasiPasarModel = new Schema({
 	us_id:String,
 	email:String,
-	lokasi:String,
+	lokasi:[
+		{latitude:Number,
+		longitude:Number}
+	],
 	komoditas:String,
 	pesan:String,
 	datePost:String
