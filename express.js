@@ -16,6 +16,7 @@ var jwt    			= 	require('jsonwebtoken');
 var config 			= 	require('./config');
 var moment 			=	require('moment');
 var tz 				=	require('moment-timezone');
+<<<<<<< HEAD
 
 //buat mailgun
 
@@ -42,6 +43,8 @@ app.get('/test/kirim', function(req, res) {
   });
 	console.log('success');
 })*/
+=======
+>>>>>>> origin/master
 
 //modul 3 & 4
 var masy 			=	require('./routes/masyarakat/masyRouter');
@@ -80,7 +83,8 @@ app.use('/forgetPassword',forgetPassword);
 //untuk masyarakat
 app.use('/masyarakat',masy);
 app.use('/mailgun',email);
-app.use('/pemerintah',setKomoditas);
+app.use('/setKomoditas',setKomoditas);
+
 
 
 //app.use('/smtp',smtp);
