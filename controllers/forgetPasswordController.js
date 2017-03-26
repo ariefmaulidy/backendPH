@@ -16,7 +16,7 @@ var forgetPassword = function(req,res ){
 	//var email 	="";
 
 User.findOne({username:req.body.username},function (err,user){
-	user.password=crypto.createHash('md5').update(newPassword, 'ut-8').digest('hex');
+	user.password=crypto.createHash('md5').update(newPassword+'portalharga', 'ut-8').digest('hex');
 	console.log(user.password);
 	console.log(newPassword);
 	var email 	= user.email;
