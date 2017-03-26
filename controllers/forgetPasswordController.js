@@ -13,8 +13,11 @@ var forgetPassword = function(req,res ){
 		charset: 'alphabetic'
 	});
 
+	var email 	="";
+
 	User.findOne({username:req.body.username},function (err,user){
 		user.password=crypto.createHash('md5').update(newPassword, 'ut-8').digest('hex');
+		console.log(user.email);
 		var email 	= user.email;
 		user.save(function(err){
 			if(!err){
@@ -23,7 +26,7 @@ var forgetPassword = function(req,res ){
 			else
 			{
 				//res.status(400).json({status:400,message:'bad request'});
-				console.log('succes update password');
+				console.log('filed update password');
 			}
 		});
 	});
