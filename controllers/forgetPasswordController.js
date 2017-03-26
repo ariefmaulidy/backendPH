@@ -7,27 +7,27 @@ var User            	=	require('./../models/userModel');
 var crypto 				= 	require('crypto');
 
 var forgetPassword = function(req,res ){
-	var email 	= 	req.body.email;
 	var name	=	req.body.name;
 	var newPassword = randomstring.generate({
 		length:12,
 		charset: 'alphabetic'
 	});
-	
+
 	User.findOne({username:req.body.username},function (err,user){
 		user.password=crypto.createHash('md5').update(newPassword, 'ut-8').digest('hex');
+		var email 	= user.email;
 		user.save(function(err){
 			if(!err){
-				res.status(200).json({status:200,message:'Update success',result:user});
+				res.status(200).json({status:200,message:'Update success'});
 			}
-			else 
+			else
 			{
 				//res.status(400).json({status:400,message:'bad request'});
 				console.log('succes update password');
 			}
 		});
 	});
-	
+
 	var mailOptions = {
 		from: '"PORTAL-HARGA" <portalharga.ipb@gmail.com>',
 		to: email,
@@ -37,7 +37,7 @@ var forgetPassword = function(req,res ){
 		'Setelah berhasil login segera ubah password anda'
 		//'baris 2'+
 	};
-	
+
 	transporter.sendMail(mailOptions, function(error, info){
 		if(error){
 			return console.log(error);
@@ -55,7 +55,3 @@ var forgetPassword = function(req,res ){
 module.exports = {
 	forgetPassword:forgetPassword
 }
-
-
-
-	
