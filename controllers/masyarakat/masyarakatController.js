@@ -1,4 +1,6 @@
+//dari komoditas model
 var komoditas = require('./../../models/komoditas/komoditasModel');
+//dari operasi pasar model
 var op = require('./../../models/masyarakat/operasiPasarModel');
 var users = require('./../../models/masyarakat/masyarakatModel');
 var crypto = require('crypto');
@@ -7,19 +9,19 @@ var jwt = require('jsonwebtoken');
 var moment=require('moment');
 var tz=require('moment-timezone');
 var each = require('foreach');
-var math = require('mathjs'); //untuk math
-
+//untuk math
+var math = require('mathjs');
 //var now = require('date-now');
 var date = require('date-utils');;
 
-/*modul 1 komoditas*/
-
+//modul 1 komoditas
 var addKomoditas = function(req,res){
 	var newKom = new komoditas(req.body);
-	newKom.lokasi.push({latitude:req.body.latitude,longitude:req.body.longitude});/*push lokasi latitude dan longitude (Number)*/
-	//newKom.jenis = req.body.jenis;
+	//push lokasi latitude dan longitude (Number)
+	newKom.lokasi.push({latitude:req.body.latitude,longitude:req.body.longitude});
 	var time = moment();
 	var now = moment(new Date());
+	//misal 16 March 2017
 	newKom.datePost =now.format("D MMM YYYY");
 	newKom.save(function(err){
 		if(err){
@@ -30,9 +32,10 @@ var addKomoditas = function(req,res){
 				message:"succes"
 			});
 		}
-	})
+	});
 };
 
+//semua komoditas
 var allKomoditas = function(req,res){
 	komoditas.find({},'-_id -__v',function(err,kom){
 		if(err){
@@ -48,40 +51,39 @@ var allKomoditas = function(req,res){
 
 //komoditas yang ditampilkan *hanya untuk hari ini saja
 var todayKomoditas =function(req,res){
-		var now = moment(new Date());
-		var sekarang = now.format("D MMM YYYY");
-		var total = [];
-		var counter = 0;
-		//console.log(sekarang);
-		komoditas.find({jenis:req.body.jenis,datePost:sekarang/*"16 Mar 2017"*/},'-_id -__v',{sort:{harga:1}}, function(err,komo){
-			console.log(komo);
-			if(err){
-				throw err;
-			}else if(komo=="") {
-				res.json({message:"no data"});
-			}else{
-				/*res.json({data:komo});*/
-				if(counter<komo.length){
-					for(var i=0;i<komo.length;i++){
-						total.push(komo[i].harga);
-						console.log(total);
-						counter++;
-						if(counter==komo.length){
-							var mak = math.max(total);
-							var min = math.min(total);
-							var mean = parseInt(math.mean(total)); //buat parsing langsung ke integer
-							res.json({
-								data:komo,
-								minimum:min,
-								ratarata:mean,	
-								makasimum:mak,
-								message:"succes"
-							});
-						}
+	//untuk tanggal
+	var now = moment(new Date());
+	var sekarang = now.format("D MMM YYYY");
+	//inisialisasi array total
+	var total = [];
+	var counter = 0;
+	komoditas.find({jenis:req.body.jenis,datePost:sekarang},'-_id -__v',{sort:{harga:1}}, function(err,komo){
+		if(err){
+			throw err;
+		}else if(komo==""){
+			res.json({message:"no data"});
+		}else{
+			if(counter<komo.length){
+				for(var i=0;i<komo.length;i++){
+					total.push(komo[i].harga);
+					counter++;
+					if(counter==komo.length){
+						var mak = math.max(total);
+						var min = math.min(total);
+						//buat parsing langsung ke integer
+						var mean = parseInt(math.mean(total));
+						res.json({
+							data:komo,
+							minimum:min,
+							ratarata:mean,	
+							makasimum:mak,
+							message:"succes"
+						});
 					}
 				}
 			}
-		});
+		}
+	});
 };
 
 //modul 2 untuk CRUD masyarakat
@@ -113,7 +115,7 @@ var addMasy=function(req,res){
 						console.log(newUser);
 						res.json({"status":"404","message":"can't save"})
 					}else {
-						var token = jwt.sign(/*newUser*/{us_id:newUser.us_id,role:newUser.role,username:newUser.username},config.secretKey,{
+						var token = jwt.sign({us_id:newUser.us_id,role:newUser.role,username:newUser.username},config.secretKey,{
 							expiresIn:60*60})
 						res.status(201);
 					  	res.json({
@@ -181,30 +183,30 @@ var findMasy=function(req,res){
 	});
 };
 
-// modul 2 fungsi terakhir untuk request operasi pasar
-
-//request operasi pasar
-
+//modul 2 fungsi terakhir untuk request operasi pasar
+//masyarakat request operasi pasar
 var addoperasiPasar =function(req,res){
 	var operasi = new op(req.body);
-	console.log(req.body.longitude);
-	operasi.lokasi.push({latitude:req.body.latitude,longitude:req.body.longitude});/*push lokasi latitude dan longitude (Number)*/
+	//push lokasi latitude dan longitude valuenya = Number
+	operasi.lokasi.push({latitude:req.body.latitude,longitude:req.body.longitude});
+	//inisialisasi time saat ini
 	var now = moment(new Date());
 	operasi.datePost = now.format("D MMM YYYY");
-	//console.log(sekarang);
 	operasi.save(function(err,komo){
 		if(err){
 			throw err;
 		}else{
-			res.json({data:operasi,
-					 message:"succes"
-					 });
+			res.json({
+				data:operasi,
+				message:"succes"
+			});
 		}
 	});
 };
 
 //Histori setiap user untuk operasi pasar yang telah diminta
 var operasiKu = function(req,res){
+	//op = operasi pasar
 	op.find({us_id:req.params.us_id},function(err,myoperasi){
 		if(err){
 			throw err;
@@ -217,17 +219,14 @@ var operasiKu = function(req,res){
 // untuk mendapatakan semua jenis komoditasnya saja
 var allJenisKomoditas = function(req,res){
 	komoditas.find({},'-_id -__v',{sort:{jenis:1}},function(err,all){
-		console.log(all.length);
-		//res.json({data:all});
+		//inisialisasi parsing dan jenis dalam bentuk array
 		var parsing="";
 		var jenis=[];
 		var counter=0;
 		if(counter<all.length){
 			for(var i=0;i<all.length;i++){
-				//console.log(all[i].jenis)
 				if(parsing==all[i].jenis){
 					parsing=all[i].jenis;
-					//console.log("ini yang di if"+all[i].jenis);
 				}else{
 					parsing=all[i].jenis;
 					jenis.push(all[i].jenis);
@@ -235,7 +234,6 @@ var allJenisKomoditas = function(req,res){
 				counter++;
 				if(counter==all.length){
 					res.json({data:jenis});
-					/*console.log("sudah 9"+jenis);*/
 				}
 			};
 		}
@@ -244,7 +242,6 @@ var allJenisKomoditas = function(req,res){
 
 //Masy		= Masyarakat
 //Kom		= komoditas
-
 module.exports = {
 	//modul 1 komoditas
 	addKom:addKomoditas,

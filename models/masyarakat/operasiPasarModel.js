@@ -9,6 +9,7 @@ autoIncrement.initialize(connection);
 var operasiPasarModel = new Schema({
 	us_id:String,
 	email:String,
+	//lokasi maps latitide dan longitude
 	lokasi:[
 		{latitude:Number,
 		longitude:Number}

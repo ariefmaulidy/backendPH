@@ -15,20 +15,33 @@ masyRouter.route('/updateMasy/:us_id')
 masyRouter.route('/deleteMasy/:us_id')
   .get(masyController.deleteMasy);
 
+
 //untuk komoditas
+
+//tambah komoditas
 masyRouter.route('/addKom')
 	.post(masyController.addKom);
-masyRouter.route('/allKom')  //kalau nggak dipakai
+
+//semua komoditas
+masyRouter.route('/allKom')
 	.get(masyController.allKom);
+
+//komoditas tertentu hari ini saja
 masyRouter.route('/todayKom')
 	.post(masyController.todayKom);
+
 //untuk dapetin semua jenis komoditas
 masyRouter.route('/allJenis')
 	.get(masyController.allJenis);
 
+
 //untuk operasi pasar
+
+//request operasi pasar
 masyRouter.route('/addOperasi')
 	.post(masyController.operasiPasar);
+
+//histori operasi pasar untuk setiap user
 masyRouter.route('/operasiku/:us_id')
 	.get(masyController.operasiKu);
 

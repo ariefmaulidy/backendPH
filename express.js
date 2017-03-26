@@ -16,15 +16,15 @@ var jwt    			= 	require('jsonwebtoken');
 var config 			= 	require('./config');
 var moment 			=	require('moment');
 var tz 				=	require('moment-timezone');
-
-
-//modul 3 & 4
+// masyarakat
 var masy 			=	require('./routes/masyarakat/masyRouter');
+
+//email forget password
 var email			=	require('./routes/mailgun');
-var setKomoditas	=	require('./routes/pemerintah/setKomoditasRouter');
 var forgetPassword	=	require('./routes/forgetPasswordRouter');
-//nyoba sendgrid
-//var smtp 		= 	require('./routes/smtp2Router');
+
+//setKomoditas pemerintah
+var setKomoditas	=	require('./routes/pemerintah/setKomoditasRouter');
 
 var port = process.env.PORT || 5000; // used to create, sign, and verify tokens
 var secureRoutes 	=	express.Router();
@@ -49,12 +49,14 @@ app.use('/api',authRouter);
 app.use('/register',regRouter);
 
 
-//Forget Password
+//email forget Password
 app.use('/forgetPassword',forgetPassword);
+app.use('/mailgun',email);
 
 //untuk masyarakat
 app.use('/masyarakat',masy);
-app.use('/mailgun',email);
+
+//set komoditas dari pemerintah
 app.use('/setKomoditas',setKomoditas);
 
 

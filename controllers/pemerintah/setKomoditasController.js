@@ -1,3 +1,4 @@
+//setKomoditas model
 var setKomoditas 	= 	require('./../../models/pemerintah/setKomoditasModel');
 var crypto 			= 	require('crypto');
 var config			=	require('./../../config');
@@ -7,6 +8,7 @@ var tz				=	require('moment-timezone');
 var each 			= 	require('foreach');
 var math 			=	require('mathjs'); //untuk math
 
+//tambah komoditas
 var tambahKomoditas = function(req,res){
 	var komoditasBaru = new setKomoditas(req.body);
 	komoditasBaru.save(function(err){
@@ -21,6 +23,7 @@ var tambahKomoditas = function(req,res){
 	});	
 };
 
+//semua komoditas yang sudah diinput oleh pemerintah
 var semuaKomoditas = function(req,res){
 	setKomoditas.find({},'-_id -__v',{sort:{namaKomoditas:1}},function(err,hasil){
 		if(err){
@@ -34,9 +37,9 @@ var semuaKomoditas = function(req,res){
 	});
 };
 
+//hapus komoditas
 var deleteKomoditas = function(req,res){
 	setKomoditas.findOne({setKom_id:req.params.setKom_id},function(err,komoditas){
-		console.log(req.params.setKom_id);
 		komoditas.remove(function(err){
 			if(err){
 				throw err;
@@ -50,18 +53,19 @@ var deleteKomoditas = function(req,res){
 	});
 };
 
+//menghapus komoditasnya saja
 var jenisKomoditas = function(req,res){
 	setKomoditas.find({},'-_id -__v',{sort:{namaKomoditas:1}},function(err,komoditas){
 		console.log(komoditas.length);
+		//inisialisasi variable untuk parsing dan jenis dalam bentuk array
 		var parsing="";
 		var jenis=[];
 		var counter=0;
+		//loping untuk mendapatkan komoditas
 		if(counter<komoditas.length){
 			for(var i=0;i<komoditas.length;i++){
-				//console.log(all[i].jenis)
 				if(parsing==komoditas[i].namaKomoditas){
 					parsing=komoditas[i].namaKomoditas;
-					//console.log("ini yang di if"+all[i].jenis);
 				}else{
 					parsing=komoditas[i].namaKomoditas;
 					jenis.push(komoditas[i].namaKomoditas);
@@ -69,7 +73,6 @@ var jenisKomoditas = function(req,res){
 				counter++;
 				if(counter==komoditas.length){
 					res.json({data:jenis});
-					/*console.log("sudah 9"+jenis);*/
 				}
 			};
 		}
