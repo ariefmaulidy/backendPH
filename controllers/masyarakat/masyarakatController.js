@@ -29,6 +29,7 @@ var addKomoditas = function(req,res){
 		}else{
 			res.json({
 				data:newKom,
+				status:200,
 				message:"succes"
 			});
 		}
@@ -43,6 +44,7 @@ var allKomoditas = function(req,res){
 		}else{
 			res.json({
 				data:kom,
+				status:200,
 				message:"succes"
 			});
 		}
@@ -74,6 +76,7 @@ var todayKomoditas =function(req,res){
 						var mean = parseInt(math.mean(total));
 						res.json({
 							data:komo,
+							status:200,
 							minimum:min,
 							ratarata:mean,	
 							makasimum:mak,
@@ -120,6 +123,7 @@ var addMasy=function(req,res){
 						res.status(201);
 					  	res.json({
 							newUser,
+							status:200,
 							token:token
 					  })
 				  }
@@ -143,7 +147,10 @@ var updateMasy=function(req,res){
 					res.json({"status":"404","message":"failed updateUser"});
 				}else {
 					res.status(500);
-					res.send(user);
+					res.json({
+						data:user,
+						status:200,
+					});
 				}
 			});
 		}
