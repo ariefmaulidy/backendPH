@@ -4,19 +4,19 @@ var setKomoditasController=require('./../../controllers/pemerintah/setKomoditasC
 var setKomoditasRouter=express.Router();
 
 //tambah komoditas
-setKomoditasRouter.route('/setKomoditas/tambahKomoditas')
+setKomoditasRouter.route('/tambahKomoditas')
 	.post(setKomoditasController.tambahKomoditas);
 
 //semua komoditas
-setKomoditasRouter.route('/setKomoditas/semuaKomoditas')
+setKomoditasRouter.route('/semuaKomoditas')
 	.get(setKomoditasController.semuaKomoditas);
 
 //menghapus komoditas
-setKomoditasRouter.route('/setKomoditas/hapusKomoditas/:setKom_id')
+setKomoditasRouter.route('/hapusKomoditas/:setKom_id')
 	.get(setKomoditasController.deleteKomoditas);
 
 //hanya jenisnya saja
-setKomoditasRouter.route('/setKomoditas/jenisKomoditas')
+setKomoditasRouter.route('/jenisKomoditas')
 	.get(setKomoditasController.jenisKomoditas);
 
 module.exports = setKomoditasRouter;
