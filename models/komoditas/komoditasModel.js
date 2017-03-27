@@ -14,6 +14,7 @@ var komoditasModel = new Schema({
 		{latitude:String,
 		longitude:String}
 	],		*/
+	alamat:String,
 	latitude:String,
 	longitude:String,
 	datePost:String,

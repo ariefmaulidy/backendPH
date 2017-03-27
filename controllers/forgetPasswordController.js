@@ -38,10 +38,8 @@ var forgetPassword = function(req,res ){
 				to: email,
 				subject: 'Forget Password',
 				html:
-				'Saudara/i '+ req.body.username + ' password baru anda : ' + newPassword + '<br>'+
-				'Setelah berhasil login segera ubah password anda <br>' +
-				'ini password yang di database : ' + user.password + '<br>' +
-				'ini password yang baru yang tidak di encrip : ' + newPassword
+				'Saudara/i '+ req.body.username + ' password baru anda : ' + newPassword + '<br><br>'+
+				'Setelah berhasil login segera ubah password anda <br>'
 			};
 			
 			//function sender
