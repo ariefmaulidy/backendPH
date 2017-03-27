@@ -10,10 +10,12 @@ var operasiPasarModel = new Schema({
 	us_id:String,
 	email:String,
 	//lokasi maps latitide dan longitude
-	lokasi:[
+	/*lokasi:[
 		{latitude:Number,
 		longitude:Number}
-	],
+	],*/
+	latitude:String,
+	longitude:String,
 	komoditas:String,
 	pesan:String,
 	datePost:String

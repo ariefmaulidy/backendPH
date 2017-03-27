@@ -18,7 +18,7 @@ var date = require('date-utils');;
 var addKomoditas = function(req,res){
 	var newKom = new komoditas(req.body);
 	//push lokasi latitude dan longitude (Number)
-	newKom.lokasi.push({latitude:req.body.latitude,longitude:req.body.longitude});
+	//newKom.lokasi.push({latitude:req.body.latitude,longitude:req.body.longitude});
 	var time = moment();
 	var now = moment(new Date());
 	//misal 16 March 2017
@@ -188,7 +188,7 @@ var findMasy=function(req,res){
 var addoperasiPasar =function(req,res){
 	var operasi = new op(req.body);
 	//push lokasi latitude dan longitude valuenya = Number
-	operasi.lokasi.push({latitude:req.body.latitude,longitude:req.body.longitude});
+	//operasi.lokasi.push({latitude:req.body.latitude,longitude:req.body.longitude});
 	//inisialisasi time saat ini
 	var now = moment(new Date());
 	operasi.datePost = now.format("D MMM YYYY");
