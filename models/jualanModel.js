@@ -9,9 +9,11 @@ var jualanModel = new Schema({
 	komoditas:String,
 	us_id:String,
 	harga:String,
+	satuan_harga:String,
 	foto_komoditas:String,
-	datePost:String,
-	stok:String
+	datePost:Number,
+	stok:String,
+	satuan_stok:String
 });
 jualanModel.plugin(autoIncrement.plugin, { model: 'Jualan', field: 'jualan_id' });
 

@@ -4,7 +4,7 @@ var jualanRouter=express.Router();
 
 // upload photo
 
-jualanRouter.route('/getAll/:id')
+jualanRouter.route('/getAll')
 	.get(jualanController.getAll);
 jualanRouter.route('/getJualanKu/:id')
 	.get(jualanController.getJualanKu);

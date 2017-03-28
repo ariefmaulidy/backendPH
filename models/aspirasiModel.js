@@ -9,7 +9,7 @@ autoIncrement.initialize(connection);
 var aspirasiModel = new Schema({
 	us_id:{type:String,ref:'User'},
 	subjek:String,
-	datePost:String,
+	datePost:Number,
 	isi_aspirasi:String,
 	pendukung_id:[{idpendukung:String}]
 });

@@ -9,9 +9,9 @@ var jwt=require('jsonwebtoken');
 
 var getAllUser = function(req,res){
 	User.find(function(err,users){
-		if(err)
+		if(users=='')
 		{
-			res.json({"status":"400","message":"Bad Request"});
+			res.json({status:404,message:'No data provided'});
 		}
 		else
 		{
@@ -23,7 +23,7 @@ var getAllUser = function(req,res){
 
 var addUser = function(req,res){
 	User.findOne({username:req.body.username},function(err,usercheck){
-		if(usercheck!=null){
+		if(usercheck!=''){
 			res.json({status:500,message:"Create failed, username is already exist"});
 		}
 		else{

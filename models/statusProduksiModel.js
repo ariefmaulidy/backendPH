@@ -10,8 +10,9 @@ var produksiModel = new Schema({
 	us_id:{type:String,ref:'User'},
 	komoditas:String,
 	lokasi:String,
-	datePost:String,
+	datePost:Number,
 	jumlah_produksi:String,
+	satuan_produksi:String,
 	keterangan:String
 });
 

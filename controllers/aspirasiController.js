@@ -10,7 +10,7 @@ var each = require('foreach');
 var allAspirasi = function(req,res){
 	
 	Aspirasi.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){
-	if(aspirasi!=null)
+	if(aspirasi!='')
 	{ 	
 		var counter = 0;
 		
@@ -47,6 +47,10 @@ var allAspirasi = function(req,res){
 				
 		}
 		
+		else
+		{
+			res.json({status:404,message:'No data provided'});
+		}
 			
 	});
 }
@@ -58,7 +62,7 @@ var aspirasiKu = function(req,res){
 		var counter = 0;
 		
 				each(aspirasi,function(value,key,array){
-					User.findOne({us_id:aspirasi[key].us_id}).exec(function(err,user){
+					User.findOne({us_id:aspirasi[key].us_id}.sort).exec(function(err,user){
 					aspirasi[key].name=user.name;
 					aspirasi[key].prof_pict=user.prof_pict;
 					aspirasi[key].time=fromNow(aspirasi[key].datePost);
@@ -91,7 +95,7 @@ var getPendukung = function(req,res){
 		var pendukung=[];
 				each(aspirasi.pendukung_id,function(value,key,array){
 					User.findOne({us_id:value.idpendukung},'name prof_pict -_id',function(err,user){
-					if(user!=null){
+					if(user!=''){
 					pendukung.push(user);
 					counter++;	
 					if(counter==aspirasi.pendukung_id.length)
@@ -131,7 +135,7 @@ var postAspirasi = function(req,res){
 	aspirasi = new Aspirasi(req.body);
 	//console.log(req.role);
 	  	var time=moment();
-		aspirasi.datePost = moment(time).tz('Asia/Jakarta'); 
+		aspirasi.datePost = Date.parse(moment(time).tz('Asia/Jakarta')); 
 		aspirasi.save(function(err)
 		{
 			if(!err && (req.role==1||req.role==0))
@@ -149,7 +153,7 @@ var postAspirasi = function(req,res){
 var delAspirasi = function(req,res){
 	Aspirasi.findOne({aspirasi_id:req.body.aspirasi_id,us_id:req.body.us_id},function(err,aspirasi){
 	//	res.json({aspirasi});
-		if(aspirasi!=null && (req.role==1||req.role==0))
+		if(aspirasi!='' && (req.role==1||req.role==0))
 		{
 			aspirasi.remove(function(err){
 				if(!err){
@@ -169,7 +173,7 @@ var delAspirasi = function(req,res){
 var dukung_aspirasi = function(req,res){
 	Aspirasi.findOne({aspirasi_id:req.body.aspirasi_id}).exec(function(err,aspirasi){
 		console.log(req.role);
-	if(aspirasi!=null && req.role==1)
+	if(aspirasi!='' && req.role==1)
 		{
 			aspirasi.pendukung_id.push({idpendukung:req.body.us_id});
 			console.log(aspirasi);

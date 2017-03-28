@@ -9,7 +9,7 @@ var tz=require('moment-timezone');
 
 var allProduksi = function(req,res){
 	Produksi.find({us_id:req.params.id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,produksi){
-					if(produksi!=null)
+					if(produksi!='')
 							{ var counter = 0;
 									each(produksi,function(value,key,array){
 										User.findOne({us_id:produksi[key].us_id}).exec(function(err,user){
@@ -24,17 +24,18 @@ var allProduksi = function(req,res){
 										});
 									})			
 								}
-				else
-				{
-					res.json({status:400,message:"Failed to get data",err:err});
-				}
+				
+					else
+					{
+						res.json({status:404,message:'No data provided'});
+					}
 			})
 }
 
 var postProduksi = function(req,res){
 		produksi = new Produksi(req.body);
 	  	var time=moment();
-	  	produksi.datePost = moment(time).tz('Asia/Jakarta'); 
+	  	produksi.datePost = Date.parse(moment(time).tz('Asia/Jakarta')); 
 		produksi.save(function(err)
 		{
 			if(!err)
@@ -52,7 +53,7 @@ var postProduksi = function(req,res){
 var delProduksi = function(req,res){
 	Produksi.findOne({produksi_id:req.body.produksi_id,us_id:req.body.us_id},function(err,produksi){
 	//	res.json({aspirasi});
-		if(produksi!=null)
+		if(produksi!='')
 		{
 			produksi.remove(function(err){
 				if(!err){
