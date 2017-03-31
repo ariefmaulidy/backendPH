@@ -3,10 +3,15 @@ var produksiController=require('./../controllers/produksiController');
  
 var produksiRouter=express.Router();
 
-produksiRouter.route('/postProduksi')
+produksiRouter.route('/add')
 	.post(produksiController.postProduksi);
-produksiRouter.route('/delProduksi')
+produksiRouter.route('/update')
+	.post(produksiController.updateProduksi);
+produksiRouter.route('/delete')
 	.post(produksiController.delProduksi);
-produksiRouter.route('/getProduksi/:id')
-	.get(produksiController.allProduksi);
+produksiRouter.route('/get/:id')
+	.get(produksiController.getProduksiKu);
+produksiRouter.route('/get')
+	.get(produksiController.getProduksi);
+
 module.exports=produksiRouter;

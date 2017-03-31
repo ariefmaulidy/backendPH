@@ -4,12 +4,19 @@ var userRouter=express.Router();
 
 // upload photo
 
-userRouter.route('/del_id/:id')
-	.get(userController.delId);
+userRouter.route('/delete')
+	.post(userController.deleteUser);
 userRouter.route('/update')
 	.post(userController.updateUser);
+userRouter.route('/add')
+	.post(userController.addUser);
 userRouter.route('/updatePassword')
 	.post(userController.updatePassword);
-userRouter.route('/all')
+userRouter.route('/uploadPhoto')
+	.post(userController.uploadPhoto);
+	
+userRouter.route('/get')
 	.get(userController.getAllUser);
+userRouter.route('/get/:user_id')
+	.get(userController.getOneUser);
 module.exports=userRouter; 

@@ -1,9 +1,8 @@
 var express=require('express')
 var userController=require('./../controllers/userController');
-var regRouter=express.Router();
+var registerRouter=express.Router();
 
-// upload photo
-
-regRouter.route('/inputUser')
+// create new user
+registerRouter.route('')
 	.post(userController.addUser);
-module.exports=regRouter;
+module.exports=registerRouter; 

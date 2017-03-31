@@ -13,24 +13,24 @@ var allAspirasi = function(req,res){
 	if(aspirasi!='')
 	{ 	
 		var counter = 0;
-		
-				each(aspirasi,function(value,key,array){
-					User.findOne({us_id:aspirasi[key].us_id}).exec(function(err,user){
+				each(aspirasi,function(value,key,array)
+				{
+					User.findOne({user_id:aspirasi[key].user_id}).exec(function(err,user){
 					aspirasi[key].name=user.name;
-					aspirasi[key].prof_pict=user.prof_pict;
+					aspirasi[key].picture=user.picture;
 					aspirasi[key].time=fromNow(aspirasi[key].datePost);
-					aspirasi[key].total_pendukung=aspirasi[key].pendukung_id.length;
+					aspirasi[key].total_pendukung=aspirasi[key].pendukung.length;
 					aspirasi[key].status_voted=false;
 					
 					if(counter<=aspirasi.length)
 					{
-						for(var i=0;i<aspirasi[key].pendukung_id.length;i++)
+						for(var i=0;i<aspirasi[key].pendukung.length;i++)
 						{
-							if(aspirasi[key].pendukung_id[i].idpendukung==req.params.id)
+							if(aspirasi[key].pendukung[i].user_id==req.user_id)
 							{
 								aspirasi[key].status_voted=true;
 							}
-							else if(aspirasi[key].pendukung_id.length==0)
+							else if(aspirasi[key].pendukung.length==0)
 							{
 								aspirasi[key].status_voted=false;
 							}
@@ -56,22 +56,22 @@ var allAspirasi = function(req,res){
 }
 
 var aspirasiKu = function(req,res){
-	Aspirasi.find({us_id:req.params.id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){
+	Aspirasi.find({user_id:req.params.user_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){
 	if(aspirasi.length!=0)
 	{ 	
 		var counter = 0;
 		
 				each(aspirasi,function(value,key,array){
-					User.findOne({us_id:aspirasi[key].us_id}.sort).exec(function(err,user){
+					User.findOne({user_id:aspirasi[key].user_id}.sort).exec(function(err,user){
 					aspirasi[key].name=user.name;
-					aspirasi[key].prof_pict=user.prof_pict;
+					aspirasi[key].picture=user.picture;
 					aspirasi[key].time=fromNow(aspirasi[key].datePost);
-					aspirasi[key].total_pendukung=aspirasi[key].pendukung_id.length;
+					aspirasi[key].total_pendukung=aspirasi[key].pendukung.length;
 					aspirasi[key].status_voted=false;
 					counter++;
 					if(counter==aspirasi.length)
 						{
-							//console.log(aspirasi[0].pendukung_id[0]);
+							//console.log(aspirasi[0].pendukung[0]);
 		 					res.json({status:200,message:'Get data success',data:aspirasi,token:req.token});		
 						}
 					});
@@ -86,48 +86,65 @@ var aspirasiKu = function(req,res){
 	});
 }
 
-var getPendukung = function(req,res){
+var getPendukung = function(req,res)
+{
 	Aspirasi.findOne({aspirasi_id:req.params.aspirasi_id}).lean().exec(function(err,aspirasi){
-	if(aspirasi.pendukung_id.length!=0)
+	if(aspirasi.pendukung.length!=0)
 	{ 	
-		//console.log(aspirasi.pendukung_id.length);
+		console.log(aspirasi.pendukung.length);
 		var counter = 0;
-		var pendukung=[];
-				each(aspirasi.pendukung_id,function(value,key,array){
-					User.findOne({us_id:value.idpendukung},'name prof_pict -_id',function(err,user){
-					if(user!=''){
-					pendukung.push(user);
+		var pendukungKu=[];
+		each(aspirasi.pendukung,function(value,key,array)
+		{
+			User.findOne({user_id:value.user_id},'name picture -_id',function(err,user)
+			{
+				if(user!='')
+				{
+					pendukungKu.push(user);
 					counter++;	
-					if(counter==aspirasi.pendukung_id.length)
+					if(counter==aspirasi.pendukung.length)
+					{
+						if(pendukungKu!=null)
 						{
-							if(pendukung!=[])
-								{
-									res.json({status:200,message:'Get data success',data_pendukung:pendukung,token:req.token});		
-								}
+							res.json({status:200,message:'Get data success',data_pendukung:pendukungKu,token:req.token});		
+						}
+						else 
+						{
+							res.json({status:404,message:'No data provided',token:req.token});		
 						}
 					}
-						
-					});
-				})									
-		}
-		else
-		{
-			res.json({status:404,message:'No data provided'});
-		}	
+				}	
+			});
+		})									
+	}
+	else
+	{
+		res.json({status:404,message:'No data provided',token:req.token});
+	}	
 		
 			
 	});	
 }
+
 var batalDukung = function(req,res){
 	if(req.role==1||req.role==0)
 	{
 		Aspirasi.update( 
       { aspirasi_id: req.body.aspirasi_id },
-      { $pull: { pendukung_id : { idpendukung : req.body.us_id } } },
+      { $pull: { pendukung : { user_id : req.body.user_id } } },
       { safe: true },
       function(err, aspirasi) {
-        res.json({status:200,message:'Delete vote success',token:req.token});  
+        console.log(err);
+        if(!err)
+        {
+	        res.json({status:200,message:'Delete vote success',token:req.token});
+        }
+        else
+        {
+        	res.json({status:400,message:err,token:req.token});	
+        }  
       });
+
     }  				
 }
 
@@ -151,7 +168,7 @@ var postAspirasi = function(req,res){
 }
 
 var delAspirasi = function(req,res){
-	Aspirasi.findOne({aspirasi_id:req.body.aspirasi_id,us_id:req.body.us_id},function(err,aspirasi){
+	Aspirasi.findOne({aspirasi_id:req.body.aspirasi_id,user_id:req.body.user_id},function(err,aspirasi){
 	//	res.json({aspirasi});
 		if(aspirasi!='' && (req.role==1||req.role==0))
 		{
@@ -172,20 +189,54 @@ var delAspirasi = function(req,res){
 }
 var dukung_aspirasi = function(req,res){
 	Aspirasi.findOne({aspirasi_id:req.body.aspirasi_id}).exec(function(err,aspirasi){
-		console.log(req.role);
 	if(aspirasi!='' && req.role==1)
-		{
-			aspirasi.pendukung_id.push({idpendukung:req.body.us_id});
-			console.log(aspirasi);
-				aspirasi.save(function(err)
+		{ 
+			console.log(aspirasi.pendukung.length)
+			counter=0;
+			status_voted=false;
+			if(aspirasi.pendukung.length==0)
+			{
+				aspirasi.pendukung.push({user_id:req.body.user_id});
+				console.log(aspirasi);
+					aspirasi.save(function(err)
+					{
+					if(!err){
+						res.status(200).json({status:200,message:"Vote success",data:aspirasi,token:req.token});
+					}
+					else{
+						res.status(400).json({status:400,message:"Bad request"});
+					}
+				});
+			}
+			else
+			{
+				each(aspirasi.pendukung,function(value,key,array)
 				{
-				if(!err){
-					res.status(200).json({status:200,message:"success",result:aspirasi,token:req.token});
-				}
-				else{
-					res.status(400).json({status:400,message:"Bad request"});
-				}
-			});
+						if(value.user_id==req.body.user_id || aspirasi.user_id==req.body.user_id)
+						{
+							status_voted=true;
+						}
+						counter++;
+						if(counter>=aspirasi.pendukung.length && status_voted==false)
+						{	
+							aspirasi.pendukung.push({user_id:req.body.user_id});
+							console.log(aspirasi);
+								aspirasi.save(function(err)
+								{
+								if(!err){
+									res.status(200).json({status:200,message:"Vote success",data:aspirasi,token:req.token});
+								}
+								else{
+									res.status(400).json({status:400,message:"Bad request"});
+								}
+							});
+						}
+						else if(counter>=aspirasi.pendukung.length && status_voted==true)
+						{
+							res.status(400).json({status:400,message:"User already voted or user is this aspirasi's creator"});
+						}
+				})	
+			}
 		}
 		else
 		{

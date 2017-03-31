@@ -7,14 +7,17 @@ var connection = mongoose.createConnection("mongodb://localhost/PortalHarga");
 autoIncrement.initialize(connection);
 
 var produksiModel = new Schema({
-	us_id:{type:String,ref:'User'},
-	komoditas:String,
-	lokasi:String,
+	user_id:{type:String,ref:'User'},
+	komoditas_id:String,
+	posisi:[{
+				longitude:String,
+				latitude:String,
+				alamat:String
+			}],
 	datePost:Number,
-	jumlah_produksi:String,
-	satuan_produksi:String,
+	datePanen:Number,
+	jumlah:String,
 	keterangan:String
 });
-
 produksiModel.plugin(autoIncrement.plugin, { model: 'Produksi', field: 'produksi_id' });
 module.exports=mongoose.model('Produksi',produksiModel);

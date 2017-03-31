@@ -13,8 +13,9 @@ var userModel = new Schema({
 	email:String,
 	role:{type:Number,default:0},
 	last_login:String,
-	prof_pict:String
+	picture:String,
+	address:String
 });
-userModel.plugin(autoIncrement.plugin, { model: 'User', field: 'us_id' });
+userModel.plugin(autoIncrement.plugin, { model: 'User', field: 'user_id' });
 
 module.exports=mongoose.model('User',userModel);

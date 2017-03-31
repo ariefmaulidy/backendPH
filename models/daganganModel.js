@@ -5,16 +5,14 @@ var connection = mongoose.createConnection("mongodb://localhost/PortalHarga");
  
 autoIncrement.initialize(connection);
 
-var jualanModel = new Schema({
-	komoditas:String,
-	us_id:String,
+var daganganModel = new Schema({
+	komoditas_id:String,
+	user_id:String,
 	harga:String,
-	satuan_harga:String,
-	foto_komoditas:String,
+	picture:String,
 	datePost:Number,
-	stok:String,
-	satuan_stok:String
+	stok:String
 });
-jualanModel.plugin(autoIncrement.plugin, { model: 'Jualan', field: 'jualan_id' });
+daganganModel.plugin(autoIncrement.plugin, { model: 'Dagangan', field: 'dagangan_id' });
 
-module.exports=mongoose.model('Jualan',jualanModel);
+module.exports=mongoose.model('Dagangan',daganganModel);

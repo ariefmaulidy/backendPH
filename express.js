@@ -1,10 +1,10 @@
 var express			=	require('express');
 var app				=	express();
 var User            =	require('./models/userModel');
-var jualanRouter	=	require('./routes/jualanRouter.js');
+var daganganRouter	=	require('./routes/daganganRouter.js');
 var userRouter		=	require('./routes/userRouter.js');
 var authRouter		=	require('./routes/auth.js');
-var regRouter		=	require('./routes/regRouter.js');
+var registerRouter	=	require('./routes/registerRouter.js');
 var aspirasiRouter	=	require('./routes/aspirasiRouter.js');
 var produksiRouter	=	require('./routes/produksiRouter.js');
 var multer	 		= 	require('multer');
@@ -16,15 +16,11 @@ var jwt    			= 	require('jsonwebtoken');
 var config 			= 	require('./config');
 var moment 			=	require('moment');
 var tz 				=	require('moment-timezone');
-// masyarakat
+
+//modul 3 & 4
 var masy 			=	require('./routes/masyarakat/masyRouter');
-
-//email forget password
-var email			=	require('./routes/mailgun');
-var forgetPassword	=	require('./routes/forgetPasswordRouter');
-
-//setKomoditas pemerintah
-var setKomoditas	=	require('./routes/pemerintah/setKomoditasRouter');
+//nyoba sendgrid
+//var smtp 		= 	require('./routes/smtp2Router');
 
 var port = process.env.PORT || 5000; // used to create, sign, and verify tokens
 var secureRoutes 	=	express.Router();
@@ -36,127 +32,74 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, token , login_type");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, token");
   next();
 });
 app.use(morgan('dev'));
 app.listen(port);
 console.log('Server start at http://localhost:' + port);
 
-// API Routes
+// User Login Router
+app.use('/user/auth',authRouter);
 
-app.use('/api',authRouter);
-app.use('/register',regRouter);
-
-
-//email forget Password
-app.use('/forgetPassword',forgetPassword);
-app.use('/mailgun',email);
+// For registering new user
+app.use('/user/add',registerRouter);
 
 //untuk masyarakat
 app.use('/masyarakat',masy);
 
-//set komoditas dari pemerintah
-app.use('/setKomoditas',setKomoditas);
 
+//app.use('/smtp',smtp);
 
 // --- JWT Validaltion ---
 app.use(function(req,res,next){
-	if(req.headers.token){
-		if(req.headers.login_type!=null)
-		{
-				// mobile login
-				if(req.headers.login_type==1)
-					{
-						 jwt.verify(req.headers.token, config.secret, function(err, decoded) {
-
-								    if (err)
-								    {
-					        			return res.json({ success: false, message: 'Failed to authenticate token.' });
-					    	  		}
-					    	  		else
-					    	  		{
-					    	  			req.token='-';
-					    	  			req.role = decoded.role;
-					    	  			//console.log(decoded);
-					    	  			next();
-					    	  		}
-					    	})
-						}
-
-					else if(req.headers.login_type==0)
-					{
-						// website login
-						jwt.verify(req.headers.token, config.secret, function(err, decoded) {
-						//console.log(decoded);
-						req.role = decoded.role;
-								    if (err)
-								    {
-					        			return res.json({ success: false, message: 'Failed to authenticate token.' });
-					    	  		}
-					    	  		else
-					    	  		{
-					      	  			req.token=jwt.sign({id:decoded.id,username:decoded.username,time:decoded.time,role:decoded.role},config.secret, {
-					                    expiresIn : 60*20// expires in 24 hours
-					                    });
-					    	  			next();
-					    	  		}
-					    	});
-					}
-
-		}
-		else
-		{
-			return res.json({ success: false, message: 'Please send login_type' });
-		}
-		// mobile login
+	if(req.headers.token)
+	{
+		jwt.verify(req.headers.token, config.secret, function(err, decoded) 
+		{      
+			    if (err) 
+			    {
+	    			return res.json({ success: false, message: 'Failed to authenticate token.' });    
+		  		}		 
+		  		else 
+		  		{	
+		  			// for website login
+		  			if(decoded.login_type==0)
+		  			{
+		  				req.user_id=decoded.user_id;
+			  			req.role = decoded.role;
+	      	  			req.token=jwt.sign({
+	      	  									user_id:user._id,
+	                                            username:user.username,
+	                                            time:user.last_login,
+	                                            role:user.role,
+	                                            login_type:req.body.login_type
+	                                        }
+	                                        ,config.secret, {
+						                    expiresIn : 60*60// expires in 24 hours
+						                    });
+			  			next();
+		  			}
+		  			//for mobile login
+		  			else if(decoded.login_type==1)
+		  			{
+		  				console.log(decoded.user_id);
+		  				req.user_id=decoded.user_id;
+		  				req.token='-';
+					    req.role = decoded.role;
+	    	  			next();	
+		  			}	
+		  		}
+		})
 	}
 	else
     {
-    	return res.json({ success: false, message: 'Please send token' });
+    	return res.status(400).json({ status:400, message: 'Please send token' }); 
     }
-
-
 });
-// -------------upload----------------
-
-app.post('/user/upload_photo',function(req,res,next){
-
-		var ImageSaver = require('image-saver-nodejs/lib');
-    	var imageSaver = new ImageSaver();
-
-    	User.findOne({us_id:req.body.us_id},function(err,user){
-				if(user){
-					if(user.prof_pict!=null){
-					fs.unlinkSync('../public_html/'+user.prof_pict);
-					}
-					var time=moment();
-					user.prof_pict='uploads/prof_pict/pp_'+user.username+moment(time).tz('Asia/Jakarta')+".jpg";
-					user.save(function(err){
-						if(!err){
-							imageSaver.saveFile("../public_html/"+user.prof_pict, req.body.string64).then((data)=>{
-	    					res.json({status:200,message:'Change profile picture success',prof_pict:user.prof_pict});
-    						})
-    						.catch((err)=>{
-					        	res.json({status:400,message:err});
-					    	})
-						}
-						else
-						{
-							res.json({status:400,message:err});
-						}
-					});
-				}
-				else
-				{
-					res.json({status:404,message:'User is not found'});
-				}
-			})
-
- });
-// -----------------------------------------
 
 app.use('/user',userRouter);
 app.use('/produksi',produksiRouter);
-app.use('/jualan',jualanRouter);
+app.use('/dagangan',daganganRouter);
 app.use('/aspirasi',aspirasiRouter);
+
