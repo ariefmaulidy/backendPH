@@ -32,7 +32,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, token");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   next();
 });
 app.use(morgan('dev'));
@@ -53,9 +53,9 @@ app.use('/masyarakat',masy);
 
 // --- JWT Validaltion ---
 app.use(function(req,res,next){
-	if(req.headers.token)
+	if(req.headers.authorization)
 	{
-		jwt.verify(req.headers.token, config.secret, function(err, decoded) 
+		jwt.verify(req.headers.authorization, config.secret, function(err, decoded) 
 		{      
 			    if (err) 
 			    {
@@ -69,7 +69,7 @@ app.use(function(req,res,next){
 		  				req.user_id=decoded.user_id;
 			  			req.role = decoded.role;
 	      	  			req.token=jwt.sign({
-	      	  									user_id:user._id,
+	      	  									user_id:user.user_id,
 	                                            username:user.username,
 	                                            time:user.last_login,
 	                                            role:user.role,

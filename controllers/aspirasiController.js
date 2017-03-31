@@ -155,7 +155,7 @@ var postAspirasi = function(req,res){
 		aspirasi.datePost = Date.parse(moment(time).tz('Asia/Jakarta')); 
 		aspirasi.save(function(err)
 		{
-			if(!err && (req.role==1||req.role==0))
+			if(!err)
 			{
 				res.json({status:200,success:true,message:'Input Success',data:aspirasi,token:req.token});
 			}
