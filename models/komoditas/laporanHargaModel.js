@@ -6,20 +6,18 @@ var connection = mongoose.createConnection("mongodb://localhost/PortalHarga");
 
 autoIncrement.initialize(connection);
 
-var operasiPasarModel = new Schema({
+var laporanHargaModel = new Schema({
+	komoditas_id:Number,
 	user_id:Number,
+	harga:Number,
+	date:Number,
 	lokasi:[{
 		latitude:Number,
 		longitude:Number,
 		alamat:String
-	}],
-	pesan:String,
-	date:Number,
-	pendukung:[{
-		user_id:Number
 	}]
 });
 
-operasiPasarModel.plugin(autoIncrement.plugin,{model:'operasiPasar',field:'operasiPasar_id',startAt:1});
+laporanHargaModel.plugin(autoIncrement.plugin,{model:'laporanHarga',field:'laporanHarga_id',startAt:1});
 
-module.exports = mongoose.model("operasiPasar",operasiPasarModel);
+module.exports = mongoose.model("laporanHarga",komoditasModel);

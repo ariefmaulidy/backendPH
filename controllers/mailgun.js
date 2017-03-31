@@ -18,7 +18,7 @@ var send = function(req,res ){
 		'baris 1<br>'+
 		'passwor baru anda : ' + newPassword
   	};
-	
+
 	transporter.sendMail(mailOptions, function(error, info){
 		if(error){
 			return console.log(error);

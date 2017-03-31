@@ -15,13 +15,12 @@ var userModel = new Schema({
 	role:{type:Number,default:0},
 	last_login:String,
 	picture:String,
-	address:String
 	//pedagang
 	dagangan:[{
 		komoditas_id:Number,
 		keterangan:String,
 		harga:Number,
-		stok:Number,
+		stock:Number,
 		date:Number
 	}]
 });

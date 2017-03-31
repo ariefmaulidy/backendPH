@@ -7,20 +7,13 @@ var connection = mongoose.createConnection("mongodb://localhost/PortalHarga");
 autoIncrement.initialize(connection);
 
 var komoditasModel = new Schema({
-	jenis:String,		//jenis komoditasnya misal bawang cabai
-	us_id:String,
-	harga:Number,		//dalam satuan kg
-	/*lokasi:[				//lokasi di mana post komoditas
-		{latitude:String,
-		longitude:String}
-	],		*/
-	alamat:String,
-	latitude:String,
-	longitude:String,
-	datePost:String,
-	pathPictLocKOm:String	//path picture lokasi komoditas
+	name:String,
+	satuan:String,
+	harga:Number,
+	date:Number,
+	last_update:Number
 });
 
-komoditasModel.plugin(autoIncrement.plugin,{model:'komoditas',field:'kom_id',startAt:1});
+komoditasModel.plugin(autoIncrement.plugin,{model:'komoditas',field:'komoditas_id',startAt:1});
 
 module.exports = mongoose.model("komoditas",komoditasModel);

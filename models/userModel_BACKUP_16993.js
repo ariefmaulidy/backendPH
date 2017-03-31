@@ -21,7 +21,7 @@ var userModel = new Schema({
 		komoditas_id:Number,
 		keterangan:String,
 		harga:Number,
-		stok:Number,
+		stock:Number,
 		date:Number
 	}]
 });
