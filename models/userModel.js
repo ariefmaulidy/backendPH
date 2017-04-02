@@ -7,7 +7,6 @@ var connection = mongoose.createConnection("mongodb://localhost/PortalHarga");
 autoIncrement.initialize(connection);
 
 var userModel = new Schema({
-	//user umum
 	username:String,
 	email:String,
 	password:String,
@@ -15,15 +14,11 @@ var userModel = new Schema({
 	role:{type:Number,default:0},
 	last_login:String,
 	picture:String,
-	address:String
-	//pedagang
-	dagangan:[{
-		komoditas_id:Number,
-		keterangan:String,
-		harga:Number,
-		stok:Number,
-		date:Number
-	}]
+	address:String,
+	//penyuluh
+	region:String,
+	komoditas_id:Number,
+	materi:String
 });
 userModel.plugin(autoIncrement.plugin, { model: 'User', field: 'user_id',startAt:1});
 

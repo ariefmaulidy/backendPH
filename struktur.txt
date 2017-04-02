@@ -1,0 +1,182 @@
+Method
+User
+{
+	user_id
+	username
+	email
+	password
+	name
+	role
+	last_login
+	picture
+}
+get
+- all
+- :id
+post
+- add
+  (username,email,password,nama lengkap)
+- auth
+  (username,password,type)
+  (token <- data)
+- update
+  (semua kecuali id <- password)
+- updatePassword
+  (password,newPassword)
+- delete
+  (id)
+- uploadPhoto
+
+API/user/get
+API/user/get/:id
+
+API/user/add
+API/user/auth
+API/user/update
+API/user/updatePassword
+API/user/uploadPhoto
+API/user/delete
+API/user/forgetPassword
+
+Komoditas
+{
+	komoditas_id
+	name
+	satuan
+	harga
+	date
+	last_update
+}
+
+API/komoditas/get
+
+API/komoditas/add
+API/komoditas/update
+API/komoditas/delete
+
+laporanHarga
+{
+	laporanHarga_id
+	komoditas_id
+	user_id
+	harga
+	date
+	lokasi{
+		latitude
+		longitude
+		alamat
+	}
+}
+
+API/laporanHarga/get/:hari
+
+API/laporanHarga/add
+API/laporanHarga/update
+API/laporanHarga/delete
+
+Aspirasi
+{
+	aspirasi_id
+	user_id
+	subjek
+	isi
+	date
+	pendukung
+	[
+		{
+			user_id
+		}
+	]
+}
+
+API/aspirasi/get/
+API/aspirasi/get/:aspirasi_id
+API/aspirasi/pendukung/get/:aspirasi_id
+
+API/aspirasi/add
+API/aspirasi/update
+API/aspirasi/delete
+API/aspirasi/pendukung/add
+API/aspirasi/pendukung/delete
+
+dagangan
+{
+	dagangan_id
+	komoditas_id
+	keterangan
+	harga
+	stok
+	date
+}
+
+API/dagangan/get/
+API/dagangan/get/:dagangan_id
+
+API/dagangan/add
+API/dagangan/update
+API/dagangan/delete
+
+Produksi
+{
+	produksi_id
+	user_id
+	komoditas_id
+	posisi{
+		latitude
+		longitude
+		alamat
+	}
+	keterangan
+	date_panen
+	jumlah
+	date
+}
+
+API/produksi/get/
+API/produksi/get/:produksi_id
+
+API/produksi/add
+API/produksi/update
+API/produksi/delete
+
+OperasiPasar
+{
+	operasiPasar_id
+	user_id
+	lokasi{
+		latitude
+		longitude
+		alamat
+	}	
+	pesan
+	date
+	pendukung
+	[
+		{
+			user_id
+		}
+	]
+}
+
+API/operasiPasar/get/
+API/operasiPasar/get/:operasiPasar_id
+API/operasiPasar/pendukung/get/:operasiPasar_id
+
+API/operasiPasar/add
+API/operasiPasar/update
+API/operasiPasar/delete
+API/operasiPasar/pendukung/add
+API/operasiPasar/pendukung/delete
+
+{
+	status : 
+	data : 
+	token : 
+}
+
+status {
+	200 success
+	204 kosong
+	401 Unauthorized
+	408 Request Timeout
+}

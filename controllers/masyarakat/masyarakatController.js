@@ -13,9 +13,7 @@ var jwt 				=			require('jsonwebtoken');
 var moment 				=			require('moment');
 var tz 					= 			require('moment-timezone');
 var each 				= 			require('foreach');
-//untuk math
 var math 				= 			require('mathjs');
-//var now = require('date-now');
 var date 				=	 		require('date-utils');;
 
 
@@ -25,50 +23,54 @@ var date 				=	 		require('date-utils');;
 var addMasyarakat = function(req,res){
 	var newMasyarakat = new masyarakat(req.body);
 	if(req.body.username=="" || req.body.email=="" || req.body.password=="" || req.body.name==""){
-		res.json({status:204,data:"ada filed kosong",token:""});
+		res.json({status:204,data:"",message:"ada field kosong",token:""});
 	}else{
-		console.log(req.body.username);
-		masyarakat.findOne({username:req.body.username},function(err,masy){
-			console.log('ini'+masy);
-			if(masy!=null){
-				res.json({status:"200","data":"username sudah ada","token":""})
-			}else{
-				newMasyarakat.password = crypto.createHash('md5').update(req.body.password+'portalharga', 'ut-8').digest('hex');
-				var time=moment();
-				//var login_time = new Date()
-				newMasyarakat.last_login = Date.parse(moment(time).tz('Asia/Jakarta'));
-			  	newMasyarakat.save(function(err){
-					if(err){
-						res.json({status:408,data:"error save",token:""});
-					}else {
-						var token = jwt.sign({
-							user_id:newMasyarakat.user_id,
-							username:newMasyarakat.username,
-							email:newMasyarakat.email,
-							password:newMasyarakat.password,
-							role:newMasyarakat.role
-						},config.secretKey,{
-							expiresIn:60*60});
-					  	res.json({
-							status:200,
-							data:newMasyarakat,
-							token:token
-					  });
-				  }
-			  });
-		  }
-	  });
+		masyarakat.findOne({username:req.body.username},function(err,user){
+			if(user){
+				res.json({status:200,data:"",message:"username sudah terdaftar",token:""})
+            }else{
+				masyarakat.findOne({email:req.body.email},function(err,masy){
+					if(masy){
+						res.json({status:200,data:"",message:"email sudah terdaftar",token:""});
+					}else{
+						newMasyarakat.password = crypto.createHash('md5').update(req.body.password+'portalharga', 'ut-8').digest('hex');
+						var time=moment();
+
+						var date_parser = Date.parse(moment(time).tz('Asia/Jakarta'));
+						newMasyarakat.last_login = new Date(date_parser);
+			  			newMasyarakat.save(function(err){
+							if(err){
+								res.json({status:408,data:"",message:"gagal simpan masyarakat",token:""});
+							}else {
+								var token = jwt.sign({
+									user_id:newMasyarakat.user_id,
+									username:newMasyarakat.username,
+									email:newMasyarakat.email,
+									password:newMasyarakat.password,
+									role:newMasyarakat.role
+								},config.secretKey,{expiresIn:60*60});
+								res.json({
+									status:200,
+									data:newMasyarakat,
+									message:"sukses tambah masyarakat",
+					  				token:token
+					  			});
+							}
+						});
+					}
+				});
+			}
+		});
 	}
 };
 
-var getAllMays=function(req,res){
-	users.find(function(err,allUser){
+
+var getAllMaysarakat=function(req,res){
+	masyarakat.find(function(err,allMasyarakat){
 		if(err){
-			res.status(500);
-			res.send("Internal server error");
-			res.status(200);
+			res.json({status:408,data:"",message:"err find masyarakat",token:""});
 		}else{
-			res.send(allUser);
+			res.json({status:200,data:allMasyarakat,message:"sukses get masyarakat",token:""});
 		}
 	});
 };
@@ -104,7 +106,7 @@ var deleteMasy=function(req,res){
 		console.log(req.params.userId);
 		if(!user){
 			res.json({"satus":"Not Founded User"});
-		}else {						
+		}else {
 			user.remove(function(err){
 				if(err){
 					res.json({"status":"404","message":"can't deleteUser"});
@@ -199,7 +201,7 @@ var todayKomoditas =function(req,res){
 							data:komo,
 							status:200,
 							minimum:min,
-							ratarata:mean,	
+							ratarata:mean,
 							makasimum:mak,
 							message:"succes"
 						});
@@ -303,7 +305,7 @@ module.exports = {
 	allJenis:allJenisKomoditas,
 	//modul 2 masyarakat
 	addMasyarakat:addMasyarakat,
-	allMasy:getAllMays,
+	allMasy:getAllMaysarakat,
 	updateMasy:updateMasy,
 	deleteMasy:deleteMasy,
 	findMasy:findMasy,

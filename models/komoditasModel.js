@@ -10,8 +10,8 @@ var komoditasModel = new Schema({
 	name:String,
 	satuan:String,
 	harga:Number,
-	date:Number,
-	last_update:Number
+	datePost:Number,
+	last_update:String
 });
 
 komoditasModel.plugin(autoIncrement.plugin,{model:'komoditas',field:'komoditas_id',startAt:1});
