@@ -33,7 +33,12 @@ app.use(bodyParser.json());
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  next();
+  if ('OPTIONS' == req.method) {
+      res.send(200);
+    }
+    else {
+      next();
+    }
 });
 app.use(morgan('dev'));
 app.listen(port);
@@ -53,13 +58,13 @@ app.use('/masyarakat',masy);
 
 // --- JWT Validaltion ---
 app.use(function(req,res,next){
-	if(req.headers.authorization)
+	if(req.headers["authorization"])
 	{
-		jwt.verify(req.headers.authorization, config.secret, function(err, decoded) 
+		jwt.verify(req.headers["authorization"], config.secret, function(err, decoded) 
 		{      
 			    if (err) 
 			    {
-	    			return res.json({ success: false, message: 'Failed to authenticate token.' });    
+	    			return res.json({ success: false, message: 'Failed to authenticate token.', token: req.headers["authorization"] });    
 		  		}		 
 		  		else 
 		  		{	

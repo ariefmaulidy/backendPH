@@ -8,7 +8,7 @@ var fromNow = require('from-now');
 var each = require('foreach');
 
 var allAspirasi = function(req,res){
-	
+console.log("masuk controller");	
 	Aspirasi.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){
 	if(aspirasi!='')
 	{ 	
