@@ -145,35 +145,47 @@ app.use('/dagangan',daganganRouter);
 app.use('/aspirasi',aspirasiRouter);
 
 //Cek ROLE
+/*
+1 = admin
+2 = pemerintah
+3 = penyuluh
+4 = petani
+5 = masyarakat
+6 = pedagang
+*/
+/*app.use(function(req,res,next){
+	if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
+		var token = req.headers.authorization.split(' ')[1];
+		jwt.verify(token, config.secret, function(err, decoded){
+			var role = decoded.role;
+			if(role==1){
+				next();	
+			}else{
+				//res.json({status:401,message:"role tidak sesuai",data:"",token:token});
+				next();
+			}
+			
+		});
+	}
+});*/
+
+app.use('/komoditas',komoditasRouter);
+
 app.use(function(req,res,next){
 	if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
 		var token = req.headers.authorization.split(' ')[1];
 		jwt.verify(token, config.secret, function(err, decoded){
 			var role = decoded.role;
-			for(var i=0; i<role.length;i++){
-				if(role[i]==1 || role[i]==2){
-					console.log(role[i]);
-					res.send(sukses)
-					break;
-					next();
-					
-				}/*
-				else{
-					res.json({status:401,data:"",message:"Unauthorized role user",token:token});
-				}*/
+			if(role==5){
+				next();	
+			}else{
+				next();
 			}
-			
 			
 		});
 	}
 });
-	
-app.use('/komoditas',komoditasRouter);
 
-app.use('/test',function(req,res,next){
-					res.send("gege");
-					console.log("gege");
-					next();
-				});
-			  
-
+app.post('/role',function(req,res){
+	res.send("role 5")
+});
