@@ -14,7 +14,7 @@ var moment 				=			require('moment');
 var tz 					= 			require('moment-timezone');
 var each 				= 			require('foreach');
 var math 				= 			require('mathjs');
-var date 				=	 		require('date-utils');;
+var date 				=	 		require('date-utils');
 
 
 

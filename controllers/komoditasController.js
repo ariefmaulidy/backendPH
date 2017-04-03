@@ -63,8 +63,8 @@ var allKomoditas = function(req,res){
 					var role = req.body.role;
 					var sukses = "sukses ambil semua komoditas";
 					var token = jwt.sign({
-					status:sukses,
-					role:role
+						status:sukses,
+						role:role
 					},config.secretKey,{expiresIn:60*20});
 					
 					res.json({
@@ -97,8 +97,9 @@ var oneKomoditas = function(req,res){
 					var role = req.body.role;
 					var sukses = "sukses ambil satu komoditas";
 					var token = jwt.sign({
-					status:sukses,
-					role:role
+						komoditas_id:komoditi.komoditas_id,
+						status:sukses,
+						role:role
 					},config.secretKey,{expiresIn:60*20});
 					
 					res.json({

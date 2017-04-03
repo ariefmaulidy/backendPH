@@ -17,6 +17,9 @@ var jwt    			= 	require('jsonwebtoken');
 var config 			= 	require('./config');
 var moment 			=	require('moment');
 var tz 				=	require('moment-timezone');
+var now 			=	require("date-now")
+var fromNow			= 	require('from-now');
+var dateFormat 		= 	require('dateformat');
 
 var port = process.env.PORT || 5000; // used to create, sign, and verify tokens
 var secureRoutes 	=	express.Router();
@@ -46,19 +49,21 @@ app.use('/user/auth',authRouter);
 app.use('/user/add',registerRouter);
 
 
-app.get('/break',function(req,res){
-	var role = [];
-		role.push(5);
-		role.push(6);
-		role.push(1);
-		role.push(4);
-	for(var i=0; i<role.length;i++){
-		console.log(role[i]);
-		if(role[i]==1 || role[i]==2){
-			
-			break;
-		}
-	}
+app.get('/gg',function(req,res){
+	//var ts = now()
+	var ts2 = Date.now();
+	var day = fromNow(1444140297141); //1 year
+	var days = fromNow(1491145721834);
+	var time=moment();
+	var gg = Date.parse(moment(time).tz('Asia/Jakarta'));
+	
+	
+	//kelar yang dapet hari ini
+	var tanggal = dateFormat(ts2, "dddd , mmmm dS , yyyy");
+	console.log(ts2);
+	//console.log(new Date(ts2));
+	console.log(tanggal);
+
 })
 
 
@@ -153,21 +158,7 @@ app.use('/aspirasi',aspirasiRouter);
 5 = masyarakat
 6 = pedagang
 */
-/*app.use(function(req,res,next){
-	if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
-		var token = req.headers.authorization.split(' ')[1];
-		jwt.verify(token, config.secret, function(err, decoded){
-			var role = decoded.role;
-			if(role==1){
-				next();	
-			}else{
-				//res.json({status:401,message:"role tidak sesuai",data:"",token:token});
-				next();
-			}
-			
-		});
-	}
-});*/
+
 
 app.use('/komoditas',komoditasRouter);
 

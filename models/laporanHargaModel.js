@@ -10,7 +10,7 @@ var laporanHargaModel = new Schema({
 	komoditas_id:Number,
 	user_id:Number,
 	harga:Number,
-	date:Number,
+	datePost:Number,
 	lokasi:[{
 		latitude:Number,
 		longitude:Number,
