@@ -1,25 +1,26 @@
-var express			=	require('express');
-var app				=	express();
-var User            =	require('./models/userModel');
-var daganganRouter	=	require('./routes/daganganRouter.js');
-var userRouter		=	require('./routes/userRouter.js');
-var authRouter		=	require('./routes/auth.js');
-var registerRouter	=	require('./routes/registerRouter.js');
-var aspirasiRouter	=	require('./routes/aspirasiRouter.js');
-var produksiRouter	=	require('./routes/produksiRouter.js');
-var komoditasRouter = 	require('./routes/komoditasRouter');
-var multer	 		= 	require('multer');
-var mongoose		=	require('mongoose');
-var bodyParser		=	require('body-parser');
-var morgan 			= 	require('morgan');
-var fs 				=	require('fs');
-var jwt    			= 	require('jsonwebtoken');
-var config 			= 	require('./config');
-var moment 			=	require('moment');
-var tz 				=	require('moment-timezone');
-var now 			=	require("date-now")
-var fromNow			= 	require('from-now');
-var dateFormat 		= 	require('dateformat');
+var express				=	require('express');
+var app					=	express();
+var User            	=	require('./models/userModel');
+var daganganRouter		=	require('./routes/daganganRouter.js');
+var userRouter			=	require('./routes/userRouter.js');
+var authRouter			=	require('./routes/auth.js');
+var registerRouter		=	require('./routes/registerRouter.js');
+var aspirasiRouter		=	require('./routes/aspirasiRouter.js');
+var produksiRouter		=	require('./routes/produksiRouter.js');
+var komoditasRouter 	= 	require('./routes/komoditasRouter');
+var laporanHargaRouter 	= 	require('./routes/laporanHargaRouter');
+var multer	 			= 	require('multer');
+var mongoose			=	require('mongoose');
+var bodyParser			=	require('body-parser');
+var morgan 				= 	require('morgan');
+var fs 					=	require('fs');
+var jwt    				= 	require('jsonwebtoken');
+var config 				= 	require('./config');
+var moment 				=	require('moment');
+var tz 					=	require('moment-timezone');
+var now 				=	require("date-now")
+var fromNow				= 	require('from-now');
+var dateFormat 			= 	require('dateformat');
 
 var port = process.env.PORT || 5000; // used to create, sign, and verify tokens
 var secureRoutes 	=	express.Router();
@@ -161,6 +162,7 @@ app.use('/aspirasi',aspirasiRouter);
 
 
 app.use('/komoditas',komoditasRouter);
+app.use('/laporanHarga',laporanHargaRouter);
 
 app.use(function(req,res,next){
 	if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){

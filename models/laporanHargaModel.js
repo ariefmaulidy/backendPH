@@ -11,13 +11,13 @@ var laporanHargaModel = new Schema({
 	user_id:Number,
 	harga:Number,
 	datePost:Number,
-	lokasi:[{
-		latitude:Number,
-		longitude:Number,
-		alamat:String
-	}]
+	//lokasi:[{
+	latitude:Number,
+	longitude:Number,
+	alamat:String
+	//}]
 });
 
 laporanHargaModel.plugin(autoIncrement.plugin,{model:'laporanHarga',field:'laporanHarga_id',startAt:1});
 
-module.exports = mongoose.model("laporanHarga",komoditasModel);
+module.exports = mongoose.model("laporanHarga",laporanHargaModel);

@@ -21,13 +21,14 @@ var addLaporan = function(req,res){
 				newLaporan.user_id = req.body.user_id;
 				newLaporan.harga = req.body.harga;
 				//create date
-				var tanggal = Date.now();
-				newLaporan.datePost = req.body.tanggal;
-				newLaporan.lokasi.push({
-					latitude:req.body.latitude,
-					longitude:req.body.longitude,
-					alamat:req.body.alamat
-				});
+				newLaporan.datePost = Date.now();
+				//newLaporan.datePost = 1444140297141;
+				console.log(newLaporan.datePost);
+				//newLaporan.lokasi.push({
+				newLaporan.latitude=req.body.latitude,
+				newLaporan.longitude=req.body.longitude,
+				newLaporan.alamat=req.body.alamat
+				//});
 				newLaporan.save(function(err){
 					if(err){
 						res.json({status:402,message:err,data:"",token:""});
@@ -94,7 +95,7 @@ var oneLaporan = function(req,res){
 		jwt.verify(token, config.secret, function(err, decoded){
 			var role = decoded.role;
 			if(role==1 || role==2 || role==5){
-				laporanHarga.findOne({laporanHarga_id:req.body.laporanHarga_id},function(err,satulaporan){
+				laporanHarga.findOne({laporanHarga_id:req.params.laporanHarga_id},function(err,satulaporan){
 					if(satulaporan==null){
 						res.json({status:201,message:"laporan tidak ditemukan",data:"",token:""});
 					}else{
@@ -130,7 +131,7 @@ var updateLaporan = function(req,res){
 			var role = decoded.role;
 			if(role==1 || role==2 || role==5){
 				laporanHarga.findOne({laporanHarga_id:req.body.laporanHarga_id},function(err,ubahLaporan){
-					if(satulaporan==null){
+					if(ubahLaporan==null){
 						res.json({status:201,message:"laporan tidak ditemukan",data:"",token:""});
 					}else{
 						ubahLaporan.user_id = req.body.user_id;
@@ -138,11 +139,11 @@ var updateLaporan = function(req,res){
 						//create date
 						var tanggal = Date.now();
 						ubahLaporan.datePost = req.body.tanggal;
-						ubahLaporan.lokasi.push({
-						latitude:req.body.latitude,
-						longitude:req.body.longitude,
-						alamat:req.body.alamat
-						});
+						//ubahLaporan.lokasi.push({
+						ubahLaporan.latitude=req.body.latitude,
+						ubahLaporan.longitude=req.body.longitude,
+						ubahLaporan.alamat=req.body.alamat
+						//});
 						ubahLaporan.save(function(err){
 							if(err){
 								res.json({status:402,message:err,data:"",token:""});
@@ -221,13 +222,14 @@ var todayLaporan = function(req,res){
 			if(role==1 || role==2 || role==5){
 				var date1 = Date.now();
 				var date2 = dateFormat(date1, "dddd , mmmm dS , yyyy");
+				console.log('ini date2 '+ date2);
 				var parsing = [];
 				laporanHarga.find({},'-_id -__v',{sort:{datePost:1}},function(err,all){
 					if(err){
 						res.json({status:402,message:err,data:"",token:""});
 					}else{
-						for(var i=0; i<all.length: i++){
-							if(dateFormat(all[i].datePost, "dddd , mmmm dS , yyyy");==date2){
+						for(var i=0; i<all.length; i++){
+							if(dateFormat(all[i].datePost, "dddd , mmmm dS , yyyy")==date2){
 								parsing.push(all[i].laporanHarga_id);
 							}
 						}
