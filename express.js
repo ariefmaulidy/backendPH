@@ -22,6 +22,20 @@ var now 				=	require("date-now")
 var fromNow				= 	require('from-now');
 var dateFormat 			= 	require('dateformat');
 
+//geocoder
+var geocoder = require('geocoder');
+var NodeGeocoder = require('node-geocoder');
+var geocoder_2 = NodeGeocoder(options);
+
+var options = {
+  provider: 'google',
+ 
+  // Optional depending on the providers 
+  httpAdapter: 'https', // Default 
+  apiKey: 'AIzaSyA6RjQPiwHVVV38o3XoOvFOhksNbDyHI7I', // for Mapquest, OpenCage, Google Premier 
+  formatter: null         // 'gpx', 'string', ... 
+};
+
 var port = process.env.PORT || 5000; // used to create, sign, and verify tokens
 var secureRoutes 	=	express.Router();
 
@@ -51,7 +65,7 @@ app.use('/user/add',registerRouter);
 
 
 app.get('/gg',function(req,res){
-	//var ts = now()
+	/*//var ts = now()
 	var ts2 = Date.now();
 	var day = fromNow(1444140297141); //1 year
 	var days = fromNow(1491145721834);
@@ -59,12 +73,45 @@ app.get('/gg',function(req,res){
 	var gg = Date.parse(moment(time).tz('Asia/Jakarta'));
 	
 	
+	var oneWeekAgo = new Date();
+	oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+	var seminggu = dateFormat(oneWeekAgo, "dddd , mmmm dS , yyyy");
 	//kelar yang dapet hari ini
 	var tanggal = dateFormat(ts2, "dddd , mmmm dS , yyyy");
-	console.log(ts2);
+	console.log(oneWeekAgo);
 	//console.log(new Date(ts2));
-	console.log(tanggal);
-
+	console.log(seminggu);
+*/
+	//bogor
+	//geocoder.reverseGeocode(-6.5635228, 106.7308386, function ( err, data ) {
+	
+	//GG kelar
+	//pasar anyar
+	var wepe = null;
+	var nice = geocoder.reverseGeocode(-7.4215321,111.0333929, function ( err, data ){
+		var gg = data.results[0].formatted_address;
+	}) ;
+									   console.log(nice);
+	/*geocoder.reverseGeocode(-7.4215321,111.0333929, function ( err, data ) {
+	//sragen
+	//geocoder.reverseGeocode(-7.4299729, 111.0182713, function ( err, data ) {
+		// do something with data
+		
+		
+		//ini sudah sukses dapat alamat lengkap
+		var gg = data.results[0].formatted_address;
+		
+		//sukses dapat kabupatennya saja
+		//var wp = data.results[0].address_components[3].long_name;
+		
+		var wepe = gg;
+		res.send(wepe);
+		console.log(gg);
+	}, { sensor: true });*/
+	
+	/*geocoder_2.reverse({lat:-7.4215321, lon:111.0333929}, function(err, hasil) {
+		res.send(hasil[0].formattedAddress);
+});*/
 })
 
 
@@ -94,6 +141,22 @@ app.post('/cors',function(req,res,next){
 		})
 	}		
 });
+
+
+app.use('/wtf',function(req,res){
+	if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
+		var token = req.headers.authorization.split(' ')[1];
+		jwt.verify(token, config.secret, function(err, decoded){
+			var role = decoded.role;
+			if(role==1 || role==2 || role==5){
+				console.log('GOOD');
+			}
+			
+		});
+	}
+});
+
+
 
 
 // --- JWT Validaltion ---
@@ -164,20 +227,7 @@ app.use('/aspirasi',aspirasiRouter);
 app.use('/komoditas',komoditasRouter);
 app.use('/laporanHarga',laporanHargaRouter);
 
-app.use(function(req,res,next){
-	if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
-		var token = req.headers.authorization.split(' ')[1];
-		jwt.verify(token, config.secret, function(err, decoded){
-			var role = decoded.role;
-			if(role==5){
-				next();	
-			}else{
-				next();
-			}
-			
-		});
-	}
-});
+
 
 app.post('/role',function(req,res){
 	res.send("role 5")

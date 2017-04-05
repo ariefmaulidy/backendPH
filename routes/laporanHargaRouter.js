@@ -12,7 +12,7 @@ laporanHargaRouter.route('/update')
 	.post(laporanHargaController.update);
 laporanHargaRouter.route('/delete')
 	.post(laporanHargaController.delete);
-laporanHargaRouter.route('/today')
-	.get(laporanHargaController.today);
+laporanHargaRouter.route('/day/:day')
+	.get(laporanHargaController.getDay);
 
 module.exports = laporanHargaRouter;

@@ -87,8 +87,8 @@ var oneKomoditas = function(req,res){
 		console.log(komoditi);
 		if(err){
 			res.json({status:402,message:"request time out",data:"",token:""});
-		}else if(komoditi==null){
-			res.json({status:204,message:"komoditas tidak ditemukan",data:"",token:""});
+		/*}else if(komoditi==null){
+			res.json({status:204,message:"komoditas tidak ditemukan",data:"",token:""});*/
 		}else if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
 			var token = req.headers.authorization.split(' ')[1];
 			jwt.verify(token, config.secret, function(err, decoded){
