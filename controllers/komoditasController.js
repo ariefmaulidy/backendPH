@@ -55,31 +55,17 @@ var allKomoditas = function(req,res){
 	komoditas.find(function(err,semuaKomoditas){
 		if(err){
 			res.json({status:402,message:"request time out",data:"",token:""});
-		}else if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
-			var token = req.headers.authorization.split(' ')[1];
-			jwt.verify(token, config.secret, function(err, decoded){
-				var role = decoded.role;
-				if(role==1 || role==2){
-					var role = req.body.role;
-					var sukses = "sukses ambil semua komoditas";
-					var token = jwt.sign({
-						status:sukses,
-						role:role
-					},config.secretKey,{expiresIn:60*20});
-					
-					res.json({
-						status:200,
-						message:"sukses ambil semua komoditas",
-						data:semuaKomoditas,						
-						token:token
-					});
-				}else{
-					res.json({status:401,message:"role tidak sesuai",data:"",token:""});
-				}
+		}else{
+			res.json({
+				status:200,
+				message:"sukses ambil semua komoditas",
+				data:semuaKomoditas,						
+				token:req.token
 			});
 		}
-	});
+	})
 };
+		
 
 
 var oneKomoditas = function(req,res){

@@ -88,10 +88,11 @@ app.get('/gg',function(req,res){
 	//GG kelar
 	//pasar anyar
 	var wepe = null;
-	var nice = geocoder.reverseGeocode(-7.4215321,111.0333929, function ( err, data ){
+	geocoder.reverseGeocode(-6.5592227,106.7322101, function ( err, data ){
 		var gg = data.results[0].formatted_address;
+		console.log(gg);
 	}) ;
-									   console.log(nice);
+									   
 	/*geocoder.reverseGeocode(-7.4215321,111.0333929, function ( err, data ) {
 	//sragen
 	//geocoder.reverseGeocode(-7.4299729, 111.0182713, function ( err, data ) {

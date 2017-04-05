@@ -20,72 +20,44 @@ var geocoder 			=			require('geocoder');
 //add laporanHarga
 var addLaporan = function(req,res){
 	var newLaporan = new laporanHarga(req.body);
-	//misahin text "Bearer" dengan token
-	if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
-		var token = req.headers.authorization.split(' ')[1];
-		//verifikasi token jwt lalu didecode
-		jwt.verify(token, config.secret, function(err, decode){
-			var role = decode.role;
-			//cek role user
-			if(role==1 || role==2 || role==5){
-				
-				
-				//address
-				geocoder.reverseGeocode(req.body.latitude,req.body.longitude, function ( err, data ) {
-					//dapat alamatnya
-					newLaporan.komoditas_id = req.body.komoditas_id;
-					newLaporan.user_id = req.body.user_id;
-					newLaporan.harga = req.body.harga;
-					//create date add laporanHarga
-					newLaporan.datePost = Date.now();
-					newLaporan.alamat = data.results[0].formatted_address;
-					
-					newLaporan.save(function(err){
-						if(err){
-							res.json({status:402,message:err,data:"",token:""});
-						}else{
-							//create token dan apa saja yang dimasukan ke dalam token
-							var token = jwt.sign({
-								laporanHarga_id:newLaporan.laporanHarga_id,
-								komoditas_id:newLaporan.komoditas_id,
-								user_id:newLaporan.user_id,
-								role:role,
-								login_type:1
-							},config.secretKey,{expiresIn:60*20});
-							//kembalian dalam bentuk json
-							res.json({
-								status:200,
-								message:"sukses tambah laporan harga",
-								data:newLaporan,						
-								token:token
-							});
-						}
-					})
-				}, { sensor: true });
-				/*newLaporan.latitude=req.body.latitude,
-				newLaporan.longitude=req.body.longitude,*/
-				//newLaporan.alamat=wwe;				
-				
-				//save laporan yang masuk
-				
-				//jika role tidak sesuai
-			}else{
-				res.json({status:401,message:"role tidak sesuai",data:"",token:""});
-			}
-		});
+	//ambil role dari app.use yang di express
+	var role = req.role;
+	//cek role user
+	if(role==1 || role==2 || role==5){				
+		//address
+		geocoder.reverseGeocode(req.body.latitude,req.body.longitude, function ( err, data ) {
+			//dapat alamatnya
+			newLaporan.komoditas_id = req.body.komoditas_id;
+			newLaporan.user_id = req.body.user_id;
+			newLaporan.harga = req.body.harga;
+			//create date add laporanHarga
+			newLaporan.datePost = Date.now();
+			newLaporan.alamat = data.results[0].formatted_address;
+			newLaporan.save(function(err){
+				if(err){
+					res.json({status:402,message:err,data:"",token:req.token});
+				}else{
+					//kembalian dalam bentuk json
+					res.json({
+						status:200,
+						message:"sukses tambah laporan harga",
+						data:newLaporan,						
+						token:req.token
+					});
+				}
+			})
+		}, { sensor: true });
+	}else{
+		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
 	}
-};
+}
+
 
 //ambil semualaporan, apapun komoditasnya dan kapanpun postnya
 var allLaporan = function(req,res){
 	//misahin text "Bearer" dengan token
-	if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
-		var token = req.headers.authorization.split(' ')[1];
-		var gg = req.headers.authorization;
-		console.log(gg);
-		//verifikasi jwt
-		jwt.verify(token, config.secret, function(err, decode){
-			var role = decode.role;
+	
+			var role = req.role;
 			//cek role user
 			if(role==1 || role==2 || role==5){
 				//ambil semua laporan
@@ -109,8 +81,8 @@ var allLaporan = function(req,res){
 			}else{
 				res.json({status:401,message:"role tidak sesuai",data:"",token:""});
 			}
-		});
-	}
+		
+	
 };
 
 //ambil satu laporan saja sesuai dengan laporanHarga_id nya
