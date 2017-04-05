@@ -1,22 +1,40 @@
-var express			=	require('express');
-var app				=	express();
-var User            =	require('./models/userModel');
-var daganganRouter	=	require('./routes/daganganRouter.js');
-var userRouter		=	require('./routes/userRouter.js');
-var authRouter		=	require('./routes/auth.js');
-var registerRouter	=	require('./routes/registerRouter.js');
-var aspirasiRouter	=	require('./routes/aspirasiRouter.js');
-var produksiRouter	=	require('./routes/produksiRouter.js');
-var komoditasRouter = 	require('./routes/komoditasRouter');
-var multer	 		= 	require('multer');
-var mongoose		=	require('mongoose');
-var bodyParser		=	require('body-parser');
-var morgan 			= 	require('morgan');
-var fs 				=	require('fs');
-var jwt    			= 	require('jsonwebtoken');
-var config 			= 	require('./config');
-var moment 			=	require('moment');
-var tz 				=	require('moment-timezone');
+var express				=	require('express');
+var app					=	express();
+var User            	=	require('./models/userModel');
+var daganganRouter		=	require('./routes/daganganRouter.js');
+var userRouter			=	require('./routes/userRouter.js');
+var authRouter			=	require('./routes/auth.js');
+var registerRouter		=	require('./routes/registerRouter.js');
+var aspirasiRouter		=	require('./routes/aspirasiRouter.js');
+var produksiRouter		=	require('./routes/produksiRouter.js');
+var komoditasRouter 	= 	require('./routes/komoditasRouter');
+var laporanHargaRouter 	= 	require('./routes/laporanHargaRouter');
+var multer	 			= 	require('multer');
+var mongoose			=	require('mongoose');
+var bodyParser			=	require('body-parser');
+var morgan 				= 	require('morgan');
+var fs 					=	require('fs');
+var jwt    				= 	require('jsonwebtoken');
+var config 				= 	require('./config');
+var moment 				=	require('moment');
+var tz 					=	require('moment-timezone');
+var now 				=	require("date-now")
+var fromNow				= 	require('from-now');
+var dateFormat 			= 	require('dateformat');
+
+//geocoder
+var geocoder = require('geocoder');
+var NodeGeocoder = require('node-geocoder');
+var geocoder_2 = NodeGeocoder(options);
+
+var options = {
+  provider: 'google',
+ 
+  // Optional depending on the providers 
+  httpAdapter: 'https', // Default 
+  apiKey: 'AIzaSyA6RjQPiwHVVV38o3XoOvFOhksNbDyHI7I', // for Mapquest, OpenCage, Google Premier 
+  formatter: null         // 'gpx', 'string', ... 
+};
 
 var port = process.env.PORT || 5000; // used to create, sign, and verify tokens
 var secureRoutes 	=	express.Router();
@@ -46,19 +64,54 @@ app.use('/user/auth',authRouter);
 app.use('/user/add',registerRouter);
 
 
-app.get('/break',function(req,res){
-	var role = [];
-		role.push(5);
-		role.push(6);
-		role.push(1);
-		role.push(4);
-	for(var i=0; i<role.length;i++){
-		console.log(role[i]);
-		if(role[i]==1 || role[i]==2){
-			
-			break;
-		}
-	}
+app.get('/gg',function(req,res){
+	/*//var ts = now()
+	var ts2 = Date.now();
+	var day = fromNow(1444140297141); //1 year
+	var days = fromNow(1491145721834);
+	var time=moment();
+	var gg = Date.parse(moment(time).tz('Asia/Jakarta'));
+	
+	
+	var oneWeekAgo = new Date();
+	oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+	var seminggu = dateFormat(oneWeekAgo, "dddd , mmmm dS , yyyy");
+	//kelar yang dapet hari ini
+	var tanggal = dateFormat(ts2, "dddd , mmmm dS , yyyy");
+	console.log(oneWeekAgo);
+	//console.log(new Date(ts2));
+	console.log(seminggu);
+*/
+	//bogor
+	//geocoder.reverseGeocode(-6.5635228, 106.7308386, function ( err, data ) {
+	
+	//GG kelar
+	//pasar anyar
+	var wepe = null;
+	var nice = geocoder.reverseGeocode(-7.4215321,111.0333929, function ( err, data ){
+		var gg = data.results[0].formatted_address;
+	}) ;
+									   console.log(nice);
+	/*geocoder.reverseGeocode(-7.4215321,111.0333929, function ( err, data ) {
+	//sragen
+	//geocoder.reverseGeocode(-7.4299729, 111.0182713, function ( err, data ) {
+		// do something with data
+		
+		
+		//ini sudah sukses dapat alamat lengkap
+		var gg = data.results[0].formatted_address;
+		
+		//sukses dapat kabupatennya saja
+		//var wp = data.results[0].address_components[3].long_name;
+		
+		var wepe = gg;
+		res.send(wepe);
+		console.log(gg);
+	}, { sensor: true });*/
+	
+	/*geocoder_2.reverse({lat:-7.4215321, lon:111.0333929}, function(err, hasil) {
+		res.send(hasil[0].formattedAddress);
+});*/
 })
 
 
@@ -88,6 +141,22 @@ app.post('/cors',function(req,res,next){
 		})
 	}		
 });
+
+
+app.use('/wtf',function(req,res){
+	if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
+		var token = req.headers.authorization.split(' ')[1];
+		jwt.verify(token, config.secret, function(err, decoded){
+			var role = decoded.role;
+			if(role==1 || role==2 || role==5){
+				console.log('GOOD');
+			}
+			
+		});
+	}
+});
+
+
 
 
 // --- JWT Validaltion ---
@@ -145,18 +214,30 @@ app.use('/dagangan',daganganRouter);
 app.use('/aspirasi',aspirasiRouter);
 
 //Cek ROLE
+<<<<<<< HEAD
 
 
 app.use('/gg',function(req,res){
 	res.send("wepe");
 })
 	
+=======
+/*
+1 = admin
+2 = pemerintah
+3 = penyuluh
+4 = petani
+5 = masyarakat
+6 = pedagang
+*/
+
+
+>>>>>>> 5c1a8a2b5365de9afe98c1631f06984e65b94b29
 app.use('/komoditas',komoditasRouter);
+app.use('/laporanHarga',laporanHargaRouter);
 
-app.use('/test',function(req,res,next){
-					res.send("gege");
-					console.log("gege");
-					next();
-				});
-			  
 
+
+app.post('/role',function(req,res){
+	res.send("role 5")
+});
