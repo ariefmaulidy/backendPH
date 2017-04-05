@@ -8,7 +8,7 @@ var fromNow = require('from-now');
 var each = require('foreach');
 
 var allAspirasi = function(req,res){
-	
+console.log("masuk controller");	
 	Aspirasi.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){
 	if(aspirasi!='')
 	{ 	
@@ -49,7 +49,7 @@ var allAspirasi = function(req,res){
 		
 		else
 		{
-			res.json({status:404,message:'No data provided'});
+			res.json({status:204,message:'No data provided'});
 		}
 			
 	});
@@ -80,7 +80,7 @@ var aspirasiKu = function(req,res){
 		}
 		else
 		{
-			res.json({status:404,message:'No data provided'});
+			res.json({status:204,message:'No data provided',token:req.token});
 		}
 					
 	});
@@ -106,11 +106,11 @@ var getPendukung = function(req,res)
 					{
 						if(pendukungKu!=null)
 						{
-							res.json({status:200,message:'Get data success',data_pendukung:pendukungKu,token:req.token});		
+							res.json({status:200,message:'Get data success',data:pendukungKu,token:req.token});		
 						}
 						else 
 						{
-							res.json({status:404,message:'No data provided',token:req.token});		
+							res.json({status:204,message:'No data provided',token:req.token});		
 						}
 					}
 				}	
@@ -119,7 +119,7 @@ var getPendukung = function(req,res)
 	}
 	else
 	{
-		res.json({status:404,message:'No data provided',token:req.token});
+		res.json({status:204,message:'No data provided',token:req.token});
 	}	
 		
 			
@@ -127,11 +127,11 @@ var getPendukung = function(req,res)
 }
 
 var batalDukung = function(req,res){
-	if(req.role==1||req.role==0)
+	if(req.role==1||req.role==4)
 	{
 		Aspirasi.update( 
       { aspirasi_id: req.body.aspirasi_id },
-      { $pull: { pendukung : { user_id : req.body.user_id } } },
+      { $pull: { pendukung : { user_id : req.user_id } } },
       { safe: true },
       function(err, aspirasi) {
         console.log(err);
@@ -150,6 +150,7 @@ var batalDukung = function(req,res){
 
 var postAspirasi = function(req,res){
 	aspirasi = new Aspirasi(req.body);
+	aspirasi.user_id=req.user_id;
 	//console.log(req.role);
 	  	var time=moment();
 		aspirasi.datePost = Date.parse(moment(time).tz('Asia/Jakarta')); 
@@ -162,49 +163,79 @@ var postAspirasi = function(req,res){
 			else
 			{
 
-				res.json({status:400,success:false,message:'Input Failed'});
+				res.json({status:400,success:false,message:'Input Failed',token:req.token});
 			}
 		}); 
 }
 
+var updateAspirasi = function(req,res)
+{
+	Aspirasi.findOne({aspirasi_id:req.body.aspirasi_id},function(err,aspirasi)
+	{
+		if(aspirasi!='' && (req.role==1||req.role==4))
+		{
+			aspirasi.subjek		=	req.body.subjek;
+			aspirasi.isi		=	req.body.isi;
+			var time 			=	moment();
+			aspirasi.datePost 	= 	Date.parse(moment(time).tz('Asia/Jakarta')); 
+			aspirasi.save(function(err)
+			{
+				if(!err)
+				{
+					res.status(200).json({status:200,message:"update success",data:aspirasi,token:req.token});
+				}
+				else{
+					res.status(400).json({status:400,message:"Bad request",token:req.token});
+				}
+			})	
+		}
+		else
+		{
+			res.status(403).json({status:403,message:"Forbidden",token:req.token});
+		}
+	})
+}
+
 var delAspirasi = function(req,res){
-	Aspirasi.findOne({aspirasi_id:req.body.aspirasi_id,user_id:req.body.user_id},function(err,aspirasi){
+	Aspirasi.findOne({aspirasi_id:req.body.aspirasi_id,user_id:req.user_id},function(err,aspirasi){
 	//	res.json({aspirasi});
-		if(aspirasi!='' && (req.role==1||req.role==0))
+		if(aspirasi!='' && (req.role==1||req.role==4))
 		{
 			aspirasi.remove(function(err){
 				if(!err){
 					res.status(200).json({status:200,message:"delete success",token:req.token});
 				}
-				else{
-					res.status(400).json({status:400,message:"Bad request"});
+				else
+				{
+					res.status(400).json({status:400,message:"Bad request",token:req.token});
 				}
 			})
 		}
 		else
 		{
-			res.status(403).json({status:403,message:"Forbidden"});
+			res.status(403).json({status:403,message:"Forbidden",token:req.token});
 		}
 	})
 }
 var dukung_aspirasi = function(req,res){
 	Aspirasi.findOne({aspirasi_id:req.body.aspirasi_id}).exec(function(err,aspirasi){
-	if(aspirasi!='' && req.role==1)
+	if(aspirasi!='' && (req.role==1||req.role==4) )
 		{ 
 			console.log(aspirasi.pendukung.length)
 			counter=0;
 			status_voted=false;
 			if(aspirasi.pendukung.length==0)
 			{
-				aspirasi.pendukung.push({user_id:req.body.user_id});
+				aspirasi.pendukung.push({user_id:req.user_id});
 				console.log(aspirasi);
 					aspirasi.save(function(err)
 					{
-					if(!err){
+					if(!err)
+					{
 						res.status(200).json({status:200,message:"Vote success",data:aspirasi,token:req.token});
 					}
 					else{
-						res.status(400).json({status:400,message:"Bad request"});
+						res.status(400).json({status:400,message:"Bad request",token:req.token});
 					}
 				});
 			}
@@ -212,35 +243,36 @@ var dukung_aspirasi = function(req,res){
 			{
 				each(aspirasi.pendukung,function(value,key,array)
 				{
-						if(value.user_id==req.body.user_id || aspirasi.user_id==req.body.user_id)
+						if(value.user_id==req.user_id || aspirasi.user_id==req.user_id)
 						{
 							status_voted=true;
 						}
 						counter++;
 						if(counter>=aspirasi.pendukung.length && status_voted==false)
 						{	
-							aspirasi.pendukung.push({user_id:req.body.user_id});
+							aspirasi.pendukung.push({user_id:req.user_id});
 							console.log(aspirasi);
 								aspirasi.save(function(err)
 								{
 								if(!err){
 									res.status(200).json({status:200,message:"Vote success",data:aspirasi,token:req.token});
 								}
-								else{
-									res.status(400).json({status:400,message:"Bad request"});
+								else
+								{
+									res.status(400).json({status:400,message:"Bad request",token:req.token});
 								}
 							});
 						}
 						else if(counter>=aspirasi.pendukung.length && status_voted==true)
 						{
-							res.status(400).json({status:400,message:"User already voted or user is this aspirasi's creator"});
+							res.status(400).json({status:400,message:"User already voted or user is this aspirasi's creator",token:req.token});
 						}
 				})	
 			}
 		}
 		else
 		{
-			res.status(403).json({status:403,message:"Forbidden"});
+			res.status(403).json({status:403,message:"Forbidden",token:req.token});
 		}
 	})
 }
@@ -248,6 +280,7 @@ var dukung_aspirasi = function(req,res){
 module.exports = {
 	allAspirasi:allAspirasi,
 	aspirasiKu:aspirasiKu,
+	updateAspirasi:updateAspirasi,
 	batalDukung:batalDukung,
 	getPendukung:getPendukung,
 	postAspirasi:postAspirasi,

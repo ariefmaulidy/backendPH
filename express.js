@@ -179,10 +179,17 @@ app.use(function(req,res,next){
 		  				req.user_id=decoded.user_id;
 			  			req.role = decoded.role;
 	      	  			req.token=jwt.sign({
+
 	      	  									user_id:decoded.user_id,
 	                                            username:decoded.username,
 	                                            time:decoded.last_login,
 	                                            role:decoded.role,
+
+	      	  									user_id:user.user_id,
+	                                            username:user.username,
+	                                            time:user.last_login,
+	                                            role:user.role,
+
 	                                            login_type:decoded.login_type
 	                                        }
 	                                        ,config.secret, {
@@ -215,6 +222,7 @@ app.use('/dagangan',daganganRouter);
 app.use('/aspirasi',aspirasiRouter);
 
 //Cek ROLE
+
 /*
 1 = admin
 2 = pemerintah
@@ -223,7 +231,6 @@ app.use('/aspirasi',aspirasiRouter);
 5 = masyarakat
 6 = pedagang
 */
-
 
 app.use('/komoditas',komoditasRouter);
 app.use('/laporanHarga',laporanHargaRouter);

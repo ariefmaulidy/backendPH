@@ -1,5 +1,6 @@
 var Dagangan 	=	require('./../models/daganganModel');
 var User 		=	require('./../models/userModel');
+var Komoditas 	= 	require('./../models/komoditasModel');
 var moment 		=	require('moment');
 var each		=	require('foreach');
 var fs 			=	require('fs');
@@ -17,14 +18,14 @@ var getDaganganKu = function(req,res){
 										counter++;
 										if(counter==dagangan.length)
 											{									
-							 					res.json({status:200,message:'Get data success',data:dagangan});		
+							 					res.json({status:200,message:'Get data success',data:dagangan,token:req.token});		
 											}
 										});
 									})			
 								}
 				else
 				{
-					res.json({status:404,message:"No data provided"});
+					res.json({status:204,message:"No data provided",token:req.token});
 				}
 			})
 }
@@ -33,22 +34,30 @@ var getAll = function(req,res){
 					if(dagangan!='')
 							{ var counter = 0;
 									each(dagangan,function(value,key,array){
-										User.findOne({user_id:dagangan[key].user_id}).exec(function(err,user){
-										dagangan[key].nama=user.name;
-										dagangan[key].picture=user.picture;
-										dagangan[key].address=user.address;
-										dagangan[key].time=fromNow(dagangan[key].datePost);
-										counter++;
-										if(counter==dagangan.length)
-											{									
-							 					res.json({status:200,message:'Get data success',data:dagangan});		
-											}
+										User.findOne({user_id:dagangan[key].user_id}).exec(function(err,user)
+										{
+											console.log('ini user id = '+dagangan[key].user_id);
+											dagangan[key].nama=user.name;
+											dagangan[key].picture=user.picture;
+											dagangan[key].address=user.address;
+											dagangan[key].time=fromNow(dagangan[key].datePost);
+											Komoditas.findOne({komoditas_id:dagangan[key].komoditas_id}).exec(function(err,komoditas)
+											{
+												dagangan[key].nama_komoditas=komoditas.name;
+												counter++;
+												if(counter==dagangan.length)
+													{									
+									 					res.json({status:200,message:'Get data success',data:dagangan,token:req.token});		
+													}
+											});
 										});
+										
+										
 									})			
 								}
 				else
 				{
-					res.json({status:404,message:"No data provided"});
+					res.json({status:204,message:"No data provided",token:req.token});
 				}
 			})
 }
@@ -57,7 +66,7 @@ var postDagangan = function(req,res){
 		var imageSaver = new ImageSaver();
 	  	var time=moment();
 	  	if(req.body.string64!=null){
-	  		dagangan.picture="uploads/foto_komoditas/"+req.body.user_id+"_"+req.body.komoditas_id+"_"+Date.parse(moment(time).tz('Asia/Jakarta'))+".jpg";	
+	  		dagangan.picture="uploads/foto_komoditas/"+req.user_id+"_"+req.body.komoditas_id+"_"+Date.parse(moment(time).tz('Asia/Jakarta'))+".jpg";	
 				imageSaver.saveFile("../public_html/"+dagangan.picture, req.body.string64)
 					.then((data)=>{
 						console.log("upload photo success"); 
@@ -71,11 +80,11 @@ var postDagangan = function(req,res){
 		{
 			if(!err)
 			{
-				res.json({status:200,success:true,message:'Input Success',data:dagangan});
+				res.json({status:200,success:true,message:'Input Success',data:dagangan,token:req.token});
 			}
 			else
 			{
-				res.json({status:400,success:false,message:'Input Failed'});
+				res.json({status:400,success:false,message:'Input Failed',token:req.token});
 			}
 		});
 }
@@ -88,7 +97,7 @@ var postDagangan = function(req,res){
 var updateDagangan = function(req,res){
 	Dagangan.findOne({dagangan_id:req.body.dagangan_id},function(err,dagangan){
 		if(dagangan!=null){
-			if(dagangan.user_id==req.body.user_id){
+			if(dagangan.user_id==req.user_id){
 				var time=moment();
 				dagangan.komoditas_id 		=	req.body.komoditas_id;
 				dagangan.harga				=	req.body.harga;
@@ -98,13 +107,13 @@ var updateDagangan = function(req,res){
 				if(req.body.string64!=null){
 					if(dagangan.picture!=null){
 						fs.unlinkSync('../public_html/'+dagangan.picture);
-						dagangan.picture="uploads/foto_komoditas/"+req.body.user_id+"_"+req.body.komoditas+"_"+moment(time).tz('Asia/Jakarta')+".jpg";	
+						dagangan.picture="uploads/foto_komoditas/"+req.user_id+"_"+req.body.komoditas+"_"+moment(time).tz('Asia/Jakarta')+".jpg";	
 						imageSaver.saveFile("../public_html/"+dagangan.picture, req.body.string64)
 						.then((data)=>{
 							console.log("upload photo success"); 
 				    		})
 			    		.catch((err)=>{
-							res.json({status:400,message:err});
+							res.json({status:400,message:err,token:req.token});
 							})
 						}
 		  			}
@@ -112,23 +121,23 @@ var updateDagangan = function(req,res){
 				{
 					if(!err)
 					{
-						res.json({status:200,success:true,message:'Update Success',data:dagangan});
+						res.json({status:200,success:true,message:'Update Success',data:dagangan,token:req.token});
 					}
 					else
 					{
-						res.json({status:400,success:false,message:'Update Failed'});
+						res.json({status:400,success:false,message:'Update Failed',token:req.token});
 					}
 				});
 			}
 			else
 			{
-				res.status(403).json({status:403,message:"Forbidden"});
+				res.status(403).json({status:403,message:"Forbidden",token:req.token});
 			}
 			
 		}
 		else
 		{
-			res.status(404).json({status:404,message:"Not Found"});
+			res.status(204).json({status:204,message:"Not Found",token:req.token});
 		}
 	})
 }
@@ -138,21 +147,21 @@ var delDagangan = function(req,res){
 	//	res.json({aspirasi});
 		if(dagangan!=null)
 		{
-			if(dagangan.picture!=null && dagangan.user_id==req.body.user_id){
+			if(dagangan.picture!=null && dagangan.user_id==req.user_id){
 					fs.unlinkSync('../public_html/'+dagangan.picture);
 					}
 			dagangan.remove(function(err){
-				if(dagangan.user_id==req.body.user_id){
-					res.status(200).json({status:200,message:"delete success"});
+				if(dagangan.user_id==req.user_id){
+					res.status(200).json({status:200,message:"delete success",token:req.token});
 				}
 				else{
-					res.status(403).json({status:403,message:"Forbidden"});
+					res.status(403).json({status:403,message:"Forbidden",token:req.token});
 				}
 			})
 		}
 		else
 		{
-			res.status(404).json({status:404,message:"Not Found"});
+			res.status(204).json({status:204,message:"Not Found",token:req.token});
 		}
 	})
 }
