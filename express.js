@@ -179,11 +179,11 @@ app.use(function(req,res,next){
 		  				req.user_id=decoded.user_id;
 			  			req.role = decoded.role;
 	      	  			req.token=jwt.sign({
-	      	  									user_id:user.user_id,
-	                                            username:user.username,
-	                                            time:user.last_login,
-	                                            role:user.role,
-	                                            login_type:req.body.login_type
+	      	  									user_id:decoded.user_id,
+	                                            username:decoded.username,
+	                                            time:decoded.last_login,
+	                                            role:decoded.role,
+	                                            login_type:decoded.login_type
 	                                        }
 	                                        ,config.secret, {
 						                    expiresIn : 60*60// expires in 24 hours
