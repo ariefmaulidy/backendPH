@@ -9,11 +9,9 @@ autoIncrement.initialize(connection);
 var produksiModel = new Schema({
 	user_id:{type:String,ref:'User'},
 	komoditas_id:String,
-	posisi:[{
-				longitude:String,
-				latitude:String,
-				alamat:String
-			}],
+	longitude:String,
+	latitude:String,
+	alamat:String,
 	datePost:Number,
 	datePanen:Number,
 	jumlah:String,

@@ -34,6 +34,7 @@
     "node-geocoder": "^3.16.0",
     "node-mandrill": "^1.0.1",
     "nodemailer": "^3.1.8",
+    "os": "^0.1.1",
     "pepipost-sdk-nodejs": "^0.4.0",
     "randomstring": "^1.1.5",
     "s-ago": "^1.1.0",

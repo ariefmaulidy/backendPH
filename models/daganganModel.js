@@ -11,6 +11,7 @@ var daganganModel = new Schema({
 	harga:String,
 	picture:String,
 	datePost:Number,
+	keterangan:String,
 	stok:String
 });
 daganganModel.plugin(autoIncrement.plugin, { model: 'Dagangan', field: 'dagangan_id' });

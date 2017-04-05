@@ -10,20 +10,25 @@ var tz=require('moment-timezone');
 var getProduksi = function(req,res){
 	Produksi.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,produksi){
 					if(produksi!='')
-							{ var counter = 0;
-									each(produksi,function(value,key,array){
-										User.findOne({user_id:produksi[key].user_id}).exec(function(err,user){
-										produksi[key].name=user.name;
-										console.log(produksi[key].name);
-										counter++;
-										produksi[key].time=fromNow(produksi[key].datePost);
-										if(counter==produksi.length)
-											{									
-							 					res.json({status:200,message:'Get data success',data:produksi,token:req.token});		
-											}
-										});
-									})			
-								}
+					{ 
+						var counter = 0;
+						each(produksi,function(value,key,array){
+							User.findOne({user_id:produksi[key].user_id}).exec(function(err,user){
+							produksi[key].name=user.name;
+							produksi[key].time=fromNow(produksi[key].datePost);
+							Komoditas.findOne({komoditas_id:produksi[key].komoditas_id}).exec(function(err,komoditas)
+								{
+									produksi[key].nama_komoditas=komoditas.name;
+									produksi[key].satuan_komoditas=komoditas.satuan;
+									counter++;
+									if(counter==produksi.length)
+									{										
+				 						res.json({status:200,message:'Get data success',data:produksi,token:req.token});		
+									}
+								});
+							});
+						})			
+					}
 					else
 					{
 						res.json({status:204,message:'No data provided',token:req.token});
@@ -33,21 +38,25 @@ var getProduksi = function(req,res){
 var getProduksiKu = function(req,res){
 	Produksi.find({user_id:req.params.id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,produksi){
 					if(produksi!='')
-							{ var counter = 0;
-									each(produksi,function(value,key,array){
-										User.findOne({user_id:produksi[key].user_id}).exec(function(err,user){
-										produksi[key].name=user.name;
-										console.log(produksi[key].name);
-										counter++;
-										produksi[key].time=fromNow(produksi[key].datePost);
-										if(counter==produksi.length)
-											{									
-							 					res.json({status:200,message:'Get data success',data:produksi,token:req.token});		
-											}
-										});
-									})			
-								}
-				
+					{ 
+						var counter = 0;
+						each(produksi,function(value,key,array){
+							User.findOne({user_id:produksi[key].user_id}).exec(function(err,user){
+									produksi[key].name=user.name;
+							produksi[key].time=fromNow(produksi[key].datePost);
+							Komoditas.findOne({komoditas_id:produksi[key].komoditas_id}).exec(function(err,komoditas)
+								{
+									produksi[key].nama_komoditas=komoditas.name;
+									produksi[key].satuan_komoditas=komoditas.satuan;
+									counter++;
+									if(counter==produksi.length)
+									{										
+				 						res.json({status:200,message:'Get data success',data:produksi,token:req.token});		
+									}
+								});
+							});
+						})			
+					}
 					else
 					{
 						res.json({status:204,message:'No data provided',token:req.token});
@@ -57,12 +66,8 @@ var getProduksiKu = function(req,res){
 
 var postProduksi = function(req,res){
 		produksi = new Produksi(req.body);
+		produksi.user_id=req.user_id;
 	  	var time=moment();
-	  	produksi.posisi.push({
-								latitude:req.body.latitude,
-								longitude:req.body.longitude,
-								alamat:req.body.alamat
-							});
 	  	produksi.datePost = Date.parse(moment(time).tz('Asia/Jakarta')); 
 		produksi.save(function(err)
 		{
@@ -84,6 +89,9 @@ var updateProduksi = function(req,res){
 			produksi.komoditas_id 	= req.body.komoditas_id;
 			produksi.datePanen 		= req.body.datePanen;
 			produksi.jumlah 		= req.body.jumlah;
+			produksi.latitude=req.body.latitude,
+			produksi.longitude=req.body.longitude,
+			produksi.alamat=req.body.alamat
 			produksi.keterangan		= req.body.keterangan;
 			if(req.body.latitude!='' || req.body.longitude!='' || req.body.alamat!='' )
 			{
