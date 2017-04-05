@@ -1,5 +1,9 @@
 //model atau collections laporanHargaModel
 var laporanHarga		=			require('./../../models/laporanHargaModel');
+//model komoditas
+var komoditas			=			require('./../../models/komoditasModel');
+//user
+var user				=			require('./../../models/userModel');
 //security, crypto, jwt, dan secretCodenya ada dalam config
 var crypto 				= 			require('crypto');
 var jwt 				=			require('jsonwebtoken');
@@ -112,7 +116,7 @@ var updateLaporan = function(req,res){
 			}else{
 				ubahLaporan.user_id = req.body.user_id;
 				ubahLaporan.harga = req.body.harga;
-				ubahLaporan.datePost = Date.now();						
+				ubahLaporan.datePost = Date.now();
 				//simpan perubahan yang dilakukan
 				ubahLaporan.save(function(err){
 					if(err){
@@ -172,14 +176,19 @@ var dayLaporan = function(req,res){
 	//cek role user
 	if(role==1 || role==2 || role==5){
 		//buat variabel parsing yang akan menerima laporanHarga_id pada hari itu
-		var parsing = [];
+		var parsing = [{
+			laporanHarga_id:String,
+			harga:Number,
+			namaKomoditas:String,
+			username:String
+		}];
 		//ambil semua laporanHarga di sorting sesuai dengan tanggal post
 		laporanHarga.find({},'-_id -__v',{sort:{datePost:-1}},function(err,all){
 			if(err){
 				res.json({status:402,message:err,data:"",token:""});
 			}else{
 				//tanggal sekarang
-				var dateNow = new Date();
+				var dateNow = Date.now();
 				//tanggal sekarang di kurangi hari yang diinginkan, hari nya
 				dateNow.setDate(dateNow.getDate() - req.params.day);
 				//hari yang diinginkan dalam format, hari, tanggal, bulan, dan tahun
@@ -188,14 +197,31 @@ var dayLaporan = function(req,res){
 				for(var i=0; i<all.length; i++){
 					if(dateFormat(all[i].datePost, "dddd , mmmm dS , yyyy")==getDate){
 						//jika sesuai masukkan dalam variabel parsing
-						parsing.push(all[i].laporanHarga_id);
+						laporanHarga.findOne({laporanHarga_id:all[i].laporanHarga_id},function(err,laporan){
+							komoditas.findOne({komoditas_id:laporan.komoditas_id},function(err,komo){
+								user.findOne({user_id:laporan.user_id},function(err,userrr){
+									parsing.push({
+										laporanHarga_id:laporan.laporanHarga_id,
+										harga:laporan.harga,
+										//namaKomoditas:komo.name,
+										username:userrr.username
+										
+									})
+								})
+							})
+							
+							console.log(parsing);
+						})
+						
 					}
+					
 				}
+				console.log(parsing);
 				//kembalian dalam bentuk json dan isinya
 				res.json({
 					status:200,
 					message:"sukses, kembalian array laporanHarga_id",
-					data:parsing,						
+					data:parsing,
 					token:req.token
 				});
 			}

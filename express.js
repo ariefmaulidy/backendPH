@@ -185,10 +185,7 @@ app.use(function(req,res,next){
 	                                            time:decoded.last_login,
 	                                            role:decoded.role,
 
-	      	  									user_id:user.user_id,
-	                                            username:user.username,
-	                                            time:user.last_login,
-	                                            role:user.role,
+	      	  									
 
 	                                            login_type:decoded.login_type
 	                                        }
