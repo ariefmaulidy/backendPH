@@ -2,17 +2,135 @@
 var komoditas = require('./../../models/komoditas/komoditasModel');
 //dari operasi pasar model
 var op = require('./../../models/masyarakat/operasiPasarModel');
-var users = require('./../../models/masyarakat/masyarakatModel');
-var crypto = require('crypto');
-var config=require('./../../config');
-var jwt = require('jsonwebtoken');
-var moment=require('moment');
-var tz=require('moment-timezone');
-var each = require('foreach');
-//untuk math
-var math = require('mathjs');
-//var now = require('date-now');
-var date = require('date-utils');;
+
+
+
+//mulai dari sini
+var masyarakat 			=			require('./../../models/userModel'); //user
+var crypto 				= 			require('crypto');
+var config				=			require('./../../config');
+var jwt 				=			require('jsonwebtoken');
+var moment 				=			require('moment');
+var tz 					= 			require('moment-timezone');
+var each 				= 			require('foreach');
+var math 				= 			require('mathjs');
+var date 				=	 		require('date-utils');;
+
+
+
+//modul CRUD masyarakat
+//tambah masyarakat
+var addMasyarakat = function(req,res){
+	var newMasyarakat = new masyarakat(req.body);
+	if(req.body.username=="" || req.body.email=="" || req.body.password=="" || req.body.name==""){
+		res.json({status:204,data:"",message:"ada field kosong",token:""});
+	}else{
+		masyarakat.findOne({username:req.body.username},function(err,user){
+			if(user){
+				res.json({status:200,data:"",message:"username sudah terdaftar",token:""})
+            }else{
+				masyarakat.findOne({email:req.body.email},function(err,masy){
+					if(masy){
+						res.json({status:200,data:"",message:"email sudah terdaftar",token:""});
+					}else{
+						newMasyarakat.password = crypto.createHash('md5').update(req.body.password+'portalharga', 'ut-8').digest('hex');
+						var time=moment();
+
+						var date_parser = Date.parse(moment(time).tz('Asia/Jakarta'));
+						newMasyarakat.last_login = new Date(date_parser);
+			  			newMasyarakat.save(function(err){
+							if(err){
+								res.json({status:408,data:"",message:"gagal simpan masyarakat",token:""});
+							}else {
+								var token = jwt.sign({
+									user_id:newMasyarakat.user_id,
+									username:newMasyarakat.username,
+									email:newMasyarakat.email,
+									password:newMasyarakat.password,
+									role:newMasyarakat.role
+								},config.secretKey,{expiresIn:60*60});
+								res.json({
+									status:200,
+									data:newMasyarakat,
+									message:"sukses tambah masyarakat",
+					  				token:token
+					  			});
+							}
+						});
+					}
+				});
+			}
+		});
+	}
+};
+
+
+var getAllMaysarakat=function(req,res){
+	masyarakat.find(function(err,allMasyarakat){
+		if(err){
+			res.json({status:408,data:"",message:"err find masyarakat",token:""});
+		}else{
+			res.json({status:200,data:allMasyarakat,message:"sukses get masyarakat",token:""});
+		}
+	});
+};
+
+var updateMasy=function(req,res){
+	users.findOne({masyId:req.params.us_id},function(err,user){
+		if(!user){
+			res.json({"status":"404","message":"user not founded"})
+		}else {
+			user.name=req.body.name;
+			user.username=req.body.username;
+			user.password=crypto.createHash('md5').update(req.body.password, 'ut-8').digest('hex');
+			user.email=req.body.email;
+			user.save(function(err){
+				if(err){
+					res.json({"status":"404","message":"failed updateUser"});
+				}else {
+					res.status(200);
+					res.json({
+						data:user,
+						status:200,
+					});
+				}
+			});
+		}
+	});
+};
+
+//hapus masyarakat
+
+var deleteMasy=function(req,res){
+	users.findOne({masyId:req.params.us_id},function(err,user){
+		console.log(req.params.userId);
+		if(!user){
+			res.json({"satus":"Not Founded User"});
+		}else {
+			user.remove(function(err){
+				if(err){
+					res.json({"status":"404","message":"can't deleteUser"});
+				}else {
+					res.json({"message":"success delete user"});
+				}
+			});
+		}
+	});
+};
+
+//find one masyarakat
+var findMasy=function(req,res){
+	users.findOne({masyId:req.params.us_id},function(err,user){
+		console.log(req.params.user_id);
+		console.log(req.params.userId);
+		if(!user){
+			res.json({"message":"can't find user"});
+		}else {
+			res.status(500);
+			res.send(user);
+		}
+	});
+};
 
 //modul 1 komoditas
 var addKomoditas = function(req,res){
@@ -27,6 +145,7 @@ var addKomoditas = function(req,res){
 		if(err){
 			throw err;
 		}else{
+			res.status(200);
 			res.json({
 				data:newKom,
 				status:200,
@@ -36,12 +155,15 @@ var addKomoditas = function(req,res){
 	});
 };
 
+
+
 //semua komoditas
 var allKomoditas = function(req,res){
 	komoditas.find({},'-_id -__v',function(err,kom){
 		if(err){
 			throw err;
 		}else{
+			res.status(200);
 			res.json({
 				data:kom,
 				status:200,
@@ -74,11 +196,12 @@ var todayKomoditas =function(req,res){
 						var min = math.min(total);
 						//buat parsing langsung ke integer
 						var mean = parseInt(math.mean(total));
+						res.status(200);
 						res.json({
 							data:komo,
 							status:200,
 							minimum:min,
-							ratarata:mean,	
+							ratarata:mean,
 							makasimum:mak,
 							message:"succes"
 						});
@@ -89,139 +212,6 @@ var todayKomoditas =function(req,res){
 	});
 };
 
-//modul 2 untuk CRUD masyarakat
-
-var getAllMays=function(req,res){
-	users.find(function(err,allUser){
-		if(err){
-			res.status(500);
-			res.send("Internal server error");
-			res.status(200);
-		}else{
-			res.send(allUser);
-		}
-	});
-};
-
-var addMasy=function(req,res){
-	var newUser=new users(req.body);
-	if(req.body.name=="" || req.body.username=="" || req.body.password=="" || req.body.email==""){
-		res.json({"status":"400","message":"UnClompetely"});
-	}else{
-		users.findOne({username:req.body.username},function(err,user){
-			if(user){
-				res.json({"message":"username sudah ada"});
-			}else{
-				newUser.password = crypto.createHash('md5').update(req.body.password, 'ut-8').digest('hex') ;
-			  	newUser.save(function(err){
-					if(err){
-						console.log(newUser);
-						res.json({"status":"404","message":"can't save"})
-					}else {
-						var token = jwt.sign({us_id:newUser.us_id,role:newUser.role,username:newUser.username},config.secretKey,{
-							expiresIn:60*60})
-						res.status(201);
-					  	res.json({
-							newUser,
-							status:200,
-							token:token
-					  })
-				  }
-			  });
-		  }
-	  });
-	}
-};
-
-var updateMasy=function(req,res){
-	users.findOne({masyId:req.params.us_id},function(err,user){
-		if(!user){
-			res.json({"status":"404","message":"user not founded"})
-		}else {
-			user.name=req.body.name;
-			user.username=req.body.username;
-			user.password=crypto.createHash('md5').update(req.body.password, 'ut-8').digest('hex');
-			user.email=req.body.email;
-			user.save(function(err){
-				if(err){
-					res.json({"status":"404","message":"failed updateUser"});
-				}else {
-					res.status(500);
-					res.json({
-						data:user,
-						status:200,
-					});
-				}
-			});
-		}
-	});
-};
-
-//hapus masyarakat
-
-var deleteMasy=function(req,res){
-	users.findOne({masyId:req.params.us_id},function(err,user){
-		console.log(req.params.userId);
-		if(!user){
-			res.json({"satus":"Not Founded User"});
-		}else {						
-			user.remove(function(err){
-				if(err){
-					res.json({"status":"404","message":"can't deleteUser"});
-				}else {
-					res.json({"message":"success delete user"});
-				}
-			});
-		}
-	});
-};
-
-//find one masyarakat
-var findMasy=function(req,res){
-	users.findOne({masyId:req.params.us_id},function(err,user){
-		console.log(req.params.user_id);
-		console.log(req.params.userId);
-		if(!user){
-			res.json({"message":"can't find user"});
-		}else {
-			res.status(500);
-			res.send(user);
-		}
-	});
-};
-
-//modul 2 fungsi terakhir untuk request operasi pasar
-//masyarakat request operasi pasar
-var addoperasiPasar =function(req,res){
-	var operasi = new op(req.body);
-	//push lokasi latitude dan longitude valuenya = Number
-	//operasi.lokasi.push({latitude:req.body.latitude,longitude:req.body.longitude});
-	//inisialisasi time saat ini
-	var now = moment(new Date());
-	operasi.datePost = now.format("D MMM YYYY");
-	operasi.save(function(err,komo){
-		if(err){
-			throw err;
-		}else{
-			res.json({
-				data:operasi,
-				message:"succes"
-			});
-		}
-	});
-};
-
-//Histori setiap user untuk operasi pasar yang telah diminta
-var operasiKu = function(req,res){
-	//op = operasi pasar
-	op.find({us_id:req.params.us_id},function(err,myoperasi){
-		if(err){
-			throw err;
-		}else{
-			res.json({data:myoperasi});
-		}
-	})
-};
 
 // untuk mendapatakan semua jenis komoditasnya saja
 var allJenisKomoditas = function(req,res){
@@ -247,6 +237,64 @@ var allJenisKomoditas = function(req,res){
 	});
 };
 
+
+
+
+//modul 2 fungsi terakhir untuk request operasi pasar
+//masyarakat request operasi pasar
+var addoperasiPasar =function(req,res){
+	var operasi = new op(req.body);
+	//push lokasi latitude dan longitude valuenya = Number
+	//operasi.lokasi.push({latitude:req.body.latitude,longitude:req.body.longitude});
+	//inisialisasi time saat ini
+	var now = moment(new Date());
+	operasi.datePost = now.format("D MMM YYYY");
+	operasi.save(function(err,komo){
+		if(err){
+			throw err;
+		}else{
+			res.status(200);
+			res.json({
+				data:operasi,
+				message:"succes"
+			});
+		}
+	});
+};
+
+//Histori setiap user untuk operasi pasar yang telah diminta
+var operasiKu = function(req,res){
+	//op = operasi pasar
+	op.find({us_id:req.params.us_id},function(err,myoperasi){
+		if(err){
+			throw err;
+		}else{
+			res.status(200);
+			res.json({data:myoperasi});
+		}
+	})
+};
+
+//hapus operasi pasar
+/*var deleteoperasiPasar =function(req,res){
+	op.find({us_id:req.params.us_id},function(err,myoperasi)
+	var operasi = new op(req.body);
+	var now = moment(new Date());
+	operasi.datePost = now.format("D MMM YYYY");
+	operasi.save(function(err,komo){
+		if(err){
+			throw err;
+		}else{
+			res.status(200);
+			res.json({
+				data:operasi,
+				message:"succes"
+			});
+		}
+	});
+};*/
+
+
 //Masy		= Masyarakat
 //Kom		= komoditas
 module.exports = {
@@ -256,8 +304,8 @@ module.exports = {
 	todayKom:todayKomoditas,
 	allJenis:allJenisKomoditas,
 	//modul 2 masyarakat
-	allMasy:getAllMays,
-	addMasy:addMasy,
+	addMasyarakat:addMasyarakat,
+	allMasy:getAllMaysarakat,
 	updateMasy:updateMasy,
 	deleteMasy:deleteMasy,
 	findMasy:findMasy,

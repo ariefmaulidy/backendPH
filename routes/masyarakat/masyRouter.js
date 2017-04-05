@@ -4,8 +4,8 @@ var masyController=require('./../../controllers/masyarakat/masyarakatController'
 var masyRouter=express.Router();
 
 //untuk crud masyarakat
-masyRouter.route('/addMasy')
-  .post(masyController.addMasy);
+masyRouter.route('/add')
+  .post(masyController.addMasyarakat);
 masyRouter.route('/allMasy')
   .get(masyController.allMasy);
 masyRouter.route('/findMasy/:us_id')
