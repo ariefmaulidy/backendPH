@@ -6,6 +6,8 @@ console.log("masuk routes");
 aspirasiRouter.route('/get').options(aspirasiController.allAspirasi);
 aspirasiRouter.route('/add')
 	.post(aspirasiController.postAspirasi);
+aspirasiRouter.route('/update')
+	.post(aspirasiController.updateAspirasi);
 aspirasiRouter.route('/delete')
 	.post(aspirasiController.delAspirasi);
 aspirasiRouter.route('/pendukung/add')

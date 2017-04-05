@@ -11,12 +11,12 @@ var getAllUser = function(req,res){
 	User.find(function(err,users){
 		if(users=='')
 		{
-			res.json({status:404,message:'No data provided'});
+			res.json({status:204,message:'No data provided',token:req.token});
 		}
 		else
 		{
 			res.status(200);
-			res.json({status:200,message:"Get data success",data:users});
+			res.json({status:200,message:"Get data success",data:users,token:req.token});
 		}
 	})
 }
@@ -24,12 +24,12 @@ var getOneUser = function(req,res){
 	User.findOne({user_id:req.params.user_id},function(err,users){
 		if(users==null)
 		{
-			res.json({status:404,message:'No data provided'});
+			res.json({status:204,message:'No data provided',token:req.token});
 		}
 		else
 		{
 			res.status(200);
-			res.json({status:200,message:"Get data success",data:users});
+			res.json({status:200,message:"Get data success",data:users,token:req.token});
 		}
 	})
 }
@@ -117,13 +117,13 @@ var deleteUser = function(req,res){
 	User.findOne({'user_id':req.body.user_id},function(err, user){
 		if(user)
 		{
-			res.status(404);
+			res.status(204);
 			user.remove();
-			res.json({"status": "200", "message":"Delete Success"});	
+			res.json({"status": "200", "message":"Delete Success",token:req.token});	
 		}
 		else
 		{
-			res.json({"status": "404", "message":"User is not found"});				
+			res.json({"status": "204", "message":"User is not found",token:req.token});				
 		}
 	});
 };
@@ -136,11 +136,11 @@ var updateUser = function(req,res){
 		user.email=req.body.email;
 		user.save(function(err){
 			if(!err){
-				res.status(200).json({status:200,message:'Update success',data:user});
+				res.status(200).json({status:200,message:'Update success',data:user,token:req.token});
 			}
 			else 
 			{
-				res.status(400).json({status:400,message:'bad request'});
+				res.status(400).json({status:400,message:'bad request',token:req.token});
 			}
 		});
 	});
@@ -165,17 +165,17 @@ var updatePassword = function(req,res){
 			user.email=user.email;
 			user.save(function(err){
 				if(!err){
-					res.status(200).json({status:200,message:'Update success',data:user});
+					res.status(200).json({status:200,message:'Update success',data:user,token:req.token});
 				}
 				else 
 				{
-					res.status(400).json({status:400,message:'bad request'});
+					res.status(400).json({status:400,message:'bad request',token:req.token});
 				}
 			});
 		}
 		else
 		{
-			res.status(400).json({status:400,message:'Wrong password'});
+			res.status(400).json({status:400,message:'Wrong password',token:req.token});
 		} 	
 	});
 }	
@@ -195,21 +195,21 @@ var uploadPhoto = function(req,res)
 				user.save(function(err){
 					if(!err){
 						imageSaver.saveFile("../public_html/"+user.picture, req.body.string64).then((data)=>{
-    					res.json({status:200,message:'Change profile picture success',picture:user.picture});
+    					res.json({status:200,message:'Change profile picture success',picture:user.picture,token:req.token});
 						})
 						.catch((err)=>{
-				        	res.json({status:400,message:err});
+				        	res.json({status:400,message:err,token:req.token});
 				    	})
 					}
 					else
 					{
-						res.json({status:400,message:err});
+						res.json({status:400,message:err,token:req.token});
 					}
 				});
 			}
 			else
 			{
-				res.json({status:404,message:'User is not found'});
+				res.json({status:204,message:'User is not found'});
 			}
 		})
 }

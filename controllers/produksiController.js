@@ -19,14 +19,14 @@ var getProduksi = function(req,res){
 										produksi[key].time=fromNow(produksi[key].datePost);
 										if(counter==produksi.length)
 											{									
-							 					res.json({status:200,message:'Get data success',data:produksi});		
+							 					res.json({status:200,message:'Get data success',data:produksi,token:req.token});		
 											}
 										});
 									})			
 								}
 					else
 					{
-						res.json({status:404,message:'No data provided'});
+						res.json({status:204,message:'No data provided',token:req.token});
 					}
 			})
 }
@@ -42,7 +42,7 @@ var getProduksiKu = function(req,res){
 										produksi[key].time=fromNow(produksi[key].datePost);
 										if(counter==produksi.length)
 											{									
-							 					res.json({status:200,message:'Get data success',data:produksi});		
+							 					res.json({status:200,message:'Get data success',data:produksi,token:req.token});		
 											}
 										});
 									})			
@@ -50,7 +50,7 @@ var getProduksiKu = function(req,res){
 				
 					else
 					{
-						res.json({status:404,message:'No data provided'});
+						res.json({status:204,message:'No data provided',token:req.token});
 					}
 			})
 }
@@ -68,11 +68,11 @@ var postProduksi = function(req,res){
 		{
 			if(!err)
 			{
-				res.json({status:200,success:true,message:'Input Success',data:produksi});
+				res.json({status:200,success:true,message:'Input Success',data:produksi,token:req.token});
 			}
 			else
 			{
-				res.json({status:400,success:false,message:'Input Failed'});
+				res.json({status:400,success:false,message:'Input Failed',token:req.token});
 			}
 		});
 }
@@ -99,17 +99,17 @@ var updateProduksi = function(req,res){
 			produksi.save(function(err){
 				if(err)
 				{
-					res.json({status:400,message:'Update Failed'});
+					res.json({status:400,message:'Update Failed',token:req.token});
 				}
 				else
 				{
-					res.json({status:200,message:'Update Success',data:produksi});	
+					res.json({status:200,message:'Update Success',data:produksi,token:req.token});	
 				}
 			});
 		}
 		else
 		{	
-			res.json({status:404,message:'Produksi not found'});
+			res.json({status:204,message:'Produksi not found',token:req.token});
 		}
 	})
 }
@@ -121,16 +121,16 @@ var delProduksi = function(req,res){
 		{
 			produksi.remove(function(err){
 				if(!err){
-					res.status(200).json({status:200,message:"delete success"});
+					res.status(200).json({status:200,message:"delete success",token:req.token});
 				}
 				else{
-					res.status(403).json({status:403,message:"Forbidden"});
+					res.status(403).json({status:403,message:"Forbidden",token:req.token});
 				}
 			})
 		}
 		else
 		{
-			res.status(403).json({status:403,message:"Forbidden"});
+			res.status(403).json({status:403,message:"Forbidden",token:req.token});
 		}
 	})
 }

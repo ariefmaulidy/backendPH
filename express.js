@@ -214,14 +214,7 @@ app.use('/dagangan',daganganRouter);
 app.use('/aspirasi',aspirasiRouter);
 
 //Cek ROLE
-<<<<<<< HEAD
 
-
-app.use('/gg',function(req,res){
-	res.send("wepe");
-})
-	
-=======
 /*
 1 = admin
 2 = pemerintah
@@ -231,8 +224,6 @@ app.use('/gg',function(req,res){
 6 = pedagang
 */
 
-
->>>>>>> 5c1a8a2b5365de9afe98c1631f06984e65b94b29
 app.use('/komoditas',komoditasRouter);
 app.use('/laporanHarga',laporanHargaRouter);
 
