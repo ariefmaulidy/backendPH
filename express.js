@@ -25,16 +25,7 @@ var dateFormat 			= 	require('dateformat');
 //geocoder
 var geocoder = require('geocoder');
 var NodeGeocoder = require('node-geocoder');
-var geocoder_2 = NodeGeocoder(options);
 
-var options = {
-  provider: 'google',
- 
-  // Optional depending on the providers 
-  httpAdapter: 'https', // Default 
-  apiKey: 'AIzaSyA6RjQPiwHVVV38o3XoOvFOhksNbDyHI7I', // for Mapquest, OpenCage, Google Premier 
-  formatter: null         // 'gpx', 'string', ... 
-};
 
 var port = process.env.PORT || 5000; // used to create, sign, and verify tokens
 var secureRoutes 	=	express.Router();
@@ -65,96 +56,19 @@ app.use('/user/add',registerRouter);
 
 
 app.get('/gg',function(req,res){
-	/*//var ts = now()
-	var ts2 = Date.now();
-	var day = fromNow(1444140297141); //1 year
-	var days = fromNow(1491145721834);
-	var time=moment();
-	var gg = Date.parse(moment(time).tz('Asia/Jakarta'));
-	
-	
-	var oneWeekAgo = new Date();
-	oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-	var seminggu = dateFormat(oneWeekAgo, "dddd , mmmm dS , yyyy");
-	//kelar yang dapet hari ini
-	var tanggal = dateFormat(ts2, "dddd , mmmm dS , yyyy");
-	console.log(oneWeekAgo);
-	//console.log(new Date(ts2));
-	console.log(seminggu);
-*/
-	//bogor
-	//geocoder.reverseGeocode(-6.5635228, 106.7308386, function ( err, data ) {
-	
-	//GG kelar
-	//pasar anyar
 	var wepe = null;
 	geocoder.reverseGeocode(-6.5592227,106.7322101, function ( err, data ){
 		var gg = data.results[0].formatted_address;
 		console.log(gg);
-	}) ;
-									   
-	/*geocoder.reverseGeocode(-7.4215321,111.0333929, function ( err, data ) {
-	//sragen
-	//geocoder.reverseGeocode(-7.4299729, 111.0182713, function ( err, data ) {
-		// do something with data
-		
-		
-		//ini sudah sukses dapat alamat lengkap
-		var gg = data.results[0].formatted_address;
-		
-		//sukses dapat kabupatennya saja
-		//var wp = data.results[0].address_components[3].long_name;
-		
-		var wepe = gg;
-		res.send(wepe);
-		console.log(gg);
-	}, { sensor: true });*/
-	
-	/*geocoder_2.reverse({lat:-7.4215321, lon:111.0333929}, function(err, hasil) {
-		res.send(hasil[0].formattedAddress);
-});*/
+	});								  
 })
 
 
-//coba
-app.post('/cors',function(req,res,next){
-	if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-		var asli = req.headers.authorization
-        var c = req.headers.authorization.split(' ')[1];
-	
-		
-		jwt.verify(c, config.secret, function(err,decode)
-		{
-			if(err){
-				console.log("failed");
-			}else{
-				console.log("sukses");
-				var username = decode.username;
-				var role = decode.role;
-				
-				res.json({
-					tokenAsli:asli,
-					tokenHarusnya:c,
-					username:username,
-					role:role
-				});
-			}
-		})
-	}		
-});
-
-
 app.use('/wtf',function(req,res){
-	if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
-		var token = req.headers.authorization.split(' ')[1];
-		jwt.verify(token, config.secret, function(err, decoded){
-			var role = decoded.role;
-			if(role==1 || role==2 || role==5){
-				console.log('GOOD');
-			}
-			
-		});
-	}
+	console.log('ini langsung');
+	 setTimeout(function () {
+		 console.log('setelah 5 detik');
+	 }, 5000);
 });
 
 
@@ -197,7 +111,7 @@ app.use(function(req,res,next){
 		  			//for mobile login
 		  			else if(decoded.login_type==1)
 		  			{
-		  				console.log(decoded.user_id);
+		  				
 		  				req.user_id=decoded.user_id;
 		  				req.token='-';
 					    req.role = decoded.role;
