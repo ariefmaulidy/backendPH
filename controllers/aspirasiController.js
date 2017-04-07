@@ -8,11 +8,9 @@ var fromNow = require('from-now');
 var each = require('foreach');
 
 var allAspirasi = function(req,res){
-console.log("masuk controller");	
 	Aspirasi.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){
 	if(aspirasi!='')
 	{ 	
-		var counter = 0;
 				each(aspirasi,function(value,key,array)
 				{
 					User.findOne({user_id:aspirasi[key].user_id}).exec(function(err,user){
@@ -21,29 +19,24 @@ console.log("masuk controller");
 					aspirasi[key].time=fromNow(aspirasi[key].datePost);
 					aspirasi[key].total_pendukung=aspirasi[key].pendukung.length;
 					aspirasi[key].status_voted=false;
-					
-					if(counter<=aspirasi.length)
+					for(var i=0;i<aspirasi[key].pendukung.length;i++)
 					{
-						for(var i=0;i<aspirasi[key].pendukung.length;i++)
+						if(aspirasi[key].pendukung[i].user_id==req.user_id)
 						{
-							if(aspirasi[key].pendukung[i].user_id==req.user_id)
-							{
-								aspirasi[key].status_voted=true;
-							}
-							else if(aspirasi[key].pendukung.length==0)
-							{
-								aspirasi[key].status_voted=false;
-							}
+							aspirasi[key].status_voted=true;
+						}
+						else if(aspirasi[key].pendukung.length==0)
+						{
+							aspirasi[key].status_voted=false;
+						}
 
-						}
-					}
-					counter++;
-					if(counter==aspirasi.length)
-						{
-		 					res.json({status:200,message:'Get data success',data:aspirasi,token:req.token});		
-						}
+					}	
 					});
 				})			
+				setTimeout(function()
+				{
+					res.json({status:200,message:'Get data success',data:aspirasi,token:req.token});				
+				},100);
 				
 		}
 		
@@ -59,8 +52,6 @@ var aspirasiKu = function(req,res){
 	Aspirasi.find({user_id:req.params.user_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){
 	if(aspirasi.length!=0)
 	{ 	
-		var counter = 0;
-		
 				each(aspirasi,function(value,key,array){
 					User.findOne({user_id:aspirasi[key].user_id}.sort).exec(function(err,user){
 					aspirasi[key].name=user.name;
@@ -68,15 +59,12 @@ var aspirasiKu = function(req,res){
 					aspirasi[key].time=fromNow(aspirasi[key].datePost);
 					aspirasi[key].total_pendukung=aspirasi[key].pendukung.length;
 					aspirasi[key].status_voted=false;
-					counter++;
-					if(counter==aspirasi.length)
-						{
-							//console.log(aspirasi[0].pendukung[0]);
-		 					res.json({status:200,message:'Get data success',data:aspirasi,token:req.token});		
-						}
 					});
-				})			
-				
+				})
+				setTimeout(function()
+				{
+					res.json({status:200,message:'Get data success',data:aspirasi,token:req.token});				
+				},100);			
 		}
 		else
 		{
@@ -89,7 +77,7 @@ var aspirasiKu = function(req,res){
 var getPendukung = function(req,res)
 {
 	Aspirasi.findOne({aspirasi_id:req.params.aspirasi_id}).lean().exec(function(err,aspirasi){
-	if(aspirasi.pendukung.length!=0)
+	if(aspirasi!=null)
 	{ 	
 		console.log(aspirasi.pendukung.length);
 		var counter = 0;
@@ -98,28 +86,27 @@ var getPendukung = function(req,res)
 		{
 			User.findOne({user_id:value.user_id},'name picture -_id',function(err,user)
 			{
-				if(user!='')
+				if(user!=null)
 				{
 					pendukungKu.push(user);
-					counter++;	
-					if(counter==aspirasi.pendukung.length)
-					{
-						if(pendukungKu!=null)
-						{
-							res.json({status:200,message:'Get data success',data:pendukungKu,token:req.token});		
-						}
-						else 
-						{
-							res.json({status:204,message:'No data provided',token:req.token});		
-						}
-					}
-				}	
+				}
 			});
-		})									
+		})
+		setTimeout(function()
+		{
+			if(pendukungKu!='')
+			{
+				res.json({status:200,message:'Get data success',data:pendukungKu,token:req.token});		
+			}
+			else 
+			{
+				res.json({status:204,message:'No data provided',token:req.token});		
+			}				
+		},100);										
 	}
 	else
 	{
-		res.json({status:204,message:'No data provided',token:req.token});
+		res.json({status:403,message:'Wrong aspirasi_id',token:req.token});
 	}	
 		
 			
@@ -172,6 +159,7 @@ var updateAspirasi = function(req,res)
 {
 	Aspirasi.findOne({aspirasi_id:req.body.aspirasi_id},function(err,aspirasi)
 	{
+		console.log(aspirasi);
 		if(aspirasi!='' && (req.role==1||req.role==4))
 		{
 			aspirasi.subjek		=	req.body.subjek;

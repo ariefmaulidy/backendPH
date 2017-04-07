@@ -11,23 +11,26 @@ var getProduksi = function(req,res){
 	Produksi.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,produksi){
 					if(produksi!='')
 					{ 
-						var counter = 0;
-						each(produksi,function(value,key,array){
+						each(produksi,function(value,key,array)
+						{
+							
 							User.findOne({user_id:produksi[key].user_id}).exec(function(err,user){
 							produksi[key].name=user.name;
 							produksi[key].time=fromNow(produksi[key].datePost);
+							});
+
 							Komoditas.findOne({komoditas_id:produksi[key].komoditas_id}).exec(function(err,komoditas)
-								{
-									produksi[key].nama_komoditas=komoditas.name;
-									produksi[key].satuan_komoditas=komoditas.satuan;
-									counter++;
-									if(counter==produksi.length)
-									{										
-				 						res.json({status:200,message:'Get data success',data:produksi,token:req.token});		
-									}
-								});
+							{
+								produksi[key].nama_komoditas=komoditas.name;
+								produksi[key].satuan_komoditas=komoditas.satuan;
+				
 							});
 						})			
+					
+						setTimeout(function()
+						{
+							res.json({status:200,message:'Get data success',data:produksi,token:req.token});
+						},100);
 					}
 					else
 					{
@@ -39,23 +42,26 @@ var getProduksiKu = function(req,res){
 	Produksi.find({user_id:req.params.id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,produksi){
 					if(produksi!='')
 					{ 
-						var counter = 0;
-						each(produksi,function(value,key,array){
+						each(produksi,function(value,key,array)
+						{
+							
 							User.findOne({user_id:produksi[key].user_id}).exec(function(err,user){
-									produksi[key].name=user.name;
+							produksi[key].name=user.name;
 							produksi[key].time=fromNow(produksi[key].datePost);
+							});
+
 							Komoditas.findOne({komoditas_id:produksi[key].komoditas_id}).exec(function(err,komoditas)
-								{
-									produksi[key].nama_komoditas=komoditas.name;
-									produksi[key].satuan_komoditas=komoditas.satuan;
-									counter++;
-									if(counter==produksi.length)
-									{										
-				 						res.json({status:200,message:'Get data success',data:produksi,token:req.token});		
-									}
-								});
+							{
+								produksi[key].nama_komoditas=komoditas.name;
+								produksi[key].satuan_komoditas=komoditas.satuan;
+				
 							});
 						})			
+					
+						setTimeout(function()
+						{
+							res.json({status:200,message:'Get data success',data:produksi,token:req.token});
+						},100);
 					}
 					else
 					{

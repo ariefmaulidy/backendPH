@@ -11,66 +11,76 @@ var os = require("os");
 
 var getDaganganKu = function(req,res){
 	Dagangan.find({user_id:req.params.dagangan_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,dagangan){
-					if(dagangan!='')
-							{ var counter = 0;
-									each(dagangan,function(value,key,array){
-										User.findOne({user_id:dagangan[key].user_id}).exec(function(err,user)
-										{
-										//	console.log('ini user id = '+dagangan[key].user_id);
-
-											dagangan[key].picture=req.get('X-Forwarded-Protocol')+'/'+dagangan[key].picture;
-											dagangan[key].nama=user.name;
-											dagangan[key].address=user.address;
-											dagangan[key].time=fromNow(dagangan[key].datePost);
-											Komoditas.findOne({komoditas_id:dagangan[key].komoditas_id}).exec(function(err,komoditas)
-											{
-												dagangan[key].nama_komoditas=komoditas.name;
-												dagangan[key].satuan_komoditas=komoditas.satuan;
-												counter++;
-												if(counter==dagangan.length)
-													{									
-									 					res.json({status:200,message:'Get data success',data:dagangan,token:req.token});		
-													}
-											});
-										});
-									})			
-								}
-				else
-				{
-					res.json({status:204,message:"No data provided",token:req.token});
-				}
-			})
+	if(dagangan!='')
+			{ var counter = 0;
+					each(dagangan,function(value,key,array){
+						//lookup user data in user model
+						User.findOne({user_id:dagangan[key].user_id}).exec(function(err,user)
+						{
+							dagangan[key].picture='https://ph.yippytech.com'+'/'+dagangan[key].picture;
+							dagangan[key].nama=user.name;
+							dagangan[key].address=user.address;
+							dagangan[key].time=fromNow(dagangan[key].datePost);
+							
+						});
+						//lookup komoditas data in komoditas model
+						Komoditas.findOne({komoditas_id:dagangan[key].komoditas_id}).exec(function(err,komoditas)
+						{
+							if(komoditas!=null)
+							{
+								dagangan[key].nama_komoditas=komoditas.name;
+								dagangan[key].satuan_komoditas=komoditas.satuan;
+								counter++;		
+							}
+						});
+					})
+					// send response after 100 ms
+					setTimeout(function()
+					{
+						res.json({status:200,message:'Get data success',data:dagangan,token:req.token});		
+					},100);		
+			}
+			else
+			{
+				res.json({status:204,message:"No data provided",token:req.token});
+			}
+		})
 }
 var getAll = function(req,res){
 	Dagangan.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,dagangan){
-					if(dagangan!='')
-							{ var counter = 0;
-									each(dagangan,function(value,key,array){
-										User.findOne({user_id:dagangan[key].user_id}).exec(function(err,user)
-										{
-										//	console.log('ini user id = '+dagangan[key].user_id);
-											dagangan[key].picture='https://ph.yippytech.com'+'/'+dagangan[key].picture;
-											dagangan[key].nama=user.name;
-											dagangan[key].address=user.address;
-											dagangan[key].time=fromNow(dagangan[key].datePost);
-											Komoditas.findOne({komoditas_id:dagangan[key].komoditas_id}).exec(function(err,komoditas)
-											{
-												dagangan[key].nama_komoditas=komoditas.name;
-												dagangan[key].satuan_komoditas=komoditas.satuan;
-												counter++;
-												if(counter==dagangan.length)
-													{									
-									 					res.json({status:200,message:'Get data success',data:dagangan,token:req.token});		
-													}
-											});
-										});
-									})			
-								}
-				else
-				{
-					res.json({status:204,message:"No data provided",token:req.token});
-				}
-			})
+	if(dagangan!='')
+			{ var counter = 0;
+					each(dagangan,function(value,key,array){
+						//lookup user data in user model
+						User.findOne({user_id:dagangan[key].user_id}).exec(function(err,user)
+						{
+							dagangan[key].picture='https://ph.yippytech.com'+'/'+dagangan[key].picture;
+							dagangan[key].nama=user.name;
+							dagangan[key].address=user.address;
+							dagangan[key].time=fromNow(dagangan[key].datePost);
+							
+						});
+						//lookup komoditas data in komoditas model
+						Komoditas.findOne({komoditas_id:dagangan[key].komoditas_id}).exec(function(err,komoditas)
+						{
+							if(komoditas!=null)
+							{
+								dagangan[key].nama_komoditas=komoditas.name;
+								dagangan[key].satuan_komoditas=komoditas.satuan;
+								counter++;		
+							}
+						});
+					})
+					setTimeout(function()
+					{
+						res.json({status:200,message:'Get data success',data:dagangan,token:req.token});		
+					},100);		
+			}
+			else
+			{
+				res.json({status:204,message:"No data provided",token:req.token});
+			}
+		})
 }
 var postDagangan = function(req,res){
 		dagangan = new Dagangan(req.body);
