@@ -30,13 +30,12 @@ var addLaporan = function(req,res){
 	if(role==1 || role==2 || role==5){				
 		//address
 		geocoder.reverseGeocode(req.body.latitude,req.body.longitude, function ( err, data ) {
-			console.log(data);
 			//dapat alamatnya
 			newLaporan.komoditas_id = req.body.komoditas_id;
 			newLaporan.user_id = req.user_id;
 			newLaporan.harga = req.body.harga;
 			//create date add laporanHarga
-			newLaporan.datePost = Date.now();
+			newLaporan.datePost = Date.now();			
 			newLaporan.alamat = data.results[0].formatted_address;
 			newLaporan.save(function(err){
 				if(err){
@@ -115,7 +114,7 @@ var updateLaporan = function(req,res){
 			if(ubahLaporan==null){
 				res.json({status:201,message:"laporan tidak ditemukan",data:"",token:""});
 			}else{
-				ubahLaporan.user_id = req.body.user_id;
+				ubahLaporan.user_id = req.user_id;
 				ubahLaporan.harga = req.body.harga;
 				ubahLaporan.datePost = Date.now();
 				//simpan perubahan yang dilakukan
@@ -192,21 +191,31 @@ var dayLaporan = function(req,res){
 				var parsing = [];
 				var number = [];
 				var counter = 0;
+				
 				for(var i=0;i<all.length;i++){
 					if(dateFormat(all[i].datePost, "dddd , mmmm dS , yyyy")==getDate){
 						number.push(all[i].laporanHarga_id);					
 					};
-				}setTimeout(function () {
+				}
+				//time out 65 miliseconds
+				setTimeout(function () {
 					for(var i=0;i<number.length;i++){
 						laporanHarga.findOne({laporanHarga_id:number[i]},function(err,laporan){
 							parsing.push(laporan);
 							//console.log(parsing);
 						})					
 					}
-				}, 100);
+				}, 60);
+				//time out 90 mili seconds, atau 25 second setelah
 				setTimeout(function () {
-					res.send(parsing);
-				}, 200);
+					//kembalian dalam bentuk json
+					res.json({	
+						status:200,
+						message:"sukses mendapat laporan harga " + req.params.day + ' sebelumnya',
+						data:parsing,						
+						token:req.token
+					});
+				}, 90);
 			}
 		})
 	}

@@ -1,26 +1,27 @@
-var express				=	require('express');
-var app					=	express();
-var User            	=	require('./models/userModel');
-var daganganRouter		=	require('./routes/daganganRouter.js');
-var userRouter			=	require('./routes/userRouter.js');
-var authRouter			=	require('./routes/auth.js');
-var registerRouter		=	require('./routes/registerRouter.js');
-var aspirasiRouter		=	require('./routes/aspirasiRouter.js');
-var produksiRouter		=	require('./routes/produksiRouter.js');
-var komoditasRouter 	= 	require('./routes/komoditasRouter');
-var laporanHargaRouter 	= 	require('./routes/laporanHargaRouter');
-var multer	 			= 	require('multer');
-var mongoose			=	require('mongoose');
-var bodyParser			=	require('body-parser');
-var morgan 				= 	require('morgan');
-var fs 					=	require('fs');
-var jwt    				= 	require('jsonwebtoken');
-var config 				= 	require('./config');
-var moment 				=	require('moment');
-var tz 					=	require('moment-timezone');
-var now 				=	require("date-now")
-var fromNow				= 	require('from-now');
-var dateFormat 			= 	require('dateformat');
+var express						=	require('express');
+var app							=	express();
+var User            			=	require('./models/userModel');
+var daganganRouter				=	require('./routes/daganganRouter.js');
+var userRouter					=	require('./routes/userRouter.js');
+var authRouter					=	require('./routes/auth.js');
+var registerRouter				=	require('./routes/registerRouter.js');
+var aspirasiRouter				=	require('./routes/aspirasiRouter.js');
+var produksiRouter				=	require('./routes/produksiRouter.js');
+var komoditasRouter 			= 	require('./routes/komoditasRouter');
+var laporanHargaRouter 			= 	require('./routes/laporanHargaRouter');
+var forgetPasswordRouter		= 	require('./routes/forgetPasswordRouter');
+var multer	 					= 	require('multer');
+var mongoose					=	require('mongoose');
+var bodyParser					=	require('body-parser');
+var morgan 						= 	require('morgan');
+var fs 							=	require('fs');
+var jwt    						= 	require('jsonwebtoken');
+var config 						= 	require('./config');
+var moment 						=	require('moment');
+var tz 							=	require('moment-timezone');
+var now 						=	require("date-now")
+var fromNow						= 	require('from-now');
+var dateFormat 					= 	require('dateformat');
 
 //geocoder
 var geocoder = require('geocoder');
@@ -54,25 +55,23 @@ app.use('/user/auth',authRouter);
 // For registering new user
 app.use('/user/add',registerRouter);
 
+//forget password all user
+app.use('/user/forgetPassword',forgetPasswordRouter);
 
+//30 ribu data = 16 miliseconds
 app.get('/gg',function(req,res){
-	var wepe = null;
-	geocoder.reverseGeocode(-6.5592227,106.7322101, function ( err, data ){
-		var gg = data.results[0].formatted_address;
-		console.log(gg);
-	});								  
+	var start = new Date();
+	var banding = 30000;
+	var simpan = [];
+	for (var i=0;i<100000000;i++){
+		if(i<banding){
+			simpan.push(i);
+		}
+	}
+	var time = new Date() - start;
+	console.log(time + " milliseconds.");
+	
 })
-
-
-app.use('/wtf',function(req,res){
-	console.log('ini langsung');
-	 setTimeout(function () {
-		 console.log('setelah 5 detik');
-	 }, 5000);
-});
-
-
-
 
 // --- JWT Validaltion ---
 app.use(function(req,res,next){
