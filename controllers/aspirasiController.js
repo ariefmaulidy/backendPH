@@ -17,6 +17,8 @@ var allAspirasi = function(req,res){
 					aspirasi[key].name=user.name;
 					aspirasi[key].picture=user.picture;
 					aspirasi[key].time=fromNow(aspirasi[key].datePost);
+					aspirasi[key].datePost=moment(aspirasi[key].datePost).format("DD MMMM YYYY hh:mm a");;
+					//aspirasi[key].datePost= Date.parse('2014-04-03');
 					aspirasi[key].total_pendukung=aspirasi[key].pendukung.length;
 					aspirasi[key].status_voted=false;
 					for(var i=0;i<aspirasi[key].pendukung.length;i++)
@@ -57,6 +59,7 @@ var aspirasiKu = function(req,res){
 					aspirasi[key].name=user.name;
 					aspirasi[key].picture=user.picture;
 					aspirasi[key].time=fromNow(aspirasi[key].datePost);
+					aspirasi[key].datePost=moment(aspirasi[key].datePost).format("DD MMMM YYYY hh:mm a");;
 					aspirasi[key].total_pendukung=aspirasi[key].pendukung.length;
 					aspirasi[key].status_voted=false;
 					});

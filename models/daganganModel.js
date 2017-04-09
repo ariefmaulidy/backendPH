@@ -8,11 +8,11 @@ autoIncrement.initialize(connection);
 var daganganModel = new Schema({
 	komoditas_id:String,
 	user_id:String,
-	harga:String,
+	harga:Number,
 	picture:String,
 	datePost:Number,
 	keterangan:String,
-	stok:String
+	stok:Number
 });
 daganganModel.plugin(autoIncrement.plugin, { model: 'Dagangan', field: 'dagangan_id' });
 

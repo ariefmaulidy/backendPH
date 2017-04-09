@@ -3,7 +3,7 @@ var cryp = require('crypto');
 var multer = require('multer');
 var upload = multer({ dest: 'public/uploads/'})
 var fs=require('fs');
-
+var moment=require('moment');
 var codeSecret=require('./../config');
 var jwt=require('jsonwebtoken');
 
@@ -129,21 +129,28 @@ var deleteUser = function(req,res){
 };
 
 var updateUser = function(req,res){
-	User.findOne({user_id:req.body.user_id},function (err,user){
-		user.username=req.body.username;
-		user.name=req.body.name;
-		user.role=user.role;
-		user.email=req.body.email;
-		user.save(function(err){
-			if(!err){
-				res.status(200).json({status:200,message:'Update success',data:user,token:req.token});
-			}
-			else 
+	User.findOne({username:req.body.username},function(err,usernameCheck){
+			if(usernameCheck==null || usernameCheck.user_id==req.user_id)
 			{
-				res.status(400).json({status:400,message:'bad request',token:req.token});
+				User.findOne({user_id:req.user_id},function (err,user){
+					user.username=req.body.username;
+					user.name=req.body.name;
+					user.save(function(err){
+						if(!err){
+							res.status(200).json({status:200,message:'Update success',data:user,token:req.token});
+						}
+						else 
+						{
+							res.status(400).json({status:400,message:'bad request',token:req.token});
+						}
+					});
+				});	
+			}
+			else if(usernameCheck.user_id!=req.user_id)
+			{
+				res.json({status:400,message:"Create failed, username is already exist"});
 			}
 		});
-	});
 }	
 
 
@@ -191,10 +198,10 @@ var uploadPhoto = function(req,res)
 				fs.unlinkSync('../public_html/'+user.picture);
 				}
 				var time=moment();
-				user.picture='uploads/picture/pp_'+user.username+moment(time).tz('Asia/Jakarta')+".jpg";
+				user.picture='uploads/prof_pict/pp_'+user.username+moment(time).tz('Asia/Jakarta')+".jpg";
 				user.save(function(err){
 					if(!err){
-						imageSaver.saveFile("../public_html/"+user.picture, req.body.string64).then((data)=>{
+						imageSaver.saveFile("../public_html/"+user.picture, req.body.picture).then((data)=>{
     					res.json({status:200,message:'Change profile picture success',picture:user.picture,token:req.token});
 						})
 						.catch((err)=>{
