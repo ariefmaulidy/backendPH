@@ -104,7 +104,7 @@ var operasiPasarKu = function(req,req){
 						token:req.token
 					});
 				}, 100);
-		}
+			}
 		})
 	}
 };
