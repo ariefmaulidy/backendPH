@@ -12,7 +12,7 @@ operasiPasarRouter.route('/update')
 	.post(operasiPasarController.update);
 operasiPasarRouter.route('/delete')
 	.post(operasiPasarController.delete);
-//histori operasi pasar
+//histori operasi pasarku / untuk setiap user
 operasiPasarRouter.route('/operasi/get/:user_id')
 	.get(operasiPasarController.operasiKu);
 
