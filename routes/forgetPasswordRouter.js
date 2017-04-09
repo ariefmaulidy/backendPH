@@ -3,7 +3,7 @@ var app=express();
 var forgetPasswordController=require('./../controllers/forgetPasswordController');
 var forgetPasswordRouter=express.Router();
 
-forgetPasswordRouter.route('/send')
+forgetPasswordRouter.route('')
   .post(forgetPasswordController.forgetPassword);
 
 module.exports = forgetPasswordRouter;

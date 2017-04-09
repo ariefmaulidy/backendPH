@@ -15,7 +15,7 @@ function Mail() {
 
 	  transporter.sendMail(mailOptions, function(error, info){
 		  if(error){
-			  return console.log(error);
+        return console.log(error);
 		  }
 		  else {
 			console.log('Message sent: ' + info.response);
@@ -23,7 +23,7 @@ function Mail() {
 	  });
 
   }
-  
+
 }
 
 module.exports = new Mail();

@@ -12,8 +12,7 @@ var forgetPassword = function(req,res ){
 	var newPassword = randomstring.generate({	
 		length:12,
 		charset: 'alphabetic'
-	});
-	
+	});	
 	//cari usernamenya	
 	User.findOne({username:req.body.username},function (err,user){
 		if(!user){
@@ -29,9 +28,8 @@ var forgetPassword = function(req,res ){
 			if(!err){
 				res.status(200).json({status:200,message:'Update success'});
 			}else{
-				console.log('filed update password');
+				console.log('failed update password');
 			}
-			
 			//contenct emailnya, mulai dari, tujuan, subjek, html
 			var mailOptions = {
 				from: '"PORTAL-HARGA" <portalharga.ipb@gmail.com>',
@@ -39,9 +37,9 @@ var forgetPassword = function(req,res ){
 				subject: 'Forget Password',
 				html:
 				'Saudara/i '+ req.body.username + ' password baru anda : ' + newPassword + '<br><br>'+
-				'Setelah berhasil login segera ubah password anda <br>'
-			};
-			
+				'Setelah berhasil login segera ubah password anda <br> <br>' +
+				'Portal Harga'
+			};			
 			//function sender
 			transporter.sendMail(mailOptions, function(error, info){
 				if(error){
