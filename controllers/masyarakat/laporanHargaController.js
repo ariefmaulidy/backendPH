@@ -165,6 +165,7 @@ var deleteLaporan = function(req,res){
 var dayLaporan = function(req,res){
 	//cek role user
 	if(req.role==1 || req.role==2 || req.role==5){
+		console.log(req.role);
 		//ambil semua laporanHarga di sorting sesuai dengan tanggal post
 		laporanHarga.find({},'-_id -__v',{sort:{datePost:-1}},function(err,all){
 			if(err){
@@ -208,6 +209,8 @@ var dayLaporan = function(req,res){
 				}, 90);
 			}
 		})
+	}else{
+		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
 	}
 }
 

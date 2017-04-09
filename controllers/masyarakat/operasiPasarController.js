@@ -79,9 +79,8 @@ var allOperasiPasar = function(req,res){
 };
 
 var operasiPasarKu = function(req,req){
-	var role = req.role;
 	//cek role user
-	if(role==1 || role==5){
+	if(req.role==1 || req.role==5){
 		operasiPasar.findOne({user_id:req.body.user_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,operasi){
 			if(operasi==null){
 				res.json({status:201,message:"operasi pasar tidak ditemukan",data:"",token:""});
@@ -111,9 +110,8 @@ var operasiPasarKu = function(req,req){
 };
 
 var updateOperasiPasar = function(req,res){
-	var role = req.role;
 	//cek role user
-	if(role==1 || role==5){
+	if(req.role==1 || req.role==5){
 		operasiPasar.findOne({operasiPasar_id:req.body.operasiPasar_id},function(err,operasi){
 			operasi.pesan=req.body.pesan;
 			operasi.save(function(err){
@@ -134,3 +132,7 @@ var updateOperasiPasar = function(req,res){
 	}
 };
 
+var deleteOperasiPasar = function(req,res){
+	//cek role
+	if()
+}
