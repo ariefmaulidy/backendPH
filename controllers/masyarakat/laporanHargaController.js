@@ -95,20 +95,27 @@ var oneLaporan = function(req,res){
 	//cek role user
 	if(req.role==1 || req.role==2 || req.role==5){
 		//ambil satu laporanHarga yang sesuai dengan laporanHarga_id nya
-		laporanHarga.findOne({laporanHarga_id:req.params.laporanHarga_id},function(err,satulaporan){
+		laporanHarga.findOne({laporanHarga_id:req.params.laporanHarga_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,satulaporan){
 			//jika tidak ditemukan
 			if(satulaporan==null){
 				res.json({status:201,message:"laporan tidak ditemukan",data:"",token:""});
 			}else{
-				//kembalian dalam bentuk json
-				res.json({
-					status:200,
-					message:"sukses ambil satu laporan harga",
-					data:satulaporan,						
-					token:req.token
-				});
+				each(semuaLaporan,function(value,key,array){	
+					komoditas.findOne({komoditas_id:satulaporan[key].komoditas_id},function(err,komo){			
+						satulaporan[key].namaKomoditas = komo.name;
+					})
+				});	
+				setTimeout(function () {
+					//kembalian dalam bentuk json
+					res.json({
+						status:200,
+						message:"sukses ambil satu laporan harga",
+						data:satulaporan,						
+						token:req.token
+					});
+				}, 100);		
 			}
-		})
+		});
 	}else{
 		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
 	}	
