@@ -23,11 +23,9 @@ var geocoder 			=			require('geocoder');
 
 //add laporanHarga
 var addLaporan = function(req,res){
-	var newLaporan = new laporanHarga(req.body);
-	//ambil role dari app.use yang di express
-	var role = req.role;
+	var newLaporan = new laporanHarga(req.body);	
 	//cek role user
-	if(role==1 || role==2 || role==5){				
+	if(req.role==1 || req.role==2 || req.role==5){				
 		//address
 		geocoder.reverseGeocode(req.body.latitude,req.body.longitude, function ( err, data ) {
 			//dapat alamatnya
@@ -59,9 +57,7 @@ var addLaporan = function(req,res){
 
 //ambil semualaporan, apapun komoditasnya dan kapanpun postnya
 var allLaporan = function(req,res){
-	var role = req.role;
-	//cek role user
-	if(role==1 || role==2 || role==5){
+	if(req.role==1 || req.role==2 || req.role==5){
 		//ambil semua laporan
 		laporanHarga.find(function(err,semuaLaporan){
 			//kembalian dalam bentuk json
@@ -79,9 +75,8 @@ var allLaporan = function(req,res){
 
 //ambil satu laporan saja sesuai dengan laporanHarga_id nya
 var oneLaporan = function(req,res){
-	var role = req.role;
 	//cek role user
-	if(role==1 || role==2 || role==5){
+	if(req.role==1 || req.role==2 || req.role==5){
 		//ambil satu laporanHarga yang sesuai dengan laporanHarga_id nya
 		laporanHarga.findOne({laporanHarga_id:req.params.laporanHarga_id},function(err,satulaporan){
 			//jika tidak ditemukan
@@ -104,10 +99,7 @@ var oneLaporan = function(req,res){
 
 //update laporanHarga yang sesuai dengan laporanHarga_id nya
 var updateLaporan = function(req,res){
-	//misahin text "Bearer" dengan token
-	var role = req.role;
-	//cek role user
-	if(role==1 || role==2 || role==5){
+	if(req.role==1 || req.role==2 || req.role==5){
 		//ambil laporanHarga yang akan diubah
 		laporanHarga.findOne({laporanHarga_id:req.body.laporanHarga_id},function(err,ubahLaporan){
 			//jika laporanHarga tidak ditemukan
@@ -140,9 +132,8 @@ var updateLaporan = function(req,res){
 
 //delete laporanHarga sesuai dengan laporanHarga_id nya
 var deleteLaporan = function(req,res){
-	var role = req.role;
 	//cek role user
-	if(role==1 || role==2 || role==5){
+	if(req.role==1 || req.role==2 || req.role==5){
 		//cari laporan harga yang akan dihapus sesuai dengan laporanHarga_id nya
 		laporanHarga.findOne({laporanHarga_id:req.body.laporanHarga_id},function(err,hapuslaporan){
 			//jika laporanHarga tidak ditemukan
@@ -172,9 +163,8 @@ var deleteLaporan = function(req,res){
 
 //mengambil laoranHarga beberapa hari yang lalu, komoditasnya apa aja selama hari itu
 var dayLaporan = function(req,res){
-	var role = req.role;
 	//cek role user
-	if(role==1 || role==2 || role==5){
+	if(req.role==1 || req.role==2 || req.role==5){
 		//ambil semua laporanHarga di sorting sesuai dengan tanggal post
 		laporanHarga.find({},'-_id -__v',{sort:{datePost:-1}},function(err,all){
 			if(err){

@@ -56,7 +56,6 @@ var deleteKomoditas = function(req,res){
 //menghapus komoditasnya saja
 var jenisKomoditas = function(req,res){
 	setKomoditas.find({},'-_id -__v',{sort:{namaKomoditas:1}},function(err,komoditas){
-		console.log(komoditas.length);
 		//inisialisasi variable untuk parsing dan jenis dalam bentuk array
 		var parsing="";
 		var jenis=[];
