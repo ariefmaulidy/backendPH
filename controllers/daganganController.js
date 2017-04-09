@@ -17,11 +17,15 @@ var getDaganganKu = function(req,res){
 						//lookup user data in user model
 						User.findOne({user_id:dagangan[key].user_id}).exec(function(err,user)
 						{
-							dagangan[key].picture='https://ph.yippytech.com'+'/'+dagangan[key].picture;
+							if(dagangan[key].picture)
+							{
+								dagangan[key].picture='https://ph.yippytech.com'+'/'+dagangan[key].picture;	
+							}
 							dagangan[key].nama=user.name;
 							dagangan[key].address=user.address;
 							dagangan[key].time=fromNow(dagangan[key].datePost);
-							
+							dagangan[key].datePost=moment(dagangan[key].datePost).format("DD MMMM YYYY hh:mm a");;
+
 						});
 						//lookup komoditas data in komoditas model
 						Komoditas.findOne({komoditas_id:dagangan[key].komoditas_id}).exec(function(err,komoditas)
@@ -54,11 +58,14 @@ var getAll = function(req,res){
 						//lookup user data in user model
 						User.findOne({user_id:dagangan[key].user_id}).exec(function(err,user)
 						{
-							dagangan[key].picture='https://ph.yippytech.com'+'/'+dagangan[key].picture;
+							if(dagangan[key].picture)
+							{
+								dagangan[key].picture='https://ph.yippytech.com'+'/'+dagangan[key].picture;	
+							}
 							dagangan[key].nama=user.name;
 							dagangan[key].address=user.address;
 							dagangan[key].time=fromNow(dagangan[key].datePost);
-							
+							dagangan[key].datePost=moment(dagangan[key].datePost).format("DD MMMM YYYY hh:mm a");
 						});
 						//lookup komoditas data in komoditas model
 						Komoditas.findOne({komoditas_id:dagangan[key].komoditas_id}).exec(function(err,komoditas)
@@ -133,7 +140,7 @@ var updateDagangan = function(req,res){
 					{
 						fs.unlinkSync('../public_html/'+dagangan.picture);
 					}	
-					dagangan.picture="uploads/foto_komoditas/"+req.user_id+"_"+req.body.komoditas+"_"+moment(time).tz('Asia/Jakarta')+".jpg";	
+					dagangan.picture="uploads/foto_komoditas/"+req.user_id+"_"+req.body.komoditas_id+"_"+moment(time).tz('Asia/Jakarta')+".jpg";	
 					imageSaver.saveFile("../public_html/"+dagangan.picture, req.body.picture)
 					.then((data)=>{
 						console.log("upload photo success"); 

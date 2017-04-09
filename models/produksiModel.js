@@ -13,8 +13,8 @@ var produksiModel = new Schema({
 	latitude:String,
 	alamat:String,
 	datePost:Number,
-	datePanen:Number,
-	jumlah:String,
+	date_panen:Number,
+	jumlah:Number,
 	keterangan:String
 });
 produksiModel.plugin(autoIncrement.plugin, { model: 'Produksi', field: 'produksi_id' });
