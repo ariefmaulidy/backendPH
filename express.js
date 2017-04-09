@@ -10,6 +10,7 @@ var produksiRouter				=	require('./routes/produksiRouter.js');
 var komoditasRouter 			= 	require('./routes/komoditasRouter');
 var laporanHargaRouter 			= 	require('./routes/laporanHargaRouter');
 var forgetPasswordRouter		= 	require('./routes/forgetPasswordRouter');
+var operasiPasarRouter			= 	require('./routes/operasiPasarRouter');
 var multer	 					= 	require('multer');
 var mongoose					=	require('mongoose');
 var bodyParser					=	require('body-parser');
@@ -144,9 +145,4 @@ app.use('/aspirasi',aspirasiRouter);
 
 app.use('/komoditas',komoditasRouter);
 app.use('/laporanHarga',laporanHargaRouter);
-
-
-
-app.post('/role',function(req,res){
-	res.send("role 5")
-});
+app.use('/operasiPasar',operasiPasarRouter);

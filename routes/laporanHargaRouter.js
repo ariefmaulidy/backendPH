@@ -3,11 +3,14 @@ var laporanHargaController		=	require('./../controllers/masyarakat/laporanHargaC
 var laporanHargaRouter			=	express.Router();
 
 laporanHargaRouter.route('/add')
-	.post(laporanHargaController.add);
+	.post(laporanHargaController.add);	
 laporanHargaRouter.route('/get')
 	.get(laporanHargaController.all);
 laporanHargaRouter.route('/get/:laporanHarga_id')
-	.get(laporanHargaController.one);
+	.get(laporanHargaController.oneOperasi);
+//histori user
+laporanHargaRouter.route('/get/laporan/:user_id')
+	.get(laporanHargaController.laporanku);
 laporanHargaRouter.route('/update')
 	.post(laporanHargaController.update);
 laporanHargaRouter.route('/delete')
