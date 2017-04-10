@@ -212,59 +212,54 @@ var deleteLaporan = function(req,res){
 
 //mengambil laoranHarga beberapa hari yang lalu, komoditasnya apa aja selama hari itu
 var dayLaporan = function(req,res){
-	//cek role user
-	if(req.role==1 || req.role==2 || req.role==5){
-		//ambil semua laporanHarga di sorting sesuai dengan tanggal post
-		laporanHarga.find({},'-_id -__v',{sort:{datePost:-1}},function(err,all){
-			if(all==null){
-				res.json({status:204,message:err,data:"",token:req.token});
-			}else{
-				//tanggal sekarang
-				var dateNow = new Date();				
-				//tanggal sekarang di kurangi hari yang diinginkan, hari nya
-				dateNow.setDate(dateNow.getDate() - req.params.day);
-				//hari yang diinginkan dalam format, hari, tanggal, bulan, dan tahun
-				var getDate = dateFormat(dateNow, "dddd , mmmm dS , yyyy");						
-				//console.log(getDate);
-				//buat variabel parsing yang akan menerima laporanHarga_id pada hari itu
-				var parsing = [];
-				var number = [];
-				var counter = 0;
+	//ambil semua laporanHarga di sorting sesuai dengan tanggal post
+	laporanHarga.find({},'-_id -__v',{sort:{datePost:-1}},function(err,all){
+		if(all==null){
+			res.json({status:204,message:err,data:"",token:req.token});
+		}else{
+			//tanggal sekarang
+			var dateNow = new Date();				
+			//tanggal sekarang di kurangi hari yang diinginkan, hari nya
+			dateNow.setDate(dateNow.getDate() - req.params.day);
+			//hari yang diinginkan dalam format, hari, tanggal, bulan, dan tahun
+			var getDate = dateFormat(dateNow, "dddd , mmmm dS , yyyy");						
+			//console.log(getDate);
+			//buat variabel parsing yang akan menerima laporanHarga_id pada hari itu
+			var parsing = [];
+			var number = [];
+			var counter = 0;
 				
-				for(var i=0;i<all.length;i++){
-					if(dateFormat(all[i].datePost, "dddd , mmmm dS , yyyy")==getDate){
-						number.push(all[i].laporanHarga_id);					
-					};
-				}
-				//time out 65 miliseconds
-				setTimeout(function () {
-					for(var i=0;i<number.length;i++){
-						laporanHarga.findOne({laporanHarga_id:number[i]}).lean().exec(function(err,laporan){
-							
-							komoditas.findOne({komoditas_id:laporan.komoditas_id}).exec(function(err,komo){
-								console.log('ini ' +komo.name);
-								laporan.namaKomoditas=komo.name;
-								laporan.satuan = komo.satuan
-								parsing.push(laporan);
-							})						
-						})					
-					}
-				}, 70);
-				//time out 90 mili seconds, atau 25 second setelah
-				setTimeout(function () {
-					//kembalian dalam bentuk json
-					res.json({	
-						status:200,
-						message:"sukses mendapat laporan harga " + req.params.day + ' sebelumnya',
-						data:parsing,						
-						token:req.token
-					});
-				}, 100);
+			for(var i=0;i<all.length;i++){
+				if(dateFormat(all[i].datePost, "dddd , mmmm dS , yyyy")==getDate){
+					number.push(all[i].laporanHarga_id);					
+				};
 			}
-		})
-	}else{
-		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
-	}
+			//time out 65 miliseconds
+			setTimeout(function () {
+				for(var i=0;i<number.length;i++){
+					laporanHarga.findOne({laporanHarga_id:number[i]}).lean().exec(function(err,laporan){
+
+						komoditas.findOne({komoditas_id:laporan.komoditas_id}).exec(function(err,komo){
+							console.log('ini ' +komo.name);
+							laporan.namaKomoditas=komo.name;
+							laporan.satuan = komo.satuan
+							parsing.push(laporan);
+						})						
+					})					
+				}
+			}, 70);
+			//time out 90 mili seconds, atau 25 second setelah
+			setTimeout(function () {
+				//kembalian dalam bentuk json
+				res.json({	
+					status:200,
+					message:"sukses mendapat laporan harga " + req.params.day + ' sebelumnya',
+					data:parsing,						
+					token:req.token
+				});
+			}, 100);
+		}
+	})
 }
 
 module.exports = {
