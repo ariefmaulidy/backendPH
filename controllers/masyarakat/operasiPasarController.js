@@ -61,21 +61,18 @@ var allOperasiPasar = function(req,res){
 					komoditas.findOne({komoditas_id:operasi[key].komoditas_id},function(err,komo){
 						operasi[key].totalPendukung = operasi[key].pendukung.length;
 						operasi[key].namaKomoditas = komo.name;
+						operasi[key].satuan = komo.satuan;
 						operasi[key].nama = masyarakat.name;
 						operasi[key].time=fromNow(operasi[key].datePost);
 						operasi[key].status_voted = false;
 						
-						/*for(var i=0; i<; i++){
-							console.log('ini panjangnya ' + operasi[key].pendukung.length);
-							if(operasi[key].pendukung[i].user_id==req.user_id){
-								operasi[key].status_voted = true;
-								console.log(operasi[key].status_voted);
-							}else{
-								operasi[key].status_voted = true;
-								console.log(operasi[key].status_voted);
+						for(var i=0; i<1; i++){
+							if(operasi[key].pendukung.length==0){
+								operasi[key].status_voted=false;
+							}else if(operasi[key].pendukung[i].user_id==req.user_id){
+								operasi[key].status_voted=true;
 							}
-							operasi[key].status_voted = true;
-						}*/
+						}
 					})
 				});
 			});
@@ -203,6 +200,35 @@ var deleteOperasiPasar = function(req,res){
 		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
 	}
 };
+
+
+//dukung operasi pasar
+var dukungOperasi = function(req,res){
+	if(req.role==1 || req.role==5){
+		operasiPasar.findOne({operasiPasar_id:req.body.operasiPasar_id},function(err,operasi){
+			if(operasi.pendukung.length==0){
+				operasi.pendukung.push({user_id:req.user_id})
+				operasi.save(function(err){
+					if(err){
+						res.json({status:402,message:err,data:"",token:req.token});
+					}else{
+						res.json({status:200,message:"sukses dukung operasi pasar",data:operasi,token:req.token});
+					}
+				})
+			}
+			//jika sudah ada, di cek dulu
+			else{
+				for(var i=0; i<operasi.pendukung; i++){
+					
+				}
+			}
+		})
+	}else{
+		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
+	}
+}
+
+
 
 module.exports = {
 	add:addOperasiPasar,

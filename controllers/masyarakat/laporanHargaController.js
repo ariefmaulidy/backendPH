@@ -97,25 +97,25 @@ var oneLaporan = function(req,res){
 	laporanHarga.findOne({laporanHarga_id:req.params.laporanHarga_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,satulaporan){
 		//jika tidak ditemukan
 		if(satulaporan==null){
-				res.json({status:204,message:"laporan tidak ditemukan",data:"",token:req.token});
-			}else{
-				each(semuaLaporan,function(value,key,array){	
-					komoditas.findOne({komoditas_id:satulaporan[key].komoditas_id},function(err,komo){			
-						satulaporan[key].namaKomoditas = komo.name;
-						satulaporan[key].satuan = komo.satuan;
-					})
-				});	
-				setTimeout(function () {
-					//kembalian dalam bentuk json
-					res.json({
-						status:200,
-						message:"sukses ambil satu laporan harga",
-						data:satulaporan,						
-						token:req.token
-					});
-				}, 100);		
-			}
-		});
+			res.json({status:204,message:"laporan tidak ditemukan",data:"",token:req.token});
+		}else{
+			each(semuaLaporan,function(value,key,array){	
+				komoditas.findOne({komoditas_id:satulaporan[key].komoditas_id},function(err,komo){			
+					satulaporan[key].namaKomoditas = komo.name;
+					satulaporan[key].satuan = komo.satuan;
+				})
+			});	
+			setTimeout(function () {
+				//kembalian dalam bentuk json
+				res.json({
+					status:200,
+					message:"sukses ambil satu laporan harga",
+					data:satulaporan,						
+					token:req.token
+				});
+			}, 100);		
+		}
+	});
 		
 };
 
