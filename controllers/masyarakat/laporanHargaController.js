@@ -66,32 +66,28 @@ var addLaporan = function(req,res){
 
 //ambil semualaporan, apapun komoditasnya dan kapanpun postnya
 var allLaporan = function(req,res){
-	if(req.role==1 || req.role==2 || req.role==5){
-		//ambil semua laporan
-		laporanHarga.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,semuaLaporan){
-			//ambil satuan_komoditas
-			if(semuaLaporan==null){
-				res.json({status:204,message:"laporan tidak ditemukan",data:"",token:req.token});
-			}else{
-				each(semuaLaporan,function(value,key,array){	
-					komoditas.findOne({komoditas_id:semuaLaporan[key].komoditas_id},function(err,komo){			
-						semuaLaporan[key].namaKomoditas = komo.name;
-					})
-				});	
-				setTimeout(function () {
-					//kembalian dalam bentuk json
-					res.json({
-						status:200,
-						message:"sukses ambil semua laporan harga",
-						data:semuaLaporan,						
-						token:req.token
-					});
-				}, 100);
-			}
-		});	
-	}else{
-		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
-	}	
+	//ambil semua laporan
+	laporanHarga.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,semuaLaporan){
+		//ambil satuan_komoditas
+		if(semuaLaporan==null){
+			res.json({status:204,message:"laporan tidak ditemukan",data:"",token:req.token});
+		}else{
+			each(semuaLaporan,function(value,key,array){	
+				komoditas.findOne({komoditas_id:semuaLaporan[key].komoditas_id},function(err,komo){			
+					semuaLaporan[key].namaKomoditas = komo.name;
+				})
+			});	
+			setTimeout(function () {
+				//kembalian dalam bentuk json
+				res.json({
+					status:200,
+					message:"sukses ambil semua laporan harga",
+					data:semuaLaporan,						
+					token:req.token
+				});
+			}, 100);
+		}
+	});
 };
 
 //ambil satu laporan saja sesuai dengan laporanHarga_id nya

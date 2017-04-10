@@ -58,13 +58,24 @@ var allOperasiPasar = function(req,res){
 		}else{
 			each(operasi,function(value,key,array){
 				user.findOne({user_id:operasi[key].user_id}).lean().exec(function(err,masyarakat){
-					console.log(masyarakat);
 					komoditas.findOne({komoditas_id:operasi[key].komoditas_id},function(err,komo){
-						console.log(komo);
 						operasi[key].totalPendukung = operasi[key].pendukung.length;
 						operasi[key].namaKomoditas = komo.name;
 						operasi[key].nama = masyarakat.name;
 						operasi[key].time=fromNow(operasi[key].datePost);
+						operasi[key].status_voted = false;
+						
+						for(var i=0; i<1; i++){
+							/*console.log('ini panjangnya ' + operasi[key].pendukung.length);
+							if(operasi[key].pendukung[i].user_id==req.user_id){
+								operasi[key].status_voted = true;
+								console.log(operasi[key].status_voted);
+							}else{
+								operasi[key].status_voted = true;
+								console.log(operasi[key].status_voted);
+							}*/
+							operasi[key].status_voted = true;
+						}
 					})
 				});
 			});
