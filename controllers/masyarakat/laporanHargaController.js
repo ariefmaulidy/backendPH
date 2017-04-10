@@ -75,6 +75,7 @@ var allLaporan = function(req,res){
 			each(semuaLaporan,function(value,key,array){	
 				komoditas.findOne({komoditas_id:semuaLaporan[key].komoditas_id},function(err,komo){			
 					semuaLaporan[key].namaKomoditas = komo.name;
+					semuaLaporan[key].satuan = komo.satuan
 				})
 			});	
 			setTimeout(function () {
@@ -92,17 +93,16 @@ var allLaporan = function(req,res){
 
 //ambil satu laporan saja sesuai dengan laporanHarga_id nya
 var oneLaporan = function(req,res){
-	//cek role user
-	if(req.role==1 || req.role==2 || req.role==5){
-		//ambil satu laporanHarga yang sesuai dengan laporanHarga_id nya
-		laporanHarga.findOne({laporanHarga_id:req.params.laporanHarga_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,satulaporan){
-			//jika tidak ditemukan
-			if(satulaporan==null){
+	//ambil satu laporanHarga yang sesuai dengan laporanHarga_id nya
+	laporanHarga.findOne({laporanHarga_id:req.params.laporanHarga_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,satulaporan){
+		//jika tidak ditemukan
+		if(satulaporan==null){
 				res.json({status:204,message:"laporan tidak ditemukan",data:"",token:req.token});
 			}else{
 				each(semuaLaporan,function(value,key,array){	
 					komoditas.findOne({komoditas_id:satulaporan[key].komoditas_id},function(err,komo){			
 						satulaporan[key].namaKomoditas = komo.name;
+						satulaporan[key].satuan = komo.satuan;
 					})
 				});	
 				setTimeout(function () {
@@ -116,9 +116,7 @@ var oneLaporan = function(req,res){
 				}, 100);		
 			}
 		});
-	}else{
-		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
-	}	
+		
 };
 
 
@@ -246,6 +244,7 @@ var dayLaporan = function(req,res){
 							komoditas.findOne({komoditas_id:laporan.komoditas_id}).exec(function(err,komo){
 								console.log('ini ' +komo.name);
 								laporan.namaKomoditas=komo.name;
+								laporan.satuan = komo.satuan
 								parsing.push(laporan);
 							})						
 						})					

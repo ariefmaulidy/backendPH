@@ -65,17 +65,17 @@ var allOperasiPasar = function(req,res){
 						operasi[key].time=fromNow(operasi[key].datePost);
 						operasi[key].status_voted = false;
 						
-						for(var i=0; i<1; i++){
-							/*console.log('ini panjangnya ' + operasi[key].pendukung.length);
+						/*for(var i=0; i<; i++){
+							console.log('ini panjangnya ' + operasi[key].pendukung.length);
 							if(operasi[key].pendukung[i].user_id==req.user_id){
 								operasi[key].status_voted = true;
 								console.log(operasi[key].status_voted);
 							}else{
 								operasi[key].status_voted = true;
 								console.log(operasi[key].status_voted);
-							}*/
+							}
 							operasi[key].status_voted = true;
-						}
+						}*/
 					})
 				});
 			});
