@@ -84,7 +84,7 @@ var allOperasiPasar = function(req,res){
 						data:operasi,						
 						token:req.token
 					});
-				}, 100);
+			}, 100);
 		}	
 	});
 };
@@ -127,7 +127,7 @@ var operasiPasarKu = function(req,res){
 							console.log(komo);
 							operasi[key].totalPendukung = operasi[key].pendukung.length;
 							operasi[key].namaKomoditas = komo.name;
-							operasi[key].name = masyarakat.name;
+							operasi[key].nama = masyarakat.name;
 							operasi[key].time=fromNow(operasi[key].datePost);
 					})
 				});
@@ -203,11 +203,11 @@ var deleteOperasiPasar = function(req,res){
 
 
 //dukung operasi pasar
-var dukungOperasi = function(req,res){
+var voteOperasi = function(req,res){
 	if(req.role==1 || req.role==5){
 		operasiPasar.findOne({operasiPasar_id:req.body.operasiPasar_id},function(err,operasi){
 			if(operasi.pendukung.length==0){
-				operasi.pendukung.push({user_id:req.user_id})
+				operasi.pendukung.push({user_id:req.user_id});
 				operasi.save(function(err){
 					if(err){
 						res.json({status:402,message:err,data:"",token:req.token});
@@ -218,17 +218,70 @@ var dukungOperasi = function(req,res){
 			}
 			//jika sudah ada, di cek dulu
 			else{
-				for(var i=0; i<operasi.pendukung; i++){
-					
+				var status_vote = false;
+				for(var i=0; i<operasi.pendukung.length; i++){
+					if(operasi.pendukung[i].user_id==req.user_id){
+						status_vote = true;
+						
+					}						
 				}
+				setTimeout(function () {
+					if(status_vote==false){
+						operasi.pendukung.push({user_id:req.user_id});
+						operasi.save(function(err){
+							if(err){
+								res.json({status:402,message:err,data:operasi,token:req.token});
+							}else{
+								res.json({status:200,message:"sukses vote operasi pasar",data:operasi,token:req.token});
+							}
+						});
+					}else if (status_vote==true){
+						res.json({status:200,message:"sudah vote atau anda pemilik operasi pasar",data:operasi,token:req.token});
+					}
+				}, 100);
 			}
 		})
 	}else{
-		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
+		res.json({status:401,message:"role tidak sesuai",data:"",token:req.token});
 	}
 }
 
+//unvote operasi pasar
+var unVoteOperasi = function(req,res){
+	if(req.role==1 || req.role==5){
+		operasiPasar.update(
+			{operasiPasar_id:req.body.operasiPasar_id},
+			{$pull: {pendukung: {user_id: req.user_id}}},
+			{safe: true},
+			function(err,operasi){
+				if(err){
+					res.json({status:402,message:err,data:operasi,token:req.token});
+				}else{
+					res.json({status:200,message:"sukses unvote operasi pasar",data:operasi,token:req.token});
+				}
+			});
+	}else{
+		res.json({status:401,message:"role tidak sesuai",data:"",token:req.token});
+	}
+};
 
+var getPendukungOperasi = function(req,res){
+	if(req.role==1 || req.role==5){
+		var pendukung = [];
+		operasiPasar.findOne({operasiPasar_id:req.params.operasiPasar_id},function(err,operasi){
+			for(var i=0; i<operasi.pendukung.length; i++){
+				user.findOne({user_id:operasi.pendukung[i].user_id},function(err,user){
+					pendukung.push(user);
+				})
+			}
+		})
+		setTimeout(function (){
+			res.json({status:200,message:"sukses dapat pendukung",data:pendukung,token:req.token});
+		}, 100);
+	}else{
+		res.json({status:401,message:"role tidak sesuai",data:"",token:req.token});
+	}
+};
 
 module.exports = {
 	add:addOperasiPasar,
@@ -236,5 +289,8 @@ module.exports = {
 	operasiKu:operasiPasarKu,
 	update:updateOperasiPasar,
 	delete:deleteOperasiPasar,
-	oneLaporan:oneOperasiPasar
+	oneLaporan:oneOperasiPasar,
+	voteOperasi:voteOperasi,
+	unVoteOperasi:unVoteOperasi,
+	pendukungOperasi:getPendukungOperasi
 };

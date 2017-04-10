@@ -99,12 +99,10 @@ var oneLaporan = function(req,res){
 		if(satulaporan==null){
 			res.json({status:204,message:"laporan tidak ditemukan",data:"",token:req.token});
 		}else{
-			each(semuaLaporan,function(value,key,array){	
-				komoditas.findOne({komoditas_id:satulaporan[key].komoditas_id},function(err,komo){			
-					satulaporan[key].namaKomoditas = komo.name;
-					satulaporan[key].satuan = komo.satuan;
-				})
-			});	
+			komoditas.findOne({komoditas_id:satulaporan.komoditas_id},function(err,komo){
+				satulaporan.namaKomoditas = komo.name;
+				satulaporan.satuan = komo.satuan;
+			})
 			setTimeout(function () {
 				//kembalian dalam bentuk json
 				res.json({
@@ -113,10 +111,9 @@ var oneLaporan = function(req,res){
 					data:satulaporan,						
 					token:req.token
 				});
-			}, 100);		
+			}, 20);		
 		}
-	});
-		
+	});	
 };
 
 
@@ -265,7 +262,7 @@ var dayLaporan = function(req,res){
 module.exports = {
 	add:addLaporan,
 	all:allLaporan,
-	oneOperasi:oneLaporan,
+	oneLaporan:oneLaporan,
 	update:updateLaporan,
 	delete:deleteLaporan,
 	getDay:dayLaporan,

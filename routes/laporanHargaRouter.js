@@ -7,7 +7,7 @@ laporanHargaRouter.route('/add')
 laporanHargaRouter.route('/get')
 	.get(laporanHargaController.all);
 laporanHargaRouter.route('/get/:laporanHarga_id')
-	.get(laporanHargaController.oneOperasi);
+	.get(laporanHargaController.oneLaporan);
 //histori user
 laporanHargaRouter.route('/get/laporan/:user_id')
 	.get(laporanHargaController.laporanku);

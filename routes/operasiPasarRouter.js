@@ -15,5 +15,14 @@ operasiPasarRouter.route('/delete')
 //histori operasi pasarku / untuk setiap user
 operasiPasarRouter.route('/operasi/get/:user_id')
 	.get(operasiPasarController.operasiKu);
+//vote operasi pasar
+operasiPasarRouter.route('/pendukung/add')
+	.post(operasiPasarController.voteOperasi);
+//unvote operasi pasar
+operasiPasarRouter.route('/pendukung/delete')
+	.post(operasiPasarController.unVoteOperasi);
+//get pendukung operasi pasar
+operasiPasarRouter.route('/pendukung/get/:operasiPasar_id')
+	.get(operasiPasarController.pendukungOperasi)
 
 module.exports = operasiPasarRouter;
