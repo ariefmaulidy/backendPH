@@ -125,7 +125,7 @@ var laporanHargaKu = function(req,res){
 				res.json({status:204,message:"laporan tidak ditemukan",data:"",token:req.token});
 			}else{
 				each(laporanku,function(value,key,array){	
-					komoditas.findOne({komoditas_id:laporan[key].komoditas_id},function(err,komo){			
+					komoditas.findOne({komoditas_id:laporanku[key].komoditas_id},function(err,komo){			
 						laporanku[key].namaKomoditas = komo.name;
 					})
 				});	
@@ -140,6 +140,8 @@ var laporanHargaKu = function(req,res){
 				}, 100);		
 			}
 		});
+	}else{
+		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
 	}
 };
 

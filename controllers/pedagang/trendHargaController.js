@@ -24,7 +24,7 @@ var geocoder 			=			require('geocoder');
 
 //dapat trend harga 5 hari sebelumnya
 
-var getTrend = function(day,req,res){
+var getTrend = function(day,req){
 	laporanHarga.find({},'-_id -__v',{sort:{datePost:-1}},function(err,all){
 		if(all==null){
 			res.json({status:204,message:err,data:"",token:req.token});
@@ -48,14 +48,37 @@ var getTrend = function(day,req,res){
 			}
 			//time out 65 miliseconds
 			setTimeout(function () {
+				console.log(number);
 				for(var i=0;i<number.length;i++){
-					laporanHarga.findOne({laporanHarga_id:number[i]}).lean().exec(function(err,laporan){
-						komoditas.findOne({komoditas_id:laporan.komoditas_id}).exec(function(err,komo){
-							parsing.push(laporan);
-						})						
+					laporanHarga.findOne({laporanHarga_id:number[i]},function(err,laporan){					
+						parsing.push(laporan.harga);						
 					})					
 				}}, 70);
 
-			return parsing;
+			setTimeout(function (){
+				return parsing;
+				
+			},100);
 		}
+	});
+}
+
+var trendHarga = function(req,res){
+	if(req.role==1 || req.role==5 || req.role==6){
+		/*var rata_rata=[];
+		for(var i=3; i>0 ;i--){
+			var mean = getTrend(i,req);
+			rata_rata.push(mean);
+			console.log('rata-rata '+ i +'hari sebelumnya adalah: '+ rata_rata);
+		}*/
+	
+	/*setTimeout(function (){
+		console.log(rata_rata);
+	})*/
+		getTrend(0,req);
+	}
 };
+
+module.exports = {
+	trendHarga:trendHarga
+}
