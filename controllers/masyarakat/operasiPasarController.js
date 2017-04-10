@@ -37,10 +37,11 @@ var addOperasiPasar =function(req,res){
 				if(err){
 					throw err;
 				}else{
-					res.status(200);
 					res.json({
+						status:200,
 						data:newOperasi,
-						message:"sukses tambah operasi"
+						message:"sukses tambah operasi",
+						token:req.token
 					});
 				}
 			});
@@ -62,7 +63,7 @@ var allOperasiPasar = function(req,res){
 						console.log(komo);
 						operasi[key].totalPendukung = operasi[key].pendukung.length;
 						operasi[key].namaKomoditas = komo.name;
-						operasi[key].username = masyarakat.username;
+						operasi[key].nama = masyarakat.name;
 						operasi[key].time=fromNow(operasi[key].datePost);
 					})
 				});

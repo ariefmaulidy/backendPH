@@ -245,9 +245,13 @@ var dayLaporan = function(req,res){
 				//time out 65 miliseconds
 				setTimeout(function () {
 					for(var i=0;i<number.length;i++){
-						laporanHarga.findOne({laporanHarga_id:number[i]},function(err,laporan){
-							parsing.push(laporan);
-							//console.log(parsing);
+						laporanHarga.findOne({laporanHarga_id:number[i]}).lean().exec(function(err,laporan){
+							
+							komoditas.findOne({komoditas_id:laporan.komoditas_id}).exec(function(err,komo){
+								console.log('ini ' +komo.name);
+								laporan.namaKomoditas=komo.name;
+								parsing.push(laporan);
+							})						
 						})					
 					}
 				}, 70);
