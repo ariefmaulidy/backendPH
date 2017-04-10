@@ -27,10 +27,13 @@ var addOperasiPasar =function(req,res){
 	//cek role user
 	if(role==1 || role==5){				
 		//dapat alamatnya			
-		geocoder.reverseGeocode(req.body.latitude,req.body.longitude,function(err,data){
+		//geocoder.reverseGeocode(req.body.latitude,req.body.longitude,function(err,data){
 			newOperasi.user_id = req.user_id;
 			newOperasi.komoditas_id = req.body.komoditas_id;
-			newOperasi.alamat =  data.results[0].formatted_address;
+			//newOperasi.alamat =  data.results[0].formatted_address;
+			newOperasi.alamat =  req.body.alamat;
+			newOperasi.latitude= req.body.latitude;
+			newOperasi.longitude = req.body.longitude;
 			newOperasi.pesan = req.body.pesan;
 			newOperasi.datePost = Date.now();
 			newOperasi.save(function(err,komo){
@@ -45,7 +48,7 @@ var addOperasiPasar =function(req,res){
 					});
 				}
 			});
-		});
+		//});
 	}else{
 		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
 	}

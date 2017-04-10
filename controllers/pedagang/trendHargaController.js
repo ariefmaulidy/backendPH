@@ -26,7 +26,8 @@ var geocoder 			=			require('geocoder');
 
 var getTrend = function(day,req){
 	laporanHarga.find({},'-_id -__v',{sort:{datePost:-1}},function(err,all){
-		if(all==null){
+		//console.log(all);
+		/*if(all==null){
 			res.json({status:204,message:err,data:"",token:req.token});
 		}else{
 			//tanggal sekarang
@@ -48,37 +49,34 @@ var getTrend = function(day,req){
 			}
 			//time out 65 miliseconds
 			setTimeout(function () {
-				console.log(number);
+				
 				for(var i=0;i<number.length;i++){
 					laporanHarga.findOne({laporanHarga_id:number[i]},function(err,laporan){					
 						parsing.push(laporan.harga);						
 					})					
 				}}, 70);
 
-			setTimeout(function (){
-				return parsing;
+			
+				return all;
 				
-			},100);
+			
 		}
-	});
+	});*/
+		console.log(all);
+		return callback(all);
+})
 }
 
 var trendHarga = function(req,res){
 	if(req.role==1 || req.role==5 || req.role==6){
-		/*var rata_rata=[];
-		for(var i=3; i>0 ;i--){
-			var mean = getTrend(i,req);
-			rata_rata.push(mean);
-			console.log('rata-rata '+ i +'hari sebelumnya adalah: '+ rata_rata);
-		}*/
-	
-	/*setTimeout(function (){
-		console.log(rata_rata);
-	})*/
-		getTrend(0,req);
-	}
+		var rata_rata=[];	
+	console.log(trendHarga(4,req));
 };
+}
 
 module.exports = {
 	trendHarga:trendHarga
-}
+};
+	
+	
+	
