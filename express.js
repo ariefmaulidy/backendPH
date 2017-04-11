@@ -25,6 +25,7 @@ var tz 							=	require('moment-timezone');
 var now 						=	require("date-now")
 var fromNow						= 	require('from-now');
 var dateFormat 					= 	require('dateformat');
+var math 						=	require('mathjs');
 
 //geocoder
 var geocoder = require('geocoder');
@@ -51,6 +52,17 @@ app.use(function(req, res, next) {
 app.use(morgan('dev'));
 app.listen(port);
 console.log('Server start at http://localhost:' + port);
+
+app.get('/lol',function(req,res){
+	var mean = [1,4,5];
+	if(mean.length==0){
+		mean.push(0);
+	}else{
+		mean.push(math.mean(mean));
+	}
+	
+	res.send(mean);
+})
 
 // User Login Router
 app.use('/user/auth',authRouter);

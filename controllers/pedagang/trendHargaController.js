@@ -24,54 +24,58 @@ var geocoder 			=			require('geocoder');
 
 //dapat trend harga 5 hari sebelumnya
 
-var getTrend = function(day,req){
-	laporanHarga.find({},'-_id -__v',{sort:{datePost:-1}},function(err,all){
-		//console.log(all);
-		/*if(all==null){
-			res.json({status:204,message:err,data:"",token:req.token});
+var trendHarga = function(req,res){	
+	var mean = [];
+	//ambil semua laporanHarga di sorting sesuai dengan tanggal post
+	laporanHarga.find({komoditas_id:req.params.komoditas_id},'-_id -__v',{sort:{datePost:-1}},function(err,laporan){
+		//console.log(laporan);		
+		if(laporan==""){
+			res.json({status:204,message:"not found",data:"",token:req.token});
 		}else{
 			//tanggal sekarang
-			var dateNow = new Date();				
-			//tanggal sekarang di kurangi hari yang diinginkan, hari nya
-			dateNow.setDate(dateNow.getDate() - day);
-			//hari yang diinginkan dalam format, hari, tanggal, bulan, dan tahun
-			var getDate = dateFormat(dateNow, "dddd , mmmm dS , yyyy");						
-			//console.log(getDate);
-			//buat variabel parsing yang akan menerima laporanHarga_id pada hari itu
-			var parsing = [];
-			var number = [];
-			var counter = 0;
+			for (var i=0; i<5; i++){
+				
+				var dateNow = new Date();				
+				//tanggal sekarang di kurangi hari yang diinginkan, hari nya
+				dateNow.setDate(dateNow.getDate() - i);
+				//hari yang diinginkan dalam format, hari, tanggal, bulan, dan tahun
+				var getDate = dateFormat(dateNow, "dddd , mmmm dS , yyyy");						
 
-			for(var i=0;i<all.length;i++){
-				if(dateFormat(all[i].datePost, "dddd , mmmm dS , yyyy")==getDate){
-					number.push(all[i].laporanHarga_id);					
-				};
+
+				//buat variabel parsing yang akan menerima laporanHarga_id pada hari itu
+				var parsing = [];
+				var number = [];
+				var counter = 0;
+				var mean = [];
+
+				for(var j=0;j<laporan.length;j++){
+					if(dateFormat(laporan[j].datePost, "dddd , mmmm dS , yyyy")==getDate){
+						number.push(laporan[j].laporanHarga_id);			
+						parsing.push(laporan[j].harga);
+					};
+				}
+				console.log(parsing);
+				console.log(parsing.length);
+				setTimeout(function(){
+					if(parsing.length==0){
+					mean.push(0);
+				}else{
+					mean.push(math.mean(parsing));
+				}
+				},100)
+				
+				
 			}
-			//time out 65 miliseconds
-			setTimeout(function () {
-				
-				for(var i=0;i<number.length;i++){
-					laporanHarga.findOne({laporanHarga_id:number[i]},function(err,laporan){					
-						parsing.push(laporan.harga);						
-					})					
-				}}, 70);
-
 			
-				return all;
-				
-			
+			setTimeout(function(){
+				res.send(mean);
+			},150)
+							
 		}
-	});*/
-		console.log(all);
-		return callback(all);
-})
-}
-
-var trendHarga = function(req,res){
-	if(req.role==1 || req.role==5 || req.role==6){
-		var rata_rata=[];	
-	console.log(trendHarga(4,req));
-};
+		
+		
+	})
+	
 }
 
 module.exports = {
