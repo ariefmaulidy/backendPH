@@ -31,10 +31,10 @@ var check = function(role) {
 
 //add laporanHarga
 var addLaporan = function(req,res){
-	var newLaporan = new laporanHarga(req.body);	
-	//cek role user
-//	if(req.role==1 || req.role==2 || req.role==5){				
-	if(check(req.role)){				
+		
+	//cek role user		
+	if(req.role==1 || req.role==2 || req.role==5){				
+		var newLaporan = new laporanHarga(req.body);
 		//address
 		//geocoder.reverseGeocode(req.body.latitude,req.body.longitude, function ( err, data ) {
 			//dapat alamatnya
