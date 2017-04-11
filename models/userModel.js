@@ -15,6 +15,7 @@ var userModel = new Schema({
 	last_login:String,
 	picture:String,
 	address:String,
+	nomor_telepon:String,
 	//penyuluh
 	region:String,
 	komoditas_id:Number,

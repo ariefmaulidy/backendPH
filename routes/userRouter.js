@@ -1,4 +1,4 @@
-var express=require('express')
+var express=require('express');
 var userController=require('./../controllers/userController');
 var userRouter=express.Router();
 
@@ -12,9 +12,13 @@ userRouter.route('/updatePassword')
 	.post(userController.updatePassword);
 userRouter.route('/uploadPhoto')
 	.post(userController.uploadPhoto);
+userRouter.route('/logout')
+	.post(userController.logoutUser);
 	
 userRouter.route('/get')
 	.get(userController.getAllUser);
+userRouter.route('/get/role/:role')
+	.get(userController.getRoleUser);
 userRouter.route('/get/:user_id')
 	.get(userController.getOneUser);
 module.exports=userRouter; 

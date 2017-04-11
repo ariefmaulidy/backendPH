@@ -6,6 +6,18 @@ var fs=require('fs');
 var moment=require('moment');
 var codeSecret=require('./../config');
 var jwt=require('jsonwebtoken');
+var Blacklist = require('./../models/blacklistTokenModel');
+
+//Cek ROLE
+
+/*
+1 = admin
+2 = pemerintah
+3 = penyuluh
+4 = petani
+5 = masyarakat
+6 = pedagang
+*/
 
 var getAllUser = function(req,res){
 	User.find(function(err,users){
@@ -34,6 +46,38 @@ var getOneUser = function(req,res){
 	})
 }
 
+var getRoleUser = function(req,res){
+	if(req.role==1 || req.role==2)
+	{
+		User.find({role:req.params.role},'-_id -__v',function(err,user){
+			if(user!='')
+			{
+				res.json({status:200,message:"Get data success",data:user,token:req.token});
+			}
+			else
+			{
+				res.json({status:204,message:"No data provided",data:user,token:req.token});	
+			}
+		})
+	}
+	else if(req.role==3 && req.params.role==4)
+	{
+		User.find({role:req.params.role},'-_id -__v',function(err,user){
+			if(user!='')
+			{
+				res.json({status:200,message:"Get data success",data:user,token:req.token});
+			}
+			else
+			{
+				res.json({status:204,message:"No data provided",data:user,token:req.token});	
+			}
+		})
+	}
+	else if(req.role!=1 || req.role!=2 || req.role!=3)
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
+}
 var addUser = function(req,res){
 		User.findOne({username:req.body.username},function(err,usernameCheck){
 			if(usernameCheck!=null)
@@ -153,7 +197,6 @@ var updateUser = function(req,res){
 		});
 }	
 
-
 var updatePassword = function(req,res){
 	User.findOne({user_id:req.body.user_id},function (err,user){
 		generated_hash = require('crypto')
@@ -189,19 +232,20 @@ var updatePassword = function(req,res){
 
 var uploadPhoto = function(req,res)
 {
-	var ImageSaver = require('image-saver-nodejs/lib');
-	var imageSaver = new ImageSaver();
-	
+	var ImageSaver 	= require('image-saver-nodejs/lib');
+	var imageSaver 	= new ImageSaver();
+	var pictname	= 'pp_'+req.user_id+".jpg"
+
 	User.findOne({user_id:req.body.user_id},function(err,user){
 			if(user){
 				if(user.picture!=null){
-				fs.unlinkSync('../public_html/'+user.picture);
+				fs.unlinkSync('../public_html/uploads/prof_pict/'+pictname);
 				}
 				var time=moment();
-				user.picture='uploads/prof_pict/pp_'+user.username+moment(time).tz('Asia/Jakarta')+".jpg";
+				user.picture='https://yippytech.com/uploads/prof_pict/'+pictname;
 				user.save(function(err){
 					if(!err){
-						imageSaver.saveFile("../public_html/"+user.picture, req.body.picture).then((data)=>{
+						imageSaver.saveFile("../public_html/uploads/prof_pict/"+pictname, req.body.picture).then((data)=>{
     					res.json({status:200,message:'Change profile picture success',picture:user.picture,token:req.token});
 						})
 						.catch((err)=>{
@@ -221,12 +265,30 @@ var uploadPhoto = function(req,res)
 		})
 }
 
+var logoutUser = function(req,res){
+	blacklist = new Blacklist();
+	//split bearer get only token
+	blacklist.token = req.headers.authorization.split(' ')[1];
+	blacklist.save(function(err){
+		if(!err)
+		{
+			res.json({status:200,message:'Logout success'});
+		}
+		else 
+		{
+			res.json({status:400,message:err});
+		}
+	})
+}
+
 module.exports = {
 	addUser:addUser,
+	getRoleUser:getRoleUser,
 	getOneUser:getOneUser,
 	getAllUser:getAllUser,
 	deleteUser:deleteUser,
 	updateUser:updateUser,
 	updatePassword:updatePassword,
-	uploadPhoto:uploadPhoto
+	uploadPhoto:uploadPhoto,
+	logoutUser:logoutUser
 };

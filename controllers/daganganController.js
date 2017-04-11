@@ -17,10 +17,7 @@ var getDaganganKu = function(req,res){
 						//lookup user data in user model
 						User.findOne({user_id:dagangan[key].user_id}).exec(function(err,user)
 						{
-							if(dagangan[key].picture)
-							{
-								dagangan[key].picture='https://ph.yippytech.com'+'/'+dagangan[key].picture;	
-							}
+							dagangan[key].user_picture=user.picture;
 							dagangan[key].nama=user.name;
 							dagangan[key].address=user.address;
 							dagangan[key].time=fromNow(dagangan[key].datePost);
@@ -58,12 +55,9 @@ var getAll = function(req,res){
 						//lookup user data in user model
 						User.findOne({user_id:dagangan[key].user_id}).exec(function(err,user)
 						{
-							if(dagangan[key].picture)
-							{
-								dagangan[key].picture='https://ph.yippytech.com'+'/'+dagangan[key].picture;	
-							}
 							dagangan[key].nama=user.name;
 							dagangan[key].address=user.address;
+							dagangan[key].user_picture=user.picture;
 							dagangan[key].time=fromNow(dagangan[key].datePost);
 							dagangan[key].datePost=moment(dagangan[key].datePost).format("DD MMMM YYYY hh:mm a");
 						});
@@ -92,19 +86,20 @@ var getAll = function(req,res){
 var postDagangan = function(req,res){
 		dagangan = new Dagangan(req.body);
 		dagangan.user_id = req.user_id;
-		var imageSaver = new ImageSaver();
 	  	var time=moment();
+	  	dagangan.datePost 	= 	Date.parse(moment(time).tz('Asia/Jakarta'));
+		var imageSaver 		= 	new ImageSaver();
+		var pictname		=	req.user_id+"_"+req.body.komoditas_id+"_"+Date.parse(moment(time).tz('Asia/Jakarta'))+".jpg";
 	  	if(req.body.picture!=null){
-	  		dagangan.picture="uploads/foto_komoditas/"+req.user_id+"_"+req.body.komoditas_id+"_"+Date.parse(moment(time).tz('Asia/Jakarta'))+".jpg";	
-				imageSaver.saveFile("../public_html/"+dagangan.picture, req.body.picture)
+	  		dagangan.picture="https://ph.yippytech.com/uploads/foto_komoditas/"+pictname;	
+				imageSaver.saveFile("../public_html/uploads/foto_komoditas/"+dagangan.picture, req.body.picture)
 					.then((data)=>{
 						console.log("upload photo success"); 
 			    		})
 		    		.catch((err)=>{
 						res.json({status:400,message:err});
 						})
-	  	}
-	  	dagangan.datePost = Date.parse(moment(time).tz('Asia/Jakarta')); 
+	  	} 
 		dagangan.save(function(err)
 		{
 			if(!err)
@@ -135,13 +130,14 @@ var updateDagangan = function(req,res){
 				dagangan.picture			= 	dagangan.picture;
 				dagangan.stok				= 	req.body.stok;
 				dagangan.datePost 			= 	Date.parse(moment(time).tz('Asia/Jakarta')); 
+				var pictname				=	req.user_id+"_"+req.body.komoditas_id+"_"+Date.parse(moment(time).tz('Asia/Jakarta'))+".jpg";
 				if(req.body.picture!=null){
 					if(dagangan.picture!=null)
 					{
-						fs.unlinkSync('../public_html/'+dagangan.picture);
+						fs.unlinkSync('../public_html/foto_komoditas/'+dagangan.picture);
 					}	
-					dagangan.picture="uploads/foto_komoditas/"+req.user_id+"_"+req.body.komoditas_id+"_"+moment(time).tz('Asia/Jakarta')+".jpg";	
-					imageSaver.saveFile("../public_html/"+dagangan.picture, req.body.picture)
+			  		dagangan.picture="https://ph.yippytech.com/uploads/foto_komoditas/"+pictname;	
+					imageSaver.saveFile("../public_html/uploads/foto_komoditas/"+pictname,req.body.picture)
 					.then((data)=>{
 						console.log("upload photo success"); 
 			    		})

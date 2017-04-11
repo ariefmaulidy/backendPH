@@ -1,6 +1,7 @@
 var express						=	require('express');
 var app							=	express();
 var User            			=	require('./models/userModel');
+var Blacklist          			=	require('./models/blacklistTokenModel');
 var daganganRouter				=	require('./routes/daganganRouter.js');
 var userRouter					=	require('./routes/userRouter.js');
 var authRouter					=	require('./routes/auth.js');
@@ -74,51 +75,59 @@ app.get('/gg',function(req,res){
 	console.log(time + " milliseconds.");
 	
 })
-
 // --- JWT Validaltion ---
 app.use(function(req,res,next){
 	if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer')
 	{	
-		var token = req.headers.authorization.split(' ')[1];
-		jwt.verify(token, config.secret, function(err, decoded)
-		{
-			    if (err)
-			    {
-	    			return res.json({ success: false, message: 'Failed to authenticate token.' });
-		  		}
-		  		else
-		  		{
-		  			// for website login
-		  			if(decoded.login_type==0)
-		  			{
-		  				req.user_id=decoded.user_id;
-			  			req.role = decoded.role;
-	      	  			req.token=jwt.sign({
+		Blacklist.findOne({token:req.headers.authorization.split(' ')[1]},function(err,blacklist){
+			if(blacklist!=null)
+			{
+	    		return res.json({ status:403,success: false, message: 'Token is already expired'});
+			}
+			else
+			{
+				var token = req.headers.authorization.split(' ')[1];
+				jwt.verify(token, config.secret, function(err, decoded)
+				{
+					    if (err)
+					    {
+			    			return res.json({ success: false, message: 'Failed to authenticate token.' });
+				  		}
+				  		else
+				  		{
+				  			// for website login
+				  			if(decoded.login_type==0)
+				  			{
+				  				req.user_id=decoded.user_id;
+					  			req.role = decoded.role;
+			      	  			req.token=jwt.sign({
 
-	      	  									user_id:decoded.user_id,
-	                                            username:decoded.username,
-	                                            time:decoded.last_login,
-	                                            role:decoded.role,
+			      	  									user_id:decoded.user_id,
+			                                            username:decoded.username,
+			                                            time:decoded.last_login,
+			                                            role:decoded.role,
 
-	      	  									
+			      	  									
 
-	                                            login_type:decoded.login_type
-	                                        }
-	                                        ,config.secret, {
-						                    expiresIn : 60*60// expires in 24 hours
-						                    });
-			  			next();
-		  			}
-		  			//for mobile login
-		  			else if(decoded.login_type==1)
-		  			{
-		  				
-		  				req.user_id=decoded.user_id;
-		  				req.token='-';
-					    req.role = decoded.role;
-	    	  			next();
-		  			}
-		  		}
+			                                            login_type:decoded.login_type
+			                                        }
+			                                        ,config.secret, {
+								                    expiresIn : 60*60// expires in 24 hours
+								                    });
+					  			next();
+				  			}
+				  			//for mobile login
+				  			else if(decoded.login_type==1)
+				  			{
+				  				
+				  				req.user_id=decoded.user_id;
+				  				req.token='-';
+							    req.role = decoded.role;
+			    	  			next();
+				  			}
+				  		}
+				})
+			}
 		})
 	}
 	else
