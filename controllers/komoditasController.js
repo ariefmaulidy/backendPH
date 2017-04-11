@@ -43,7 +43,7 @@ var addKomoditas = function(req,res){
 
 //ambil semua komoditas apapun itu
 var allKomoditas = function(req,res){
-	komoditas.find(function(err,semuaKomoditas){
+	komoditas.find({},'-_id -__v',{sort:{name:1}},function(err,semuaKomoditas){
 		if(err){
 			res.json({status:402,message:"request time out",data:"",token:req.token});
 		}else{

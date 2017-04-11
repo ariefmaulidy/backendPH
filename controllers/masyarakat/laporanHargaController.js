@@ -36,14 +36,17 @@ var addLaporan = function(req,res){
 //	if(req.role==1 || req.role==2 || req.role==5){				
 	if(check(req.role)){				
 		//address
-		geocoder.reverseGeocode(req.body.latitude,req.body.longitude, function ( err, data ) {
+		//geocoder.reverseGeocode(req.body.latitude,req.body.longitude, function ( err, data ) {
 			//dapat alamatnya
 			newLaporan.komoditas_id = req.body.komoditas_id;
 			newLaporan.user_id = req.user_id;
 			newLaporan.harga = req.body.harga;
+			newLaporan.alamat =  req.body.alamat;
+			newLaporan.latitude= req.body.latitude;
+			newLaporan.longitude = req.body.longitude;
 			//create date add laporanHarga
 			newLaporan.datePost = Date.now();			
-			newLaporan.alamat = data.results[0].formatted_address;
+			//newLaporan.alamat = data.results[0].formatted_address;
 			newLaporan.save(function(err){
 				if(err){
 					res.json({status:402,message:err,data:"",token:req.token});
@@ -57,7 +60,7 @@ var addLaporan = function(req,res){
 					});
 				}
 			})
-		}, { sensor: true });
+		//}, { sensor: true });
 	}else{
 		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
 	}
@@ -127,6 +130,7 @@ var laporanHargaKu = function(req,res){
 				each(laporanku,function(value,key,array){	
 					komoditas.findOne({komoditas_id:laporanku[key].komoditas_id},function(err,komo){			
 						laporanku[key].namaKomoditas = komo.name;
+						laporanku[key].satuan = komo.satuan;
 					})
 				});	
 				setTimeout(function () {
