@@ -49,6 +49,7 @@ var allKomoditas = function(req,res){
 		}else{
 			each(semuaKomoditas,function(value,key,array){
 				semuaKomoditas[key].datePost=moment(semuaKomoditas[key].datePost).format("DD MMMM YYYY hh:mm a");
+				semuaKomoditas[key].last_update=moment(semuaKomoditas[key].last_update).format("DD MMMM YYYY hh:mm a");
 			})
 			setTimeout(function(){
 				res.json({
