@@ -43,16 +43,21 @@ var addKomoditas = function(req,res){
 
 //ambil semua komoditas apapun itu
 var allKomoditas = function(req,res){
-	komoditas.find({},'-_id -__v',{sort:{name:1}},function(err,semuaKomoditas){
+	komoditas.find({},'-_id -__v',{sort:{name:1}}).lean().exec(function(err,semuaKomoditas){
 		if(err){
 			res.json({status:402,message:"request time out",data:"",token:req.token});
 		}else{
-			res.json({
-				status:200,
-				message:"sukses ambil semua komoditas",
-				data:semuaKomoditas,						
-				token:req.token
-			});
+			each(semuaKomoditas,function(value,key,array){
+				semuaKomoditas[key].datePost=moment(semuaKomoditas[key].datePost).format("DD MMMM YYYY hh:mm a");
+			})
+			setTimeout(function(){
+				res.json({
+					status:200,
+					message:"sukses ambil semua komoditas",
+					data:semuaKomoditas,						
+					token:req.token
+				});
+			},100)			
 		}
 	})
 };

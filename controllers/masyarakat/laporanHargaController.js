@@ -250,7 +250,7 @@ var dayLaporan = function(req,res){
 						})						
 					})					
 				}
-			}, 70);
+			}, 300);
 			//time out 90 mili seconds, atau 25 second setelah
 			setTimeout(function () {
 				//kembalian dalam bentuk json
@@ -260,7 +260,7 @@ var dayLaporan = function(req,res){
 					data:parsing,						
 					token:req.token
 				});
-			}, 100);
+			}, 400);
 		}
 	})
 }

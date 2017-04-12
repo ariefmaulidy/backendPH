@@ -11,6 +11,20 @@ var ImageSaver 	=	require('image-saver-nodejs/lib');
 // get all dagangans from this user_id
 var getDaganganKu = function(req,res){
 
+	Dagangan.find({user_id:req.params.dagangan_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,dagangan){
+	if(dagangan!='')
+			{ var counter = 0;
+					each(dagangan,function(value,key,array){
+						//lookup user data in user model
+						User.findOne({user_id:dagangan[key].user_id}).exec(function(err,user)
+						{
+							dagangan[key].user_picture=user.picture;
+							dagangan[key].nama=user.name;
+							dagangan[key].address=user.address;
+							dagangan[key].time=fromNow(dagangan[key].datePost);
+							dagangan[key].datePost=moment(dagangan[key].datePost).format("DD MMMM YYYY hh:mm a");
+
+
 	// find dagangan model and using lean() for adding new field in this model 
 	Dagangan.find({user_id:req.params.user_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,dagangan)
 	{
