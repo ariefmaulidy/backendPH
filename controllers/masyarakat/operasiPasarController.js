@@ -66,6 +66,7 @@ var allOperasiPasar = function(req,res){
 						operasi[key].namaKomoditas = komo.name;
 						operasi[key].satuan = komo.satuan;
 						operasi[key].nama = masyarakat.name;
+						operasi[key].datePost =moment(operasi[key].datePost).format("DD MMMM YYYY hh:mm a");						
 						operasi[key].time=fromNow(operasi[key].datePost);
 						operasi[key].status_voted = false;
 						

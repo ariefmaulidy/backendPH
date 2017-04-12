@@ -1,7 +1,5 @@
 var User=require('./../models/userModel');
 var cryp = require('crypto');
-var multer = require('multer');
-var upload = multer({ dest: 'public/uploads/'})
 var fs=require('fs');
 var moment=require('moment');
 var codeSecret=require('./../config');
@@ -19,8 +17,9 @@ var Blacklist = require('./../models/blacklistTokenModel');
 6 = pedagang
 */
 
+// get all user data
 var getAllUser = function(req,res){
-	User.find(function(err,users){
+	User.find({},'-_id -__v',function(err,users){
 		if(users=='')
 		{
 			res.json({status:204,message:'No data provided',token:req.token});
@@ -33,7 +32,7 @@ var getAllUser = function(req,res){
 	})
 }
 var getOneUser = function(req,res){
-	User.findOne({user_id:req.params.user_id},function(err,users){
+	User.findOne({user_id:req.params.user_id},'-_id -__v',function(err,users){
 		if(users==null)
 		{
 			res.json({status:204,message:'No data provided',token:req.token});
@@ -158,7 +157,7 @@ var addUser = function(req,res){
 
 var deleteUser = function(req,res){
 	
-	User.findOne({'user_id':req.body.user_id},function(err, user){
+	User.findOne({'user_id':req.user_id},function(err, user){
 		if(user)
 		{
 			res.status(204);
@@ -198,7 +197,7 @@ var updateUser = function(req,res){
 }	
 
 var updatePassword = function(req,res){
-	User.findOne({user_id:req.body.user_id},function (err,user){
+	User.findOne({user_id:req.user_id},function (err,user){
 		generated_hash = require('crypto')
 			.createHash('md5')
 			.update(req.body.old_password+'portalharga', 'utf8')
@@ -236,13 +235,12 @@ var uploadPhoto = function(req,res)
 	var imageSaver 	= new ImageSaver();
 	var pictname	= 'pp_'+req.user_id+".jpg"
 
-	User.findOne({user_id:req.body.user_id},function(err,user){
+	User.findOne({user_id:req.user_id},function(err,user){
 			if(user){
 				if(user.picture!=null){
 				fs.unlinkSync('../public_html/uploads/prof_pict/'+pictname);
 				}
-				var time=moment();
-				user.picture='https://yippytech.com/uploads/prof_pict/'+pictname;
+				user.picture='https://ph.yippytech.com/uploads/prof_pict/'+pictname;
 				user.save(function(err){
 					if(!err){
 						imageSaver.saveFile("../public_html/uploads/prof_pict/"+pictname, req.body.picture).then((data)=>{

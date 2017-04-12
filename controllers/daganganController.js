@@ -7,9 +7,10 @@ var fs 			=	require('fs');
 var fromNow 	= 	require('from-now');
 var tz 			=	require('moment-timezone');
 var ImageSaver 	=	require('image-saver-nodejs/lib');
-var os = require("os");
 
+// get all dagangans from this user_id
 var getDaganganKu = function(req,res){
+
 	Dagangan.find({user_id:req.params.dagangan_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,dagangan){
 	if(dagangan!='')
 			{ var counter = 0;
@@ -23,29 +24,47 @@ var getDaganganKu = function(req,res){
 							dagangan[key].time=fromNow(dagangan[key].datePost);
 							dagangan[key].datePost=moment(dagangan[key].datePost).format("DD MMMM YYYY hh:mm a");
 
-						});
-						//lookup komoditas data in komoditas model
-						Komoditas.findOne({komoditas_id:dagangan[key].komoditas_id}).exec(function(err,komoditas)
-						{
-							if(komoditas!=null)
-							{
-								dagangan[key].nama_komoditas=komoditas.name;
-								dagangan[key].satuan_komoditas=komoditas.satuan;
-								counter++;		
-							}
-						});
-					})
-					// send response after 100 ms
-					setTimeout(function()
+
+	// find dagangan model and using lean() for adding new field in this model 
+	Dagangan.find({user_id:req.params.user_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,dagangan)
+	{
+		if(dagangan!='')
+		{ 
+			each(dagangan,function(value,key,array){
+				//lookup user data in user model
+				User.findOne({user_id:dagangan[key].user_id}).exec(function(err,user)
+				{
+					dagangan[key].user_picture=user.picture;
+					dagangan[key].nama=user.name;
+					dagangan[key].address=user.address;
+					dagangan[key].user_nomor_telepon=user.nomor_telepon;	
+					dagangan[key].time=fromNow(dagangan[key].datePost);
+					dagangan[key].datePost=moment(dagangan[key].datePost).format("DD MMMM YYYY hh:mm a");;
+
+				});
+				//lookup komoditas data in komoditas model
+				Komoditas.findOne({komoditas_id:dagangan[key].komoditas_id}).exec(function(err,komoditas)
+				{
+					if(komoditas!=null)
 					{
-						res.json({status:200,message:'Get data success',data:dagangan,token:req.token});		
-					},100);		
-			}
-			else
+						dagangan[key].nama_komoditas=komoditas.name;
+						dagangan[key].satuan_komoditas=komoditas.satuan;
+						counter++;		
+					}
+				});
+			})
+			// send response after 100 ms
+			setTimeout(function()
 			{
-				res.json({status:204,message:"No data provided",token:req.token});
-			}
-		})
+				res.json({status:200,message:'Get data success',data:dagangan,token:req.token});		
+			},100);		
+		}
+		//if there is no data in this model
+		else
+		{
+			res.json({status:204,message:"No data provided",token:req.token});
+		}
+	})
 }
 var getAll = function(req,res){
 	Dagangan.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,dagangan){
@@ -58,6 +77,7 @@ var getAll = function(req,res){
 							dagangan[key].nama=user.name;
 							dagangan[key].address=user.address;
 							dagangan[key].user_picture=user.picture;
+							dagangan[key].user_nomor_telepon=user.nomor_telepon;	
 							dagangan[key].time=fromNow(dagangan[key].datePost);
 							dagangan[key].datePost=moment(dagangan[key].datePost).format("DD MMMM YYYY hh:mm a");
 						});
@@ -92,7 +112,7 @@ var postDagangan = function(req,res){
 		var pictname		=	req.user_id+"_"+req.body.komoditas_id+"_"+Date.parse(moment(time).tz('Asia/Jakarta'))+".jpg";
 	  	if(req.body.picture!=null){
 	  		dagangan.picture="https://ph.yippytech.com/uploads/foto_komoditas/"+pictname;	
-				imageSaver.saveFile("../public_html/uploads/foto_komoditas/"+dagangan.picture, req.body.picture)
+				imageSaver.saveFile("../public_html/uploads/foto_komoditas/"+pictname, req.body.picture)
 					.then((data)=>{
 						console.log("upload photo success"); 
 			    		})
