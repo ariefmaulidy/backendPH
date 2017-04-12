@@ -34,8 +34,7 @@ var getDaganganKu = function(req,res){
 					if(komoditas!=null)
 					{
 						dagangan[key].nama_komoditas=komoditas.name;
-						dagangan[key].satuan_komoditas=komoditas.satuan;
-						counter++;		
+						dagangan[key].satuan_komoditas=komoditas.satuan;	
 					}
 				});
 			})
