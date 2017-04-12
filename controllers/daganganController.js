@@ -21,7 +21,7 @@ var getDaganganKu = function(req,res){
 							dagangan[key].nama=user.name;
 							dagangan[key].address=user.address;
 							dagangan[key].time=fromNow(dagangan[key].datePost);
-							dagangan[key].datePost=moment(dagangan[key].datePost).format("DD MMMM YYYY hh:mm a");;
+							dagangan[key].datePost=moment(dagangan[key].datePost).format("DD MMMM YYYY hh:mm a");
 
 						});
 						//lookup komoditas data in komoditas model

@@ -24,7 +24,7 @@ var geocoder 			=			require('geocoder');
 
 //dapat trend harga 5 hari sebelumnya
 
-var trendHarga = function(req,res){	
+/*var trendHarga = function(req,res){	
 	var mean = [];
 	//ambil semua laporanHarga di sorting sesuai dengan tanggal post
 	laporanHarga.find({komoditas_id:req.params.komoditas_id},'-_id -__v',{sort:{datePost:-1}},function(err,laporan){
@@ -64,6 +64,7 @@ var trendHarga = function(req,res){
 				}
 				},100)
 				
+				return "wkwk";
 				
 			}
 			
@@ -77,10 +78,30 @@ var trendHarga = function(req,res){
 	})
 	
 }
+*/
+
+var getData = function(req,res){
+	//query mongo DB get data
+	var parsing=null;
+	laporanHarga.find({komoditas_id:1},function(err,laporan){
+		//to do somethng
+		parsing = laporan;
+		
+	})
+	
+	setTimeout(function(){
+		return parsing;
+	},100)
+	
+}
+
+var trendHarga = function(req,res){
+	var haha=getData();
+	setTimeout(function(){
+		console.log(haha);
+	},200)
+}
 
 module.exports = {
 	trendHarga:trendHarga
 };
-	
-	
-	
