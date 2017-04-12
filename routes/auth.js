@@ -35,13 +35,15 @@ authRoutes.post('', function(req, res) {
               {
                   var dt = new Date();
                   var utcDate = dt.toGMTString();
+                  user.password = generated_hash;
                   user.last_login=utcDate;
                   user.save(function(err)
                   {
                     // for website
                     if(req.body.login_type==0)
                     {
-                      var token = jwt.sign({
+                      var token = jwt.sign({  
+                                              user_data:user,
                                               user_id:user.user_id,
                                               username:user.username,
                                               time:user.last_login,
