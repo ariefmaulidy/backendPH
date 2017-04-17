@@ -12,7 +12,7 @@ var ImageSaver 	=	require('image-saver-nodejs/lib');
 var getDaganganKu = function(req,res){
 
 	// find dagangan model and using lean() for adding new field in this model 
-	Dagangan.find({user_id:req.params.id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,dagangan)
+	Dagangan.find({user_id:req.params.user_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,dagangan)
 	{
 		if(dagangan!=null)
 		{ 
@@ -139,7 +139,8 @@ var updateDagangan = function(req,res){
 				if(req.body.picture!=null){
 					if(dagangan.picture!=null)
 					{
-						fs.unlinkSync('../public_html/foto_komoditas/'+dagangan.picture);
+						var del_pict=dagangan.picture.split('https://ph.yippytech.com/uploads/foto_komoditas/')[1];
+						fs.unlinkSync('../public_html/foto_komoditas/'+del_pict);
 					}	
 			  		dagangan.picture="https://ph.yippytech.com/uploads/foto_komoditas/"+pictname;	
 					imageSaver.saveFile("../public_html/uploads/foto_komoditas/"+pictname,req.body.picture)
@@ -185,7 +186,8 @@ var delDagangan = function(req,res){
 			{
 				if(dagangan.picture!=null && dagangan.user_id==req.user_id)
 				{
-					fs.unlinkSync('../public_html/'+dagangan.picture);
+					var del_pict=dagangan.picture.split('https://ph.yippytech.com/uploads/foto_komoditas/')[1];
+					fs.unlinkSync('../public_html/foto_komoditas/'+del_pict);
 				}
 				dagangan.remove(function(err){
 					if(!err)

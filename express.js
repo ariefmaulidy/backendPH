@@ -1,5 +1,6 @@
 var express						=	require('express');
 var app							=	express();
+var https 						= 	require('https');
 var User            			=	require('./models/userModel');
 var Blacklist          			=	require('./models/blacklistTokenModel');
 var daganganRouter				=	require('./routes/daganganRouter.js');
@@ -30,27 +31,33 @@ var dateFormat 					= 	require('dateformat');
 var geocoder = require('geocoder');
 var NodeGeocoder = require('node-geocoder');
 
-
 var port = process.env.PORT || 5000; // used to create, sign, and verify tokens
-var secureRoutes 	=	express.Router();
 
 mongoose.connect(config.connect);
 
-
+// setup allowed headers for web services 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+
+// bypass option method 
   if('OPTIONS'==req.method) {
 	  res.send(200);
   }else{
 	  next();
   }
 });
+
 app.use(morgan('dev'));
-app.listen(port);
-console.log('Server start at http://localhost:' + port);
+// setup keys and certificate, create https server. request example: https://ph.yippytech.com:5000/API.....
+var options = {
+  key: fs.readFileSync('keys/agent-key.pem'),
+  cert: fs.readFileSync('keys/agent-cert.cert')
+};
+https.createServer(options, app).listen(port);
+console.log('Server start at https://ph.yippytech.com:' + port);
 
 // User Login Router
 app.use('/user/auth',authRouter);
@@ -60,21 +67,6 @@ app.use('/user/add',registerRouter);
 
 //forget password all user
 app.use('/user/forgetPassword',forgetPasswordRouter);
-
-//30 ribu data = 16 miliseconds
-app.get('/gg',function(req,res){
-	var start = new Date();
-	var banding = 30000;
-	var simpan = [];
-	for (var i=0;i<100000000;i++){
-		if(i<banding){
-			simpan.push(i);
-		}
-	}
-	var time = new Date() - start;
-	console.log(time + " milliseconds.");
-	
-})
 
 // --- JWT Validaltion ---
 app.use(function(req,res,next){
