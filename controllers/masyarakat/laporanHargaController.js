@@ -70,9 +70,13 @@ var allLaporan = function(req,res){
 			res.json({status:204,message:"laporan tidak ditemukan",data:"",token:req.token});
 		}else{
 			each(semuaLaporan,function(value,key,array){	
-				komoditas.findOne({komoditas_id:semuaLaporan[key].komoditas_id},function(err,komo){			
-					semuaLaporan[key].namaKomoditas = komo.name;
-					semuaLaporan[key].satuan = komo.satuan
+				komoditas.findOne({komoditas_id:semuaLaporan[key].komoditas_id},function(err,komo){
+					user.findOne({user_id:semuaLaporan[key].user_id},function(err,masyarakat){
+						semuaLaporan[key].namaKomoditas = komo.name;
+						semuaLaporan[key].satuan = komo.satuan;
+						semuaLaporan[key].nama = masyarakat.name;
+						semuaLaporan[key].datePost = moment(semuaLaporan[key].datePost).format("DD MMMM YYYY hh:mm a");						
+					})
 				})
 			});	
 			setTimeout(function () {
@@ -97,8 +101,12 @@ var oneLaporan = function(req,res){
 			res.json({status:204,message:"laporan tidak ditemukan",data:"",token:req.token});
 		}else{
 			komoditas.findOne({komoditas_id:satulaporan.komoditas_id},function(err,komo){
-				satulaporan.namaKomoditas = komo.name;
-				satulaporan.satuan = komo.satuan;
+				user.findOne({user_id:satulaporan.user_id},function(err,masyarakat){
+					satulaporan.namaKomoditas = komo.name;
+					satulaporan.satuan = komo.satuan;
+					satulaporan.nama = masyarakat.name;
+					satulaporan.datePost = moment(satulaporan.datePost).format("DD MMMM YYYY hh:mm a");						
+				})				
 			})
 			setTimeout(function () {
 				//kembalian dalam bentuk json
@@ -125,6 +133,7 @@ var laporanHargaKu = function(req,res){
 					komoditas.findOne({komoditas_id:laporanku[key].komoditas_id},function(err,komo){			
 						laporanku[key].namaKomoditas = komo.name;
 						laporanku[key].satuan = komo.satuan;
+						laporanku[key].datePost = moment(laporanku[key].datePost).format("DD MMMM YYYY hh:mm a");						
 					})
 				});	
 				setTimeout(function () {
@@ -235,9 +244,7 @@ var dayLaporan = function(req,res){
 			setTimeout(function () {
 				for(var i=0;i<number.length;i++){
 					laporanHarga.findOne({laporanHarga_id:number[i]}).lean().exec(function(err,laporan){
-
 						komoditas.findOne({komoditas_id:laporan.komoditas_id}).exec(function(err,komo){
-							console.log('ini ' +komo.name);
 							laporan.namaKomoditas=komo.name;
 							laporan.satuan = komo.satuan
 							parsing.push(laporan);

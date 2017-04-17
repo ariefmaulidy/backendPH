@@ -68,7 +68,7 @@ var allOperasiPasar = function(req,res){
 						//console.log(komo.name);
 						operasi[key].satuan = komo.satuan;
 						operasi[key].nama = masyarakat.name;
-						operasi[key].datePost =moment(operasi[key].datePost).format("DD MMMM YYYY hh:mm a");						
+						operasi[key].datePost =moment(operasi[key].datePost).format("DD MMMM YYYY hh:mm a");
 						operasi[key].time=fromNow(operasi[key].datePost);
 						operasi[key].status_voted = false;
 						
@@ -98,15 +98,18 @@ var allOperasiPasar = function(req,res){
 //get satu aja
 var oneOperasiPasar = function(req,res){
 	if(req.role==1 || req.role==5){
-		operasiPasar.findOne({operasiPasar_id:req.params.operasiPasar_id},'-_id -__v',{sort:{datePost:-1}},function(err,oneLaporan){
-			if(oneLaporan==null){
+		operasiPasar.findOne({operasiPasar_id:req.params.operasiPasar_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,oneOperasi){
+			oneOperasi.datePost = moment(oneOperasi.datePost).format("DD MMMM YYYY hh:mm a");
+			console.log(oneOperasi.datePost);
+			if(oneOperasi==null){
 				res.json({status:204,message:"operasi pasar tidak ditemukan",data:"",token:""});
 			}else{
 				//kembalian dalam bentuk json
+				
 				res.json({
 					status:200,
-					message:"sukses mendapat satu semua pasar",
-					data:oneLaporan,						
+					message:"sukses mendapat satu operasi pasar",
+					data:oneOperasi,						
 					token:req.token
 				});
 			}
@@ -134,6 +137,7 @@ var operasiPasarKu = function(req,res){
 							operasi[key].totalPendukung = operasi[key].pendukung.length;
 							operasi[key].namaKomoditas = komo.name;
 							operasi[key].nama = masyarakat.name;
+							operasi[key].datePost = moment(operasi[key].datePost).format("DD MMMM YYYY hh:mm a");
 							operasi[key].time=fromNow(operasi[key].datePost);
 					})
 				});
