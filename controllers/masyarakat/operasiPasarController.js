@@ -56,6 +56,7 @@ var addOperasiPasar =function(req,res){
 
 var allOperasiPasar = function(req,res){
 	operasiPasar.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,operasi){
+		
 		if(operasi==null){
 			res.json({status:204,message:"operasi pasar tidak ditemukan",data:"",token:""});
 		}else{
@@ -64,6 +65,7 @@ var allOperasiPasar = function(req,res){
 					komoditas.findOne({komoditas_id:operasi[key].komoditas_id},function(err,komo){
 						operasi[key].totalPendukung = operasi[key].pendukung.length;
 						operasi[key].namaKomoditas = komo.name;
+						//console.log(komo.name);
 						operasi[key].satuan = komo.satuan;
 						operasi[key].nama = masyarakat.name;
 						operasi[key].datePost =moment(operasi[key].datePost).format("DD MMMM YYYY hh:mm a");						

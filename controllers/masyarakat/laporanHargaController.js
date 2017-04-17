@@ -31,13 +31,9 @@ var check = function(role) {
 
 //add laporanHarga
 var addLaporan = function(req,res){
-		
 	//cek role user		
 	if(req.role==1 || req.role==2 || req.role==5){				
 		var newLaporan = new laporanHarga(req.body);
-		//address
-		//geocoder.reverseGeocode(req.body.latitude,req.body.longitude, function ( err, data ) {
-			//dapat alamatnya
 			newLaporan.komoditas_id = req.body.komoditas_id;
 			newLaporan.user_id = req.user_id;
 			newLaporan.harga = req.body.harga;
@@ -46,7 +42,6 @@ var addLaporan = function(req,res){
 			newLaporan.longitude = req.body.longitude;
 			//create date add laporanHarga
 			newLaporan.datePost = Date.now();			
-			//newLaporan.alamat = data.results[0].formatted_address;
 			newLaporan.save(function(err){
 				if(err){
 					res.json({status:402,message:err,data:"",token:req.token});
@@ -60,7 +55,6 @@ var addLaporan = function(req,res){
 					});
 				}
 			})
-		//}, { sensor: true });
 	}else{
 		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
 	}
