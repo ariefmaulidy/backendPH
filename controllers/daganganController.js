@@ -140,7 +140,7 @@ var updateDagangan = function(req,res){
 					if(dagangan.picture!=null)
 					{
 						var del_pict=dagangan.picture.split('https://ph.yippytech.com/uploads/foto_komoditas/')[1];
-						fs.unlinkSync('../public_html/foto_komoditas/'+del_pict);
+						fs.unlinkSync('../public_html/uploads/foto_komoditas/'+del_pict);
 					}	
 			  		dagangan.picture="https://ph.yippytech.com/uploads/foto_komoditas/"+pictname;	
 					imageSaver.saveFile("../public_html/uploads/foto_komoditas/"+pictname,req.body.picture)
@@ -187,7 +187,7 @@ var delDagangan = function(req,res){
 				if(dagangan.picture!=null && dagangan.user_id==req.user_id)
 				{
 					var del_pict=dagangan.picture.split('https://ph.yippytech.com/uploads/foto_komoditas/')[1];
-					fs.unlinkSync('../public_html/foto_komoditas/'+del_pict);
+					fs.unlinkSync('../public_html/uploads/foto_komoditas/'+del_pict);
 				}
 				dagangan.remove(function(err){
 					if(!err)
