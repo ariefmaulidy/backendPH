@@ -1,36 +1,51 @@
 var User 		=	require('./../models/userModel');
 var Materi 		= require('./../models/materiModel');
-var ImageSaver 	= require('image-saver-nodejs/lib');
 var moment 		= require('moment');
 var time		= moment();
 
+var multer = require('multer');
+var storage = multer.diskStorage({ //multers disk storage settings
+    destination: function (req, file, cb) {
+        cb(null, '../public_html/uploads/materi');
+    },
+    filename: function (req, file, cb) {
+        var datetimestamp = Date.now();
+        cb(null, file.originalname.split('.')[0] + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1]);
+    }
+});
+var upload = multer({ //multer settings
+                    storage: storage
+                }).single('file');
+	 
 var uploadMateri = function(req,res){
-	materi = new Materi(req.body);
-	materi.user_id 	= req.user_id;	  	
-	materi.datePost = Date.parse(moment(time).tz('Asia/Jakarta'));
-	var materiSaver = new ImageSaver();
-	var materiName	= req.user_id+"_"+req.body.judul+"_"+materi.datePost+".pdf";
-	  	if(req.body.file!=null){
-	  		materi.file="https://ph.yippytech.com/uploads/materi/"+materiName;	
-				materiSaver.saveFile("../public_html/uploads/materi/"+materiName, req.body.file)
-					.then((data)=>{
-						console.log("upload file success"); 
-			    		})
-		    		.catch((err)=>{
-						res.json({status:400,message:err});
-						})
-	  	} 
-		materi.save(function(err)
-		{
-			if(!err)
+	upload(req,res,function(err){
+        console.log(req.file);
+        if(err)
+        {
+             res.json({error_code:1,err_desc:err});
+             return;
+        }
+        else
+        {        
+	        materi = new Materi(req.body);
+			materi.user_id 	= req.user_id;	  	
+			materi.datePost = Date.parse(moment(time).tz('Asia/Jakarta'));
+		 	materi.file="https://ph.yippytech.com/uploads/materi/"+req.file.filename;	
+			materi.save(function(err)
 			{
-				res.json({status:200,success:true,message:'Input Success',data:materi,token:req.token});
-			}
-			else
-			{
-				res.json({status:400,success:false,message:'Input Failed',token:req.token});
-			}
-		});
+				if(!err)
+				{
+					res.json({status:200,success:true,message:'Input Success',data:materi,token:req.token});
+				}
+				else
+				{
+					res.json({status:400,success:false,message:'Input Failed',token:req.token});
+				}
+			});	
+        }
+    });
+	
+	
 }
 
 module.exports={

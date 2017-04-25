@@ -4,7 +4,7 @@ var materiRouter=express.Router();
 
 // upload photo
 
-materiRouter.route('/upload')
+materiRouter.route('/add')
 	.post(materiController.uploadMateri);
 
 module.exports=materiRouter; 
