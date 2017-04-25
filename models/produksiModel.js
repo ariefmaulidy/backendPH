@@ -13,6 +13,8 @@ var produksiModel = new Schema({
 	latitude:String,
 	alamat:String,
 	datePost:Number,
+	luas_lahan:Number,
+	date_tanam:Number,
 	date_panen:Number,
 	jumlah:Number,
 	keterangan:String

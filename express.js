@@ -4,6 +4,7 @@ var https 						= 	require('https');
 var User            			=	require('./models/userModel');
 var Blacklist          			=	require('./models/blacklistTokenModel');
 var daganganRouter				=	require('./routes/daganganRouter.js');
+var materiRouter				=	require('./routes/materiRouter.js');
 var userRouter					=	require('./routes/userRouter.js');
 var authRouter					=	require('./routes/auth.js');
 var registerRouter				=	require('./routes/registerRouter.js');
@@ -105,7 +106,7 @@ app.use(function(req,res,next){
 			                                            login_type:decoded.login_type
 			                                        }
 			                                        ,config.secret, {
-								                    expiresIn : 60*60// expires in 24 hours
+								                    expiresIn : 60*20// expires in 20 mins
 								                    });
 					  			next();
 				  			}
@@ -132,6 +133,7 @@ app.use(function(req,res,next){
 
 app.use('/user',userRouter);
 app.use('/produksi',produksiRouter);
+//app.use('/materi',materiRouter);
 app.use('/dagangan',daganganRouter);
 app.use('/aspirasi',aspirasiRouter);
 

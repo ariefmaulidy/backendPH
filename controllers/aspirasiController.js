@@ -295,7 +295,6 @@ var dukung_aspirasi = function(req,res)
 							if(status_voted==false)
 							{	
 								aspirasi.pendukung.push({user_id:req.user_id});
-								console.log(aspirasi);
 									aspirasi.save(function(err)
 									{
 									if(!err){
