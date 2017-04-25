@@ -14,6 +14,7 @@ var laporanHargaRouter 			= 	require('./routes/laporanHargaRouter');
 var forgetPasswordRouter		= 	require('./routes/forgetPasswordRouter');
 var operasiPasarRouter			= 	require('./routes/operasiPasarRouter');
 var trendHargaRouter			= 	require('./routes/trendHargaRouter');
+var locationRouter  			= 	require('./routes/lokasiRouter');
 var multer	 					= 	require('multer');
 var mongoose					=	require('mongoose');
 var bodyParser					=	require('body-parser');
@@ -27,9 +28,6 @@ var now 						=	require("date-now")
 var fromNow						= 	require('from-now');
 var dateFormat 					= 	require('dateformat');
 
-//geocoder
-var geocoder = require('geocoder');
-var NodeGeocoder = require('node-geocoder');
 
 var port = process.env.PORT || 5000; // used to create, sign, and verify tokens
 
@@ -57,6 +55,7 @@ var options = {
   cert: fs.readFileSync('keys/agent-cert.cert')
 };
 https.createServer(options, app).listen(port);
+//app.listen(port);
 console.log('Server start at https://ph.yippytech.com:' + port);
 
 // User Login Router
@@ -150,3 +149,6 @@ app.use('/komoditas',komoditasRouter);
 app.use('/laporanHarga',laporanHargaRouter);
 app.use('/operasiPasar',operasiPasarRouter);
 app.use('/trendHarga',trendHargaRouter);
+//lokasi
+//location
+app.use('/lokasi',locationRouter);
