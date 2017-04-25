@@ -133,7 +133,7 @@ app.use(function(req,res,next){
 
 app.use('/user',userRouter);
 app.use('/produksi',produksiRouter);
-//app.use('/materi',materiRouter);
+app.use('/materi',materiRouter);
 app.use('/dagangan',daganganRouter);
 app.use('/aspirasi',aspirasiRouter);
 
