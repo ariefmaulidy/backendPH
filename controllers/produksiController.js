@@ -21,8 +21,9 @@ var getProduksi = function(req,res){
 							produksi[key].time=fromNow(produksi[key].datePost);
 							produksi[key].datePost=moment(produksi[key].datePost).format("DD MMMM YYYY hh:mm a");
 							produksi[key].date_panen=moment(produksi[key].date_panen).format("DD MMMM YYYY");
+							produksi[key].date_tanam=moment(produksi[key].date_tanam).format("DD MMMM YYYY");
 							});
-
+							
 							Komoditas.findOne({komoditas_id:produksi[key].komoditas_id}).exec(function(err,komoditas)
 							{
 								produksi[key].nama_komoditas=komoditas.name;
@@ -55,6 +56,7 @@ var getProduksiKu = function(req,res){
 							produksi[key].time=fromNow(produksi[key].datePost);
 							produksi[key].datePost=moment(produksi[key].datePost).format("DD MMMM YYYY hh:mm a");
 							produksi[key].date_panen=moment(produksi[key].date_panen).format("DD MMMM YYYY");
+							produksi[key].date_tanam=moment(produksi[key].date_tanam).format("DD MMMM YYYY");
 							});
 
 							Komoditas.findOne({komoditas_id:produksi[key].komoditas_id}).exec(function(err,komoditas)
@@ -102,7 +104,9 @@ var updateProduksi = function(req,res){
 		{
 			produksi.komoditas_id 	= req.body.komoditas_id;
 			produksi.date_panen 	= req.body.date_panen;
+			produksi.date_tanam 	= req.body.date_tanam;
 			produksi.jumlah 		= req.body.jumlah;
+			produksi.luas_lahan 	= req.body.luas_lahan;
 			produksi.latitude		= req.body.latitude,
 			produksi.longitude		= req.body.longitude,
 			produksi.alamat			= req.body.alamat
