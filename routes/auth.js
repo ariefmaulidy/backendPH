@@ -79,7 +79,7 @@ authRoutes.post('', function(req, res) {
                               }
                               else 
                               {
-                                  mail.getValidate(req,res,user.isValidate,user.email,user.username,user.name);
+                                  mail.getValidate(req,res,user.isValidate,user.email,user.username,user.name,user.user_id);
                                   res.json({success: true,status:200,message: 'Login Success',data : result,token: token});    
                               }
                           });        
