@@ -12,6 +12,8 @@ var userModel = new Schema({
 	password:String,
 	name:String,
 	role:{type:Number,default:0},
+    //validasi lewat email
+    isValidate:{type:Boolean, default:false},
 	last_login:String,
 	picture:String,
 	address:String,

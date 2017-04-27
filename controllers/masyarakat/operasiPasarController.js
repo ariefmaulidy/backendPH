@@ -1,10 +1,10 @@
-//model atau collections laporanHargaModel
-var operasiPasar		=			require('./../../models/operasiPasarModel');
+//model or collections laporanHargaModel
+var operasiPasar		=			require('./../../models/masyarakat/operasiPasarModel');
 //model komoditas
 var komoditas			=			require('./../../models/komoditasModel');
 //user
 var user				=			require('./../../models/userModel');
-//security, crypto, jwt, dan secretCodenya ada dalam config
+//security, crypto, jwt, and secretCodenya in config
 var crypto 				= 			require('crypto');
 var jwt 				=			require('jsonwebtoken');
 var config				=			require('./../../config');
@@ -18,7 +18,7 @@ var dateFormat	 		=		 	require('dateformat');
 var each 				= 			require('foreach');
 //call fungsi matematika
 var math 				= 			require('mathjs');
-//get address dari latitude dan longitude google maps
+//get address from latitude dan longitude google maps
 var geocoder 			=			require('geocoder');
 
 var addOperasiPasar =function(req,res){
@@ -26,16 +26,14 @@ var addOperasiPasar =function(req,res){
 	var role = req.role;
 	//cek role user
 	if(role==1 || role==5){				
-		//dapat alamatnya			
-		//geocoder.reverseGeocode(req.body.latitude,req.body.longitude,function(err,data){
 			newOperasi.user_id = req.user_id;
 			newOperasi.komoditas_id = req.body.komoditas_id;
-			//newOperasi.alamat =  data.results[0].formatted_address;
 			newOperasi.alamat =  req.body.alamat;
 			newOperasi.latitude= req.body.latitude;
 			newOperasi.longitude = req.body.longitude;
 			newOperasi.pesan = req.body.pesan;
 			newOperasi.datePost = Date.now();
+            //save newOperasi
 			newOperasi.save(function(err,komo){
 				if(err){
 					throw err;
@@ -48,7 +46,6 @@ var addOperasiPasar =function(req,res){
 					});
 				}
 			});
-		//});
 	}else{
 		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
 	}
@@ -56,22 +53,23 @@ var addOperasiPasar =function(req,res){
 
 var allOperasiPasar = function(req,res){
 	operasiPasar.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,operasi){
-		
 		if(operasi==null){
 			res.json({status:204,message:"operasi pasar tidak ditemukan",data:"",token:""});
 		}else{
+            //looping operasi pasar
 			each(operasi,function(value,key,array){
+                //find user who post operasi pasar
 				user.findOne({user_id:operasi[key].user_id}).lean().exec(function(err,masyarakat){
+                    //find komoditas was posted
 					komoditas.findOne({komoditas_id:operasi[key].komoditas_id},function(err,komo){
 						operasi[key].totalPendukung = operasi[key].pendukung.length;
 						operasi[key].namaKomoditas = komo.name;
-						//console.log(komo.name);
 						operasi[key].satuan = komo.satuan;
 						operasi[key].nama = masyarakat.name;
 						operasi[key].datePost =moment(operasi[key].datePost).format("DD MMMM YYYY hh:mm a");
 						operasi[key].time=fromNow(operasi[key].datePost);
 						operasi[key].status_voted = false;
-						
+						//looping pendukung every operasi pasar and check user have been vote or no
 						for(var i=0; i<1; i++){
 							if(operasi[key].pendukung.length==0){
 								operasi[key].status_voted=false;
@@ -82,8 +80,8 @@ var allOperasiPasar = function(req,res){
 					})
 				});
 			});
+            //set time out 100 miliseconds
 			setTimeout(function () {
-					//kembalian dalam bentuk json
 					res.json({
 						status:200,
 						message:"sukses mendapat operasi semua pasar",
@@ -95,17 +93,16 @@ var allOperasiPasar = function(req,res){
 	});
 };
 
-//get satu aja
+//get one Operasi Pasar
 var oneOperasiPasar = function(req,res){
 	if(req.role==1 || req.role==5){
+        //operasi pasar base on operasiPasar_id
 		operasiPasar.findOne({operasiPasar_id:req.params.operasiPasar_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,oneOperasi){
+            //formated day mon year hour minutes
 			oneOperasi.datePost = moment(oneOperasi.datePost).format("DD MMMM YYYY hh:mm a");
-			console.log(oneOperasi.datePost);
 			if(oneOperasi==null){
 				res.json({status:204,message:"operasi pasar tidak ditemukan",data:"",token:""});
 			}else{
-				//kembalian dalam bentuk json
-				
 				res.json({
 					status:200,
 					message:"sukses mendapat satu operasi pasar",
@@ -120,20 +117,20 @@ var oneOperasiPasar = function(req,res){
 };
 
 
-//historu operasi pasar ku
+//history operasi pasar user
 var operasiPasarKu = function(req,res){
-	//cek role user
 	if(req.role==1 || req.role==5){
+        //find operasi pasar based on user_id
 		operasiPasar.find({user_id:req.params.user_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,operasi){
 			if(operasi==null){
 				res.json({status:204,message:"operasi pasar tidak ditemukan",data:"",token:""});
 			}else{
-				console.log(operasi);
+                //looping operasi pasar
 				each(operasi,function(value,key,array){
+                    //find user who post operasi pasar
 					user.findOne({user_id:operasi[key].user_id}).exec(function(err,masyarakat){
-						//console.log(masyarakat);
+                        //find komoditas was posted
 						komoditas.findOne({komoditas_id:operasi[key].komoditas_id},function(err,komo){
-							console.log(komo);
 							operasi[key].totalPendukung = operasi[key].pendukung.length;
 							operasi[key].namaKomoditas = komo.name;
 							operasi[key].nama = masyarakat.name;
@@ -142,8 +139,8 @@ var operasiPasarKu = function(req,res){
 					})
 				});
 			});
+            //set time out 100 ms
 			setTimeout(function () {
-					//kembalian dalam bentuk json
 					res.json({
 						status:200,
 						message:"sukses mendapat operasi semua pasar",
@@ -159,13 +156,11 @@ var operasiPasarKu = function(req,res){
 };
 
 var updateOperasiPasar = function(req,res){
-	//cek role user
 	if(req.role==1 || req.role==5){
 		operasiPasar.findOne({operasiPasar_id:req.body.operasiPasar_id},function(err,operasi){
-			console.log('ini user_id ' +req.user_id);
-			console.log(operasi);
 			operasi.user_id=req.user_id;
 			operasi.pesan=req.body.pesan;
+            //save update
 			operasi.save(function(err){
 				if(err){
 					throw err;
@@ -185,17 +180,17 @@ var updateOperasiPasar = function(req,res){
 };
 
 var deleteOperasiPasar = function(req,res){
-	//cek role
 	if(req.role==1 || req.role==5){
+        //find operasi pasar based on operasipasar_id
 		operasiPasar.findOne({operasiPasar_id:req.body.operasiPasar_id},function(err,hapusOperasi){
 			if(err){
 				res.json({status:402,message:err,data:"",token:req.token});
 			}else{
+                //delete operasi pasar
 				hapusOperasi.remove(function(err){
 					if(err){
 						res.json({status:401,message:err,data:"",token:req.token});
 					}else{
-						//kembalian dalam bentuk json
 						res.json({	
 							status:200,
 							message:"sukses hapus satu operasi pasar",
@@ -212,10 +207,12 @@ var deleteOperasiPasar = function(req,res){
 };
 
 
-//dukung operasi pasar
+//vote operasi pasar
 var voteOperasi = function(req,res){
 	if(req.role==1 || req.role==5){
+        //find operasi pasar based on operasi pasar id
 		operasiPasar.findOne({operasiPasar_id:req.body.operasiPasar_id},function(err,operasi){
+            //check operasi pasar have voted or no
 			if(operasi.pendukung.length==0){
 				operasi.pendukung.push({user_id:req.user_id});
 				operasi.save(function(err){
@@ -226,13 +223,13 @@ var voteOperasi = function(req,res){
 					}
 				})
 			}
-			//jika sudah ada, di cek dulu
+			//check user have voted operasi pasar or no
 			else{
 				var status_vote = false;
 				for(var i=0; i<operasi.pendukung.length; i++){
 					if(operasi.pendukung[i].user_id==req.user_id){
-						status_vote = true;
-						
+                        //have voted so status_voted = true
+						status_vote = true;					
 					}						
 				}
 				setTimeout(function () {
@@ -259,6 +256,7 @@ var voteOperasi = function(req,res){
 //unvote operasi pasar
 var unVoteOperasi = function(req,res){
 	if(req.role==1 || req.role==5){
+        //remove from array pendukung
 		operasiPasar.update(
 			{operasiPasar_id:req.body.operasiPasar_id},
 			{$pull: {pendukung: {user_id: req.user_id}}},
@@ -278,8 +276,10 @@ var unVoteOperasi = function(req,res){
 var getPendukungOperasi = function(req,res){
 	if(req.role==1 || req.role==5){
 		var pendukung = [];
+        //find operasi pasar
 		operasiPasar.findOne({operasiPasar_id:req.params.operasiPasar_id},function(err,operasi){
 			for(var i=0; i<operasi.pendukung.length; i++){
+                //find user who was voted operasi pasar
 				user.findOne({user_id:operasi.pendukung[i].user_id},function(err,user){
 					pendukung.push(user);
 				})

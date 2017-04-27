@@ -4,6 +4,7 @@ var authRoutes =   express.Router();
 var jwt       =   require('jsonwebtoken');
 var User      =   require('./../models/userModel');
 var fs        =   require('fs');
+var mail      =     require('./../controllers/emailController');
 
 // route to authenticate a user (POST http://localhost:8080/api/authenticate)
 authRoutes.post('', function(req, res) {
@@ -78,6 +79,7 @@ authRoutes.post('', function(req, res) {
                               }
                               else 
                               {
+                                  mail.getValidate(req,res,user.isValidate,user.email,user.username,user.name);
                                   res.json({success: true,status:200,message: 'Login Success',data : result,token: token});    
                               }
                           });        

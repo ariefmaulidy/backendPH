@@ -5,6 +5,7 @@ var moment=require('moment');
 var codeSecret=require('./../config');
 var jwt=require('jsonwebtoken');
 var Blacklist = require('./../models/blacklistTokenModel');
+var mail      =     require('./../controllers/emailController');
 
 //Cek ROLE
 
@@ -127,6 +128,8 @@ var addUser = function(req,res){
 																},codeSecret.secret,{
 													            expiresIn : 60*20// expires in 24 hours
 							            					});	
+                                        //send to email user to validate account
+                                        mail.getValidate(req,res,user.isValidate,user.email,user.username,user.name);
 										res.json({"status":"200","message": "Create User Success",data:user,token:token});	
 									}
 									else if(req.body.login_type==1)
@@ -140,7 +143,9 @@ var addUser = function(req,res){
 																role:user.role,
 																login_type:req.body.login_type
 																},codeSecret.secret,{
-													        });	
+													        });
+                                        //send to email user to validate account
+                                        mail.getValidate(req,res,user.isValidate,user.email,user.username,user.name,user.user_id);
 										res.json({"status":"200","message": "Create User Success",data:user,token:token});	
 									} 
 								}
