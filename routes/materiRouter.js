@@ -6,5 +6,13 @@ var materiRouter=express.Router();
 
 materiRouter.route('/add')
 	.post(materiController.uploadMateri);
+materiRouter.route('/update')
+	.post(materiController.updateMateri);
+materiRouter.route('/delete')
+	.post(materiController.delMateri);
+materiRouter.route('/get')
+	.get(materiController.getAllMateri);
+materiRouter.route('/get/:materi_id')
+	.get(materiController.getOneMateri);
 
 module.exports=materiRouter; 

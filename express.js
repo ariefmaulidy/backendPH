@@ -68,7 +68,6 @@ app.use('/user/add',registerRouter);
 //forget password all user
 app.use('/user/forgetPassword',forgetPasswordRouter);
 
-app.use('/materi',materiRouter);
 
 // --- JWT Validaltion ---
 app.use(function(req,res,next){
@@ -133,6 +132,7 @@ app.use(function(req,res,next){
 
 
 app.use('/user',userRouter);
+app.use('/materi',materiRouter);
 app.use('/produksi',produksiRouter);
 app.use('/dagangan',daganganRouter);
 app.use('/aspirasi',aspirasiRouter);
