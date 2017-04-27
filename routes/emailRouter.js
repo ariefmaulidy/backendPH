@@ -9,5 +9,5 @@ emailRouter.route('/updatePassword')
     .post(emailController.updatePassword);
 //validate acoounts
 emailRouter.route('/validate/:token')
-    .post(emailController.postValidate);
+    .get(emailController.postValidate);
 module.exports = emailRouter;
