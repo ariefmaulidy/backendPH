@@ -17,9 +17,8 @@ var kecamatan			=			require('./../../models/lokasi/kecamatanModel');
 2 = kota
 3 = kelurahan
 4 = desa*/
-
 var get_jenis = function(req,res){
-    jenis.find({},function(err,allJenis){
+    jenis.find({},'-_id',function(err,allJenis){
         if(err){
             res.json({status:402,message:err,data:"",token:req.token});
         }
@@ -33,6 +32,7 @@ var get_jenis = function(req,res){
     })
 }
 
+//all provinsi
 var get_provinsi = function(req,res){
     provinsi.find({},'-_id',function(err,prov){
         if(err){
@@ -40,13 +40,14 @@ var get_provinsi = function(req,res){
         }else{            
             res.json({
             status:200,
-            message:"succes get all provinsi",
+            message:"succes get provinsi",
             data:prov,
             token:req.token});
         }
     })
 }
 
+//kabupaten base on provinsi selected
 var get_kabupaten = function(req,res){
     kabupaten.find({id_prov:req.params.id_prov},'-_id',function(err,kab){
         if(err){
@@ -54,13 +55,14 @@ var get_kabupaten = function(req,res){
         }else{            
             res.json({
             status:200,
-            message:"succes get all kabupaten",
+            message:"succes get kabupaten",
             data:kab,
             token:req.token});
         }
     })
 }
 
+//kecamatan base on kabupaten selected
 var get_kecamatan = function(req,res){
     kecamatan.find({id_kab:req.params.id_kab},'-_id',function(err,kec){
         if(err){
@@ -68,13 +70,14 @@ var get_kecamatan = function(req,res){
         }else{            
             res.json({
             status:200,
-            message:"succes get all kecamatan",
+            message:"succes get kecamatan",
             data:kec,
             token:req.token});
         }
     })
 }
 
+//kelurahan base on kecamatan selected
 var get_kelurahan = function(req,res){
     kelurahan.find({id_kec:req.params.id_kec},'-_id',function(err,kel){
         if(err){
@@ -82,7 +85,7 @@ var get_kelurahan = function(req,res){
         }else{            
             res.json({
             status:200,
-            message:"succes get all kelurahan",
+            message:"succes get kelurahan",
             data:kel,
             token:req.token});
         }

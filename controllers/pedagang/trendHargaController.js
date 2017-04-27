@@ -1,5 +1,5 @@
 //model atau collections laporanHargaModel
-var laporanHarga		=			require('./../../models/laporanHargaModel');
+var laporanHarga		=			require('./../../models/masyarakat/laporanHargaModel');
 //model komoditas
 var komoditas			=			require('./../../models/komoditasModel');
 //user

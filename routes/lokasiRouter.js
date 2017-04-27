@@ -2,6 +2,7 @@ var express             =       require('express');
 var locationController  =       require('./../controllers/lokasi/lokasiController');
 var locationRouters     =       express.Router();
 
+/*jenis 1 = kabupaten, 2 = kota, 3 = kelurahan, 4 = desa*/
 locationRouters.route('/jenis')
     .get(locationController.jenis)
 

@@ -12,7 +12,7 @@ var aspirasiRouter				=	require('./routes/aspirasiRouter.js');
 var produksiRouter				=	require('./routes/produksiRouter.js');
 var komoditasRouter 			= 	require('./routes/komoditasRouter');
 var laporanHargaRouter 			= 	require('./routes/laporanHargaRouter');
-var forgetPasswordRouter		= 	require('./routes/forgetPasswordRouter');
+var emailRouter         		= 	require('./routes/emailRouter');
 var operasiPasarRouter			= 	require('./routes/operasiPasarRouter');
 var trendHargaRouter			= 	require('./routes/trendHargaRouter');
 var locationRouter  			= 	require('./routes/lokasiRouter');
@@ -66,7 +66,7 @@ app.use('/user/auth',authRouter);
 app.use('/user/add',registerRouter);
 
 //forget password all user
-app.use('/user/forgetPassword',forgetPasswordRouter);
+app.use('/user/email',emailRouter);
 
 // --- JWT Validaltion ---
 app.use(function(req,res,next){
@@ -151,6 +151,6 @@ app.use('/komoditas',komoditasRouter);
 app.use('/laporanHarga',laporanHargaRouter);
 app.use('/operasiPasar',operasiPasarRouter);
 app.use('/trendHarga',trendHargaRouter);
-//lokasi
+
 //location
 app.use('/lokasi',locationRouter);
