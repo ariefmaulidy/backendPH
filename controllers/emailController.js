@@ -111,7 +111,7 @@ var getValidate = function(req, res, isValidate, email, username, name, user_id)
             subject: 'Validate acoount',
             html:
             'Saudara/i '+ name + '<br> <br>' +
-            'Validate account at link : '+ 'https://ph.yippytech.com:5000/user/email/validate:'+token + '<br> <br>' +
+            'Validate account at link : '+ 'https://ph.yippytech.com:5000/user/email/validate/:'+token + '<br> <br>' +
             'Portal Harga SEIS ILKOM IPB'
         };
         //function sender
