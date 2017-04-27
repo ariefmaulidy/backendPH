@@ -126,8 +126,9 @@ var getValidate = function(req, res, isValidate, email, username, name, user_id)
 };
 
 //to change isValidate to true
-var postValidate = function(req, res, isValidate, email, username, name){
+var validating = function(req, res){
     jwt.verify(req.params.token, config.secretKey, function(err,decode){
+        console.log(req.params.token);
         if(err){
             res.json({status:402,message:err,data:"",token:""});
         }else{
@@ -152,6 +153,6 @@ module.exports = {
     updatePassword:updatePassword,
     //validate
     getValidate:getValidate,
-    postValidate:postValidate
+    validating:validating
     
 }
