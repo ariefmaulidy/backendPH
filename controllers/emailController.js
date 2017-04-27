@@ -33,7 +33,7 @@ var forgetPassword = function(req,res ){
             subject: 'Forget Password',
             html:
             'Saudara/i '+ user.name + '<br><br>'+
-            'Untuk memperbarui password silahkan buka link : '+ 'ph.yippytech.com/:'+token + '<br> <br>' +
+            'Untuk memperbarui password silahkan buka link : '+ 'ph.yippytech.com/'+token + '<br> <br>' +
             'Portal Harga SEIS ILKOM IPB'
         };			
         //function sender
@@ -111,7 +111,7 @@ var getValidate = function(req, res, isValidate, email, username, name, user_id)
             subject: 'Validate acoount',
             html:
             'Saudara/i '+ name + '<br> <br>' +
-            'Validate account at link : '+ 'https://ph.yippytech.com:5000/user/email/validate/:'+token + '<br> <br>' +
+            'Validate account at link : '+ 'https://ph.yippytech.com:5000/user/email/validate/'+token + '<br> <br>' +
             'Portal Harga SEIS ILKOM IPB'
         };
         //function sender
