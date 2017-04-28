@@ -51,12 +51,12 @@ app.use(function(req, res, next) {
 
 app.use(morgan('dev'));
 // setup keys and certificate, create https server. request example: https://ph.yippytech.com:5000/API.....
-var options = {
-  key: fs.readFileSync('keys/agent-key.pem'),
-  cert: fs.readFileSync('keys/agent-cert.cert')
-};
-https.createServer(options, app).listen(port);
-/*app.listen(port);*/
+// var options = {
+//   key: fs.readFileSync('keys/agent-key.pem'),
+//   cert: fs.readFileSync('keys/agent-cert.cert')
+// };
+//https.createServer(options, app).listen(port);
+app.listen(port);
 console.log('Server start at https://ph.yippytech.com:' + port);
 
 // User Login Router
@@ -67,6 +67,9 @@ app.use('/user/add',registerRouter);
 
 //forget password all user
 app.use('/user/email',emailRouter);
+
+//location
+app.use('/lokasi',locationRouter);
 
 // --- JWT Validaltion ---
 app.use(function(req,res,next){
@@ -151,6 +154,3 @@ app.use('/komoditas',komoditasRouter);
 app.use('/laporanHarga',laporanHargaRouter);
 app.use('/operasiPasar',operasiPasarRouter);
 app.use('/trendHarga',trendHargaRouter);
-
-//location
-app.use('/lokasi',locationRouter);
