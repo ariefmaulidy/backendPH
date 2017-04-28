@@ -34,14 +34,14 @@ var port = process.env.PORT || 5000; // used to create, sign, and verify tokens
 
 mongoose.connect(config.connect);
 
-// setup allowed headers for web services 
+// setup allowed headers for web services
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
 
-// bypass option method 
+// bypass option method
   if('OPTIONS'==req.method) {
 	  res.send(200);
   }else{
@@ -74,7 +74,7 @@ app.use('/lokasi',locationRouter);
 // --- JWT Validaltion ---
 app.use(function(req,res,next){
 	if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer')
-	{	
+	{
 		Blacklist.findOne({token:req.headers.authorization.split(' ')[1]},function(err,blacklist){
 			if(blacklist!=null)
 			{
@@ -103,19 +103,19 @@ app.use(function(req,res,next){
 			                                            time:decoded.last_login,
 			                                            role:decoded.role,
 
-			      	  									
+
 
 			                                            login_type:decoded.login_type
 			                                        }
 			                                        ,config.secret, {
-								                    expiresIn : 60*20// expires in 20 mins
+								                    expiresIn : 60*20// expires in 20 minute
 								                    });
 					  			next();
 				  			}
 				  			//for mobile login
 				  			else if(decoded.login_type==1)
 				  			{
-				  				
+
 				  				req.user_id=decoded.user_id;
 				  				req.token='-';
 							    req.role = decoded.role;
