@@ -9,6 +9,7 @@ var jwt                 =   require('jsonwebtoken');
 var config				=	require('./../config');
 var fs                  =   require('fs');
 
+//send link to mail for forget password
 var forgetPassword = function(req,res ){
 	User.findOne({username:req.body.username},function (err,user){
 		if(!user){
@@ -53,6 +54,7 @@ var forgetPassword = function(req,res ){
     });
 };
 
+//update password by link
 var updatePassword = function(req,res){
     if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){	
 		var token=req.headers.authorization.split(' ')[1];  
