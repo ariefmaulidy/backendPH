@@ -68,6 +68,8 @@ app.use('/user/add',registerRouter);
 //forget password all user
 app.use('/user/email',emailRouter);
 
+//location
+app.use('/lokasi',locationRouter);
 
 // --- JWT Validaltion ---
 app.use(function(req,res,next){
@@ -153,5 +155,3 @@ app.use('/laporanHarga',laporanHargaRouter);
 app.use('/operasiPasar',operasiPasarRouter);
 app.use('/trendHarga',trendHargaRouter);
 
-//location
-app.use('/lokasi',locationRouter);
