@@ -3,6 +3,9 @@ var Materi 		= require('./../models/materiModel');
 var moment 		= require('moment');
 var time		= moment();
 
+//looping module
+var each = require('foreach');
+
 var multer = require('multer');
 var storage = multer.diskStorage({ //multers disk storage settings
     destination: function (req, file, cb) {
@@ -65,10 +68,17 @@ var uploadMateri = function(req,res){
 
 var getAllMateri = function(req,res){
 	Materi.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,materi){
-	
+
 		if(materi!='')
 		{
-			res.json({status:200,success:true,message:'Get data success',data:materi,token:req.token});
+			each(materi,function(value,key,array)
+			{
+				materi[key].datePost=moment(materi[key].datePost).format("DD MMMM YYYY hh:mm a");
+			});
+			setTimeout(function()
+			{
+				res.json({status:200,success:true,message:'Get data success',data:materi,token:req.token});
+			},50);
 		}
 		else
 		{
@@ -148,7 +158,7 @@ var updateMateri = function(req,res){
 }
 var delMateri = function(req,res){
 	Materi.findOne({materi_id:req.body.materi_id},function(err,materi){
-	//	res.json({aspirasi});
+	//	res.json({materi});
 	//	console.log(materi);
 		if(materi!=null) 
 		{ 

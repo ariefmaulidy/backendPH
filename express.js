@@ -154,7 +154,3 @@ app.use('/komoditas',komoditasRouter);
 app.use('/laporanHarga',laporanHargaRouter);
 app.use('/operasiPasar',operasiPasarRouter);
 app.use('/trendHarga',trendHargaRouter);
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
