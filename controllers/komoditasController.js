@@ -18,6 +18,9 @@ var addKomoditas = function(req,res){
 		var role = req.role
 		//cek role
 		if(role==1 || role==2){
+			newKomoditas.nama = req.body.nama;
+			newKomoditas.satuan = req.body.satuan;
+			newKomoditas.harga = req.body.harga;
 			//create date dengan menggunakan fungsi Date();
 			newKomoditas.datePost = Date.now();
 			newKomoditas.last_update = Date.now();

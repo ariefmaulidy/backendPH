@@ -41,7 +41,7 @@ var addLaporan = function(req,res){
 			newLaporan.latitude= req.body.latitude;
 			newLaporan.longitude = req.body.longitude;
 			//create date add laporanHarga
-			newLaporan.datePost = Date.now();			
+			newLaporan.datePost = Date.now();
 			newLaporan.save(function(err){
 				if(err){
 					res.json({status:402,message:err,data:"",token:req.token});
@@ -163,7 +163,6 @@ var updateLaporan = function(req,res){
 			}else{
 				ubahLaporan.user_id = req.user_id;
 				ubahLaporan.harga = req.body.harga;
-				ubahLaporan.datePost = Date.now();
 				//simpan perubahan yang dilakukan
 				ubahLaporan.save(function(err){
 					if(err){
