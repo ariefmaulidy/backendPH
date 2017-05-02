@@ -23,7 +23,7 @@ var geocoder 			=			require('geocoder');
 
 
 
-var check = function(role) {
+var check = function(role) {		
 	if(role==1 || role==2 || role==5) return true;
 	else return false;
 }
@@ -75,7 +75,7 @@ var allLaporan = function(req,res){
 						semuaLaporan[key].namaKomoditas = komo.name;
 						semuaLaporan[key].satuan = komo.satuan;
 						semuaLaporan[key].nama = masyarakat.name;
-						semuaLaporan[key].datePost = moment(semuaLaporan[key].datePost).format("DD MMMM YYYY hh:mm a");						
+						semuaLaporan[key].datePost = moment(semuaLaporan[key].datePost).format("DD MMMM YYYY");						
 					})
 				})
 			});	
@@ -105,7 +105,7 @@ var oneLaporan = function(req,res){
 					satulaporan.namaKomoditas = komo.name;
 					satulaporan.satuan = komo.satuan;
 					satulaporan.nama = masyarakat.name;
-					satulaporan.datePost = moment(satulaporan.datePost).format("DD MMMM YYYY hh:mm a");						
+					satulaporan.datePost = moment(satulaporan.datePost).format("DD MMMM YYYY");						
 				})				
 			})
 			setTimeout(function () {
@@ -133,7 +133,7 @@ var laporanHargaKu = function(req,res){
 					komoditas.findOne({komoditas_id:laporanku[key].komoditas_id},function(err,komo){			
 						laporanku[key].namaKomoditas = komo.name;
 						laporanku[key].satuan = komo.satuan;
-						laporanku[key].datePost = moment(laporanku[key].datePost).format("DD MMMM YYYY hh:mm a");						
+						laporanku[key].datePost = moment(laporanku[key].datePost).format("DD MMMM YYYY");						
 					})
 				});	
 				setTimeout(function () {
