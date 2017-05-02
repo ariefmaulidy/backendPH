@@ -74,8 +74,9 @@ var allLaporan = function(req,res){
 					user.findOne({user_id:semuaLaporan[key].user_id},function(err,masyarakat){
 						semuaLaporan[key].namaKomoditas = komo.name;
 						semuaLaporan[key].satuan = komo.satuan;
+						console.log(masyarakat.name);
 						semuaLaporan[key].nama = masyarakat.name;
-						semuaLaporan[key].datePost = moment(semuaLaporan[key].datePost).format("DD MMMM YYYY");						
+						semuaLaporan[key].datePost = moment(semuaLaporan[key].datePost).format("YYYY-MMMM-DD");						
 					})
 				})
 			});	
@@ -105,7 +106,7 @@ var oneLaporan = function(req,res){
 					satulaporan.namaKomoditas = komo.name;
 					satulaporan.satuan = komo.satuan;
 					satulaporan.nama = masyarakat.name;
-					satulaporan.datePost = moment(satulaporan.datePost).format("DD MMMM YYYY");						
+					satulaporan.datePost = moment(satulaporan.datePost).format("YYYY-MMMM-DD");						
 				})				
 			})
 			setTimeout(function () {
@@ -133,7 +134,7 @@ var laporanHargaKu = function(req,res){
 					komoditas.findOne({komoditas_id:laporanku[key].komoditas_id},function(err,komo){			
 						laporanku[key].namaKomoditas = komo.name;
 						laporanku[key].satuan = komo.satuan;
-						laporanku[key].datePost = moment(laporanku[key].datePost).format("DD MMMM YYYY");						
+						laporanku[key].datePost = moment(laporanku[key].datePost).format("YYYY-MMMM-DD");						
 					})
 				});	
 				setTimeout(function () {
@@ -242,10 +243,11 @@ var dayLaporan = function(req,res){
 			//time out 65 miliseconds
 			setTimeout(function () {
 				for(var i=0;i<number.length;i++){
-					laporanHarga.findOne({laporanHarga_id:number[i]}).lean().exec(function(err,laporan){
+					laporanHarga.findOne({laporanHarga_id:number[i]},'-_id -__v').lean().exec(function(err,laporan){
 						komoditas.findOne({komoditas_id:laporan.komoditas_id}).exec(function(err,komo){
 							laporan.namaKomoditas=komo.name;
-							laporan.satuan = komo.satuan
+							laporan.satuan = komo.satuan;
+							laporan.datePost = moment(laporan.datePost).format("YYYY-MMMM-DD");;
 							parsing.push(laporan);
 						})						
 					})					
