@@ -74,9 +74,8 @@ var allLaporan = function(req,res){
 					user.findOne({user_id:semuaLaporan[key].user_id},function(err,masyarakat){
 						semuaLaporan[key].namaKomoditas = komo.name;
 						semuaLaporan[key].satuan = komo.satuan;
-						console.log(masyarakat.name);
 						semuaLaporan[key].nama = masyarakat.name;
-						semuaLaporan[key].datePost = moment(semuaLaporan[key].datePost).format("YYYY-MMMM-DD");						
+						semuaLaporan[key].datePost = moment(semuaLaporan[key].datePost).format("YYYY-MM-DD");						
 					})
 				})
 			});	
@@ -106,7 +105,7 @@ var oneLaporan = function(req,res){
 					satulaporan.namaKomoditas = komo.name;
 					satulaporan.satuan = komo.satuan;
 					satulaporan.nama = masyarakat.name;
-					satulaporan.datePost = moment(satulaporan.datePost).format("YYYY-MMMM-DD");						
+					satulaporan.datePost = moment(satulaporan.datePost).format("YYYY-MM-DD");						
 				})				
 			})
 			setTimeout(function () {
@@ -134,7 +133,7 @@ var laporanHargaKu = function(req,res){
 					komoditas.findOne({komoditas_id:laporanku[key].komoditas_id},function(err,komo){			
 						laporanku[key].namaKomoditas = komo.name;
 						laporanku[key].satuan = komo.satuan;
-						laporanku[key].datePost = moment(laporanku[key].datePost).format("YYYY-MMMM-DD");						
+						laporanku[key].datePost = moment(laporanku[key].datePost).format("YYYY-MM-DD");						
 					})
 				});	
 				setTimeout(function () {
@@ -247,7 +246,7 @@ var dayLaporan = function(req,res){
 						komoditas.findOne({komoditas_id:laporan.komoditas_id}).exec(function(err,komo){
 							laporan.namaKomoditas=komo.name;
 							laporan.satuan = komo.satuan;
-							laporan.datePost = moment(laporan.datePost).format("YYYY-MMMM-DD");;
+							laporan.datePost = moment(laporan.datePost).format("YYYY-MM-DD");;
 							parsing.push(laporan);
 						})						
 					})					
