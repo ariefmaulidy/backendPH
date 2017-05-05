@@ -1,12 +1,11 @@
 var User 		=	require('./../models/userModel');
 var Materi 		= require('./../models/materiModel');
 var moment 		= require('moment');
-var time		= moment();
-
+var fs 			= require('fs');
 //looping module
 var each = require('foreach');
-
 var multer = require('multer');
+
 var storage = multer.diskStorage({ //multers disk storage settings
     destination: function (req, file, cb) {
         cb(null, '../public_html/uploads/materi');
@@ -21,36 +20,53 @@ var upload = multer({ //multer settings
                 }).single('file');
 	 
 var uploadMateri = function(req,res){
-	if(req.file)
+if(req.role==1||req.role==2||req.role==3)
 	{
-		upload(req,res,function(err){
-        if(err)
-        {
-             res.json({status:400,message:"Fail to upload file",err_desc:err});
-             return;
-        }
-        	materi = new Materi(req.body);
-    	 	materi.file="https://ph.yippytech.com/uploads/materi/"+req.file.filename;	
-			materi.user_id 	= req.user_id;
-			materi.datePost = Date.parse(moment(time).tz('Asia/Jakarta'));
-			materi.save(function(err)
-			{
-				if(!err)
+		upload(req,res,function(err)
+		{
+	        if(err)
+	        {
+	             res.json({status:400,message:"Fail to upload file",err_desc:err});
+	             return;
+	        }    	 	
+	        Materi.findOne({materi_id:req.body.materi_id},function(err,materi)
+	        {
+				if(materi!=null)
 				{
-					res.json({status:200,success:true,message:'Input Success',data:materi,token:req.token});
+					if(materi.file!=null)
+					{
+						var del_file=materi.file.split('https://ph.yippytech.com/uploads/materi/')[1];
+						fs.unlinkSync('../public_html/uploads/materi/'+del_file);
+					}
+				
+				    materi.file="https://ph.yippytech.com/uploads/materi/"+req.file.filename;	
+					materi.datePost = Date.parse(moment(time).tz('Asia/Jakarta'));
+					materi.save(function(err)
+					{
+						if(!err)
+						{
+							res.json({status:200,success:true,message:'Upload Success',data:materi,token:req.token});
+						}
+						else
+						{
+							res.json({status:400,success:false,message:'Upload Failed',token:req.token});
+						}
+					});
 				}
 				else
 				{
-					res.json({status:400,success:false,message:'Input Failed',token:req.token});
-				}
-			});
+					res.json({status:400,success:false,message:'Please send correct materi_id',token:req.token});
+				}	
+			})			
 		});
 	}
-	else
-	{
+}
+var addMateri= function(req,res){
+	if(req.role==1||req.role==2||req.role==3)
+	{	
 		materi = new Materi(req.body);
-		console.log(req.body);
-	 	materi.user_id 	= req.user_id;
+		materi.user_id = req.user_id;
+		var time=moment();
 		materi.datePost = Date.parse(moment(time).tz('Asia/Jakarta'));
 		materi.save(function(err)
 		{
@@ -62,7 +78,7 @@ var uploadMateri = function(req,res){
 			{
 				res.json({status:400,success:false,message:'Input Failed',token:req.token});
 			}
-		});
+		})	
 	}
 }
 
@@ -72,8 +88,14 @@ var getAllMateri = function(req,res){
 		if(materi!='')
 		{
 			each(materi,function(value,key,array)
-			{
-				materi[key].datePost=moment(materi[key].datePost).format("DD MMMM YYYY hh:mm a");
+			{	
+				User.findOne({user_id:materi[key].user_id},function(err,user){
+					if(user!=null){
+						materi[key].name=user.name;
+						materi[key].datePost=moment(materi[key].datePost).format("DD MMMM YYYY hh:mm a");
+					}	
+				})
+				
 			});
 			setTimeout(function()
 			{
@@ -100,63 +122,48 @@ var getOneMateri = function(req,res){
 	})
 }
 
-
 var updateMateri = function(req,res){
-	Materi.findOne({materi_id:req.body.materi_id},function(err,materi){
-		if(materi!=null){
-			if(materi.user_id==req.user_id)
-			{
-				var time=moment();
-				materi.judul				=	req.body.judul;
-				materi.keterangan			=	req.body.keterangan;
-				materi.datePost 			= 	Date.parse(moment(time).tz('Asia/Jakarta')); 
-				if(req.file!=null)
+	if(req.role==1||req.role==2||req.role==3)
+	{
+		Materi.findOne({materi_id:req.body.materi_id},function(err,materi){
+			if(materi!=null){
+				if(materi.user_id==req.user_id)
 				{
-					if(materi.file!=null)
+					var time=moment();
+					materi.judul				=	req.body.judul;
+					materi.keterangan			=	req.body.keterangan;
+					materi.datePost 			= 	Date.parse(moment(time).tz('Asia/Jakarta')); 
+					
+			  		setTimeout(function()
 					{
-						var del_materi=materi.file.split('https://ph.yippytech.com/uploads/materi/')[1];
-						fs.unlinkSync('../public_html/uploads/materi/'+del_materi);
-					}
-					upload(req,res,function(err){
-				        if(err)
-				        {
-				            res.json({status:400,message:"Fail to upload file",err_desc:err});
-				            return;
-				        }
-				        else
-				        {
-				        	materi.file="https://ph.yippytech.com/uploads/materi/"+req.file.filename;		
-				        }
-		  			})
-		  		}
-		  		setTimeout(function()
+						materi.save(function(err)
+						{
+							if(!err)
+							{
+								res.json({status:200,success:true,message:'Update Success',data:materi,token:req.token});
+							}
+							else
+							{
+								res.json({status:400,success:false,message:'Update Failed',token:req.token});
+							}
+						});
+					},100);		  		
+				}
+				else
 				{
-					materi.save(function(err)
-					{
-						if(!err)
-						{
-							res.json({status:200,success:true,message:'Update Success',data:materi,token:req.token});
-						}
-						else
-						{
-							res.json({status:400,success:false,message:'Update Failed',token:req.token});
-						}
-					});
-				},100);		  		
+					res.status(403).json({status:403,message:"Forbidden",token:req.token});
+				}
 			}
 			else
 			{
-				res.status(403).json({status:403,message:"Forbidden",token:req.token});
+				res.status(204).json({status:204,message:"Not Found",token:req.token});
 			}
-			
-		}
-		else
-		{
-			res.status(204).json({status:204,message:"Not Found",token:req.token});
-		}
-	})
+		})	
+	}
 }
 var delMateri = function(req,res){
+if(req.role==1||req.role==2||req.role==3)
+{
 	Materi.findOne({materi_id:req.body.materi_id},function(err,materi){
 	//	res.json({materi});
 	//	console.log(materi);
@@ -166,8 +173,8 @@ var delMateri = function(req,res){
 			{
 				if(materi.file!=null)
 				{
-					var del_file=materi.file.split('https://ph.yippytech.com/uploads/uploads/')[1];
-					fs.unlinkSync('../public_html/foto_komoditas/'+del_file);
+					var del_file=materi.file.split('https://ph.yippytech.com/uploads/materi/')[1];
+					fs.unlinkSync('../public_html/uploads/materi/'+del_file);
 				}
 				materi.remove(function(err){
 					if(!err)
@@ -191,8 +198,10 @@ var delMateri = function(req,res){
 		}
 	})
 }
+}
 
 module.exports={
+	addMateri:addMateri,
 	uploadMateri:uploadMateri,
 	getAllMateri:getAllMateri,
 	getOneMateri:getOneMateri,

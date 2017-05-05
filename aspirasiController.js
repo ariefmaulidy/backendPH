@@ -355,6 +355,7 @@ var dukung_aspirasi = function(req,res)
 }
 
 module.exports = {
+	testAspirasi:testAspirasi,
 	allAspirasi:allAspirasi,
 	aspirasiKu:aspirasiKu,
 	updateAspirasi:updateAspirasi,

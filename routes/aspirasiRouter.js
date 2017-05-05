@@ -16,6 +16,9 @@ aspirasiRouter.route('/pendukung/add')
 aspirasiRouter.route('/pendukung/delete')
 	.post(aspirasiController.batalDukung);
 
+
+aspirasiRouter.route('/get/page/:page')
+	.get(aspirasiController.allAspirasi);
 aspirasiRouter.route('/get')
 	.get(aspirasiController.allAspirasi);
 aspirasiRouter.route('/get/:user_id')

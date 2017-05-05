@@ -1,7 +1,9 @@
 var User = require('./userModel');
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-	autoIncrement = require('mongoose-auto-increment');
+	autoIncrement = require('mongoose-auto-increment'),
+	mongoosePaginate = require('mongoose-paginate');
+
 var connection = mongoose.createConnection("mongodb://localhost/PortalHarga");
 
 autoIncrement.initialize(connection);
@@ -13,6 +15,6 @@ var aspirasiModel = new Schema({
 	isi:String,
 	pendukung:[{user_id:String}]
 });
-
+aspirasiModel.plugin(mongoosePaginate);
 aspirasiModel.plugin(autoIncrement.plugin, { model: 'Aspirasi', field: 'aspirasi_id' });
 module.exports=mongoose.model('Aspirasi',aspirasiModel);
