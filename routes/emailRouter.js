@@ -10,4 +10,7 @@ emailRouter.route('/updatePassword')
 //validate acoounts
 emailRouter.route('/validate/:token')
     .get(emailController.validating);
+//if token expire, get new validation
+emailRouter.route('/validate/resend')
+    .post(emailController.reSendGetValidation);
 module.exports = emailRouter;

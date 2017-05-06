@@ -34,7 +34,7 @@ var forgetPassword = function(req,res ){
             subject: 'Forget Password',
             html:
             'Saudara/i '+ user.name + '<br><br>'+
-            'Untuk memperbarui password silahkan buka link : '+ 'ph.yippytech.com/'+token + '<br> <br>' +
+            'Untuk memperbarui password silahkan buka link : '+ 'https://ph.yippytech.com:5000/user/fotgetPassword/'+token + '<br> <br>' +
             'Portal Harga SEIS ILKOM IPB'
         };			
         //function sender
@@ -110,7 +110,7 @@ var getValidate = function(req, res, isValidate, email, username, name, user_id)
         var mailOptions = {
             from: '"PORTAL-HARGA" <portalharga.ipb@gmail.com>',
             to: email,
-            subject: 'Validate acoount',
+            subject: 'Validate account',
             html:
             'Saudara/i '+ name + '<br> <br>' +
             'Validate account at link : '+ 'https://ph.yippytech.com:5000/user/email/validate/'+token + '<br> <br>' +
@@ -125,6 +125,47 @@ var getValidate = function(req, res, isValidate, email, username, name, user_id)
             }
         });
     }
+};
+
+//reSend Validate Email
+var reSendGetValidate = function(req, res){   
+    User.findOne({username:req.body.username},'-_id -__v',function(err,user){
+        //create token as params
+        var token = jwt.sign({  
+            user_id:user.user_id
+        },config.secretKey, {
+            expiresIn : 60*60
+        });
+
+        var url = 'https://ph.yippytech.com:5000/user/email/validate/' + token;
+        var url2 = 'www.google.com';
+
+        //contenct emailnya, mulai dari, tujuan, subjek, html
+        var mailOptions = {
+            from: '"PORTAL-HARGA" <portalharga.ipb@gmail.com>',
+            to: user.email,
+            subject: 'Validate account',
+            html:
+            'Saudara/i '+ user.name + '<br> <br>' +
+            'Validate account at link : '+ '<a href='+ url +'>klick</a>' + '<br> <br>' +
+            'Portal Harga SEIS ILKOM IPB'
+        };
+        //function sender
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                return console.log(error);
+            }else{
+                console.log('Message sent: ' + info.response);
+                res.json({
+                    status:200,
+                    message:"Succes reSendGetValidation",
+                    data:url,
+                    token:token
+                });
+            }
+        });
+
+    })    
 };
 
 //to change isValidate to true
@@ -155,6 +196,7 @@ module.exports = {
     updatePassword:updatePassword,
     //validate
     getValidate:getValidate,
-    validating:validating
+    validating:validating,
+    reSendGetValidation:reSendGetValidate
     
 }
