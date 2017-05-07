@@ -136,10 +136,10 @@ app.use(function(req,res,next){
 
 
 app.use('/user',userRouter);
-app.use('/materi',materiRouter);
 app.use('/produksi',produksiRouter);
 app.use('/dagangan',daganganRouter);
 app.use('/aspirasi',aspirasiRouter);
+app.use('/materi',materiRouter);
 
 //Cek ROLE
 

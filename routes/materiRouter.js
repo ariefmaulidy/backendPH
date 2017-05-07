@@ -6,8 +6,6 @@ var materiRouter=express.Router();
 
 materiRouter.route('/add')
 	.post(materiController.addMateri);
-materiRouter.route('/upload')
-	.post(materiController.uploadMateri);
 materiRouter.route('/update')
 	.post(materiController.updateMateri);
 materiRouter.route('/delete')
