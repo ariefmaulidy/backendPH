@@ -27,6 +27,9 @@ var forgetPassword = function(req,res ){
             expiresIn:60*60
         });
         
+        //define url
+        var url = 'https://ph.yippytech.com:5000/lokasi/provinsi'// + token;
+
         //contenct emailnya, mulai dari, tujuan, subjek, html
         var mailOptions = {
             from: '"PORTAL-HARGA" <portalharga.ipb@gmail.com>',
@@ -34,7 +37,7 @@ var forgetPassword = function(req,res ){
             subject: 'Forget Password',
             html:
             'Saudara/i '+ user.name + '<br><br>'+
-            'Untuk memperbarui password silahkan buka link : '+ 'https://ph.yippytech.com:5000/user/fotgetPassword/'+token + '<br> <br>' +
+            'reNew Password at link : '+ '<a href='+ url +'>klick</a>' + '<br> <br>' +
             'Portal Harga SEIS ILKOM IPB'
         };			
         //function sender
@@ -105,6 +108,8 @@ var getValidate = function(req, res, isValidate, email, username, name, user_id)
         },config.secretKey, {
             expiresIn : 60*60
         });
+
+        var url = 'https://ph.yippytech.com:5000/user/email/validate/' + token;
         
         //contenct emailnya, mulai dari, tujuan, subjek, html
         var mailOptions = {
@@ -113,7 +118,7 @@ var getValidate = function(req, res, isValidate, email, username, name, user_id)
             subject: 'Validate account',
             html:
             'Saudara/i '+ name + '<br> <br>' +
-            'Validate account at link : '+ 'https://ph.yippytech.com:5000/user/email/validate/'+token + '<br> <br>' +
+            'Validate account at link : '+ '<a href='+ url +'>klick</a>' + '<br> <br>' +
             'Portal Harga SEIS ILKOM IPB'
         };
         //function sender
@@ -193,7 +198,7 @@ var validating = function(req, res){
 module.exports = {
     //password
 	forgetPassword:forgetPassword,
-    updatePassword:updatePassword,
+    reNewPassword:updatePassword,
     //validate
     getValidate:getValidate,
     validating:validating,

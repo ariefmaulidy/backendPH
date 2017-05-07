@@ -5,8 +5,8 @@ var emailRouter=express.Router();
 
 emailRouter.route('/forgetPassword')
     .post(emailController.forgetPassword);
-emailRouter.route('/updatePassword')
-    .post(emailController.updatePassword);
+emailRouter.route('/reNewPassword')
+    .post(emailController.reNewPassword);
 //validate acoounts
 emailRouter.route('/validate/:token')
     .get(emailController.validating);
