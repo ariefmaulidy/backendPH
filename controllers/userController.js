@@ -144,8 +144,6 @@ var addUser = function(req,res){
 																login_type:req.body.login_type
 																},codeSecret.secret,{
 													        });
-                                        //send to email user to validate account
-                                        mail.getValidate(req,res,user.isValidate,user.email,user.username,user.name,user.user_id);
 										res.json({"status":"200","message": "Create User Success",data:user,token:token});	
 									} 
 								}
