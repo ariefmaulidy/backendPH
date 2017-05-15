@@ -7,10 +7,10 @@ emailRouter.route('/forgetPassword')
     .post(emailController.forgetPassword);
 emailRouter.route('/reNewPassword')
     .post(emailController.reNewPassword);
-//validate acoounts
+//verify acoounts
 emailRouter.route('/validate/:token')
-    .get(emailController.validating);
-//if token expire, get new validation
+    .get(emailController.verify);
+//if token expire, get new verify
 emailRouter.route('/validate/resend')
-    .post(emailController.reSendGetValidation);
+    .post(emailController.reSendGetMailVerify);
 module.exports = emailRouter;

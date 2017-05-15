@@ -200,8 +200,8 @@ module.exports = {
 	forgetPassword:forgetPassword,
     reNewPassword:updatePassword,
     //validate
-    getValidate:getValidate,
-    validating:validating,
-    reSendGetValidation:reSendGetValidate
+    getMailVerify:getValidate,
+    verify:validating,
+    reSendGetMailVerify:reSendGetValidate
     
 }
