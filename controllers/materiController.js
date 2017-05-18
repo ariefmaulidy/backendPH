@@ -94,10 +94,46 @@ var getAllMateri = function(req,res){
 }
 
 var getOneMateri = function(req,res){
-	Materi.findOne({materi_id:req.params.materi_id},function(err,materi){
+	Materi.findOne({materi_id:req.params.materi_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,materi){
+
 		if(materi!=null)
 		{
-			res.json({status:200,success:true,message:'Get data success',data:materi,token:req.token});
+				User.findOne({user_id:materi.user_id},function(err,user){
+					if(user!=null){
+						materi.name=user.name;
+						materi.datePost=moment(materi.datePost).format("DD MMMM YYYY hh:mm a");
+					}	
+				})				
+			setTimeout(function()
+			{
+				res.json({status:200,success:true,message:'Get data success',data:materi,token:req.token});
+			},50);
+		}
+		else
+		{
+			res.json({status:200,success:true,message:'No data provided',data:materi,token:req.token});	
+		}
+	})
+}
+
+var getMateriKu = function(req,res){
+	Materi.find({user_id:req.params.user_id},function(err,materi){
+		if(materi!='')
+		{			
+			each(materi,function(value,key,array)
+			{	
+				User.findOne({user_id:materi[key].user_id},function(err,user){
+					if(user!=null){
+						materi[key].name=user.name;
+						materi[key].datePost=moment(materi[key].datePost).format("DD MMMM YYYY hh:mm a");
+					}	
+				})
+				
+			});
+			setTimeout(function()
+			{
+				res.json({status:200,success:true,message:'Get data success',data:materi,token:req.token});
+			},50);
 		}
 		else
 		{
@@ -236,6 +272,7 @@ if(req.role==1||req.role==2||req.role==3)
 module.exports={
 	addMateri:addMateri,
 	getAllMateri:getAllMateri,
+	getMateriKu:getMateriKu,
 	getOneMateri:getOneMateri,
 	delMateri:delMateri,
 	updateMateri:updateMateri

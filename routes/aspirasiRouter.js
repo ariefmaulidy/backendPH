@@ -21,7 +21,9 @@ aspirasiRouter.route('/get/page/:page')
 	.get(aspirasiController.allAspirasi);
 aspirasiRouter.route('/get')
 	.get(aspirasiController.allAspirasi);
-aspirasiRouter.route('/get/:user_id')
+aspirasiRouter.route('/get/:aspirasi_id')
+	.get(aspirasiController.oneAspirasi);
+aspirasiRouter.route('/get/user/:user_id')
 	.get(aspirasiController.aspirasiKu);
 aspirasiRouter.route('/pendukung/get/:aspirasi_id')
 	.get(aspirasiController.getPendukung);

@@ -88,6 +88,42 @@ var getAll = function(req,res){
 			}
 		})
 }
+var getOneDagangan = function(req,res){
+	Dagangan.findOne({dagangan_id:req.params.dagangan_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,dagangan){
+	if(dagangan!=null)
+			{ var counter = 0;
+					//lookup user data in user model, append them to the model
+						User.findOne({user_id:dagangan.user_id}).exec(function(err,user)
+						{
+							dagangan.nama=user.name;
+							dagangan.address=user.address;
+							dagangan.user_picture=user.picture;
+							dagangan.user_nomor_telepon=user.nomor_telepon;	
+							dagangan.time=fromNow(dagangan.datePost);
+							dagangan.datePost=moment(dagangan.datePost).format("DD MMMM YYYY hh:mm a");
+						});
+						//lookup komoditas data in komoditas model,  append them to the model
+						Komoditas.findOne({komoditas_id:dagangan.komoditas_id}).exec(function(err,komoditas)
+						{
+							if(komoditas!=null)
+							{
+								dagangan.nama_komoditas=komoditas.name;
+								dagangan.satuan_komoditas=komoditas.satuan;
+								counter++;		
+							}
+						});
+					setTimeout(function()
+					{
+						res.json({status:200,message:'Get data success',data:dagangan,token:req.token});		
+					},100);		
+			}
+			else
+			{
+				res.json({status:204,message:"No data provided",token:req.token});
+			}
+		})
+}
+
 var postDagangan = function(req,res){
 		dagangan = new Dagangan(req.body);
 		dagangan.user_id = req.user_id;
@@ -214,6 +250,7 @@ var delDagangan = function(req,res){
 
 module.exports={
 	getAll:getAll,
+	getOneDagangan:getOneDagangan,
 	postDagangan:postDagangan,
 	updateDagangan:updateDagangan,
 	getDaganganKu:getDaganganKu,

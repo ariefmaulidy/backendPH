@@ -6,8 +6,10 @@ var daganganRouter=express.Router();
 
 daganganRouter.route('/get')
 	.get(daganganController.getAll);
-daganganRouter.route('/get/:user_id')
+daganganRouter.route('/get/user/:user_id')
 	.get(daganganController.getDaganganKu);
+daganganRouter.route('/get/:dagangan_id')
+	.get(daganganController.getOneDagangan);
 daganganRouter.route('/update')
 	.post(daganganController.updateDagangan);
 daganganRouter.route('/add')

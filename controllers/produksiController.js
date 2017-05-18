@@ -44,7 +44,7 @@ var getProduksi = function(req,res){
 			})
 }
 var getProduksiKu = function(req,res){
-	Produksi.find({user_id:req.params.id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,produksi){
+	Produksi.find({user_id:req.params.user_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,produksi){
 					if(produksi!='')
 					{ 
 						each(produksi,function(value,key,array)
@@ -71,6 +71,38 @@ var getProduksiKu = function(req,res){
 						{
 							res.json({status:200,message:'Get data success',data:produksi,token:req.token});
 						},100);
+					}
+					else
+					{
+						res.json({status:204,message:'No data provided',token:req.token});
+					}
+			})
+}
+
+var getOneProduksi = function(req,res){
+	Produksi.findOne({produksi_id:req.params.produksi_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,produksi){
+					if(produksi!=null)
+					{ 
+							User.findOne({user_id:produksi.user_id}).exec(function(err,user){
+							produksi.name=user.name;
+							produksi.picture=user.picture;
+							produksi.time=fromNow(produksi.datePost);
+							produksi.datePost=moment(produksi.datePost).format("DD MMMM YYYY hh:mm a");
+							produksi.date_panen=moment(produksi.date_panen).format("DD MMMM YYYY");
+							produksi.date_tanam=moment(produksi.date_tanam).format("DD MMMM YYYY");
+							});
+
+							Komoditas.findOne({komoditas_id:produksi.komoditas_id}).exec(function(err,komoditas)
+							{
+								produksi.nama_komoditas=komoditas.name;
+								produksi.satuan_komoditas=komoditas.satuan;
+				
+							});
+						
+						setTimeout(function()
+						{
+							res.json({status:200,message:'Get data success',data:produksi,token:req.token});
+						},50);
 					}
 					else
 					{
@@ -154,6 +186,7 @@ module.exports={
 	delProduksi:delProduksi,
 	getProduksi:getProduksi,
 	getProduksiKu:getProduksiKu,
+	getOneProduksi:getOneProduksi,
 	updateProduksi:updateProduksi,
 	postProduksi:postProduksi
 };

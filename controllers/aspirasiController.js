@@ -32,7 +32,7 @@ var allAspirasi = function(req,res){
 	var page=req.params.page=null ? 0:req.params.page;
 	Aspirasi.find({},'-_id -__v',{sort:{datePost:-1},skip:2*page, limit:2}).lean().exec(function(err,aspirasi){
 	if(aspirasi!='')
-	{ 	
+	{ 
 		//looping all aspirasi
 				each(aspirasi,function(value,key,array)
 				{
@@ -62,6 +62,52 @@ var allAspirasi = function(req,res){
 					}	
 					});
 				})			
+				setTimeout(function()
+				{
+					res.json({status:200,message:'Get data success',data:aspirasi,token:req.token});				
+				},100);
+				
+		}
+		// if there is no aspirasi data 
+		else
+		{
+			res.json({status:204,message:'No data provided'});
+		}
+			
+	});
+}
+
+var oneAspirasi = function(req,res){
+	Aspirasi.findOne({aspirasi_id:req.params.aspirasi_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){
+	if(aspirasi!=null)
+	{ 
+		//looping all aspirasi
+				
+					// find name, profile picture from user_id
+					User.findOne({user_id:aspirasi.user_id}).exec(function(err,user){
+					aspirasi.name=user.name;
+					aspirasi.picture=user.picture;
+					aspirasi.time=fromNow(aspirasi.datePost);
+					aspirasi.datePost=moment(aspirasi.datePost).format("DD MMMM YYYY hh:mm a");;
+					aspirasi.total_pendukung=aspirasi.pendukung.length;
+					//aspirasi.datePost= Date.parse('2014-04-03');
+					
+					// initial value status voted, for checking which user that already voted an aspirasi
+					aspirasi.status_voted=false;
+					// checking voted logic
+					for(var i=0;i<aspirasi.pendukung.length;i++)
+					{
+						if(aspirasi.pendukung[i].user_id==req.user_id)
+						{
+							aspirasi.status_voted=true;
+						}
+						else if(aspirasi.pendukung.length==0)
+						{
+							aspirasi.status_voted=false;
+						}
+
+					}	
+					});
 				setTimeout(function()
 				{
 					res.json({status:200,message:'Get data success',data:aspirasi,token:req.token});				
@@ -356,6 +402,7 @@ var dukung_aspirasi = function(req,res)
 
 module.exports = {
 	allAspirasi:allAspirasi,
+	oneAspirasi:oneAspirasi,
 	aspirasiKu:aspirasiKu,
 	updateAspirasi:updateAspirasi,
 	batalDukung:batalDukung,

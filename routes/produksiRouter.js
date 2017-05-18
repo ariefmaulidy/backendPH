@@ -9,8 +9,10 @@ produksiRouter.route('/update')
 	.post(produksiController.updateProduksi);
 produksiRouter.route('/delete')
 	.post(produksiController.delProduksi);
-produksiRouter.route('/get/:id')
+produksiRouter.route('/get/user/:user_id')
 	.get(produksiController.getProduksiKu);
+produksiRouter.route('/get/:produksi_id')
+	.get(produksiController.getOneProduksi);
 produksiRouter.route('/get')
 	.get(produksiController.getProduksi);
 

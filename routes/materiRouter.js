@@ -12,6 +12,8 @@ materiRouter.route('/delete')
 	.post(materiController.delMateri);
 materiRouter.route('/get')
 	.get(materiController.getAllMateri);
+materiRouter.route('/get/user/:user_id')
+	.get(materiController.getMateriKu);
 materiRouter.route('/get/:materi_id')
 	.get(materiController.getOneMateri);
 
