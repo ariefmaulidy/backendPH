@@ -239,7 +239,7 @@ var dayLaporan = function(req,res){
 					number.push(all[i].laporanHarga_id);					
 				};
 			}
-			//time out 65 miliseconds
+			//time out 300 miliseconds
 			setTimeout(function () {
 				for(var i=0;i<number.length;i++){
 					laporanHarga.findOne({laporanHarga_id:number[i]},'-_id -__v').lean().exec(function(err,laporan){
@@ -252,9 +252,8 @@ var dayLaporan = function(req,res){
 					})					
 				}
 			}, 300);
-			//time out 90 mili seconds, atau 25 second setelah
+			//time out 400 mili seconds
 			setTimeout(function () {
-				//kembalian dalam bentuk json
 				res.json({	
 					status:200,
 					message:"sukses mendapat laporan harga " + req.params.day + ' sebelumnya',
