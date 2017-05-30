@@ -3,8 +3,6 @@ var aspirasiController=require('./../controllers/aspirasiController');
  
 var aspirasiRouter=express.Router();
 
-aspirasiRouter.route('/get')
-	.options(aspirasiController.allAspirasi);
 aspirasiRouter.route('/add')
 	.post(aspirasiController.postAspirasi);
 aspirasiRouter.route('/update')

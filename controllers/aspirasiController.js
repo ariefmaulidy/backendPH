@@ -28,9 +28,58 @@ var check = function(role) {
 // }
 
 // get all aspirasis, sort by last post
+// var allAspirasi = function(req,res){
+// 	var page=req.params.page=null ? 0:req.params.page;
+// 	Aspirasi.find({},'-_id -__v',{sort:{datePost:-1},skip:2*page, limit:2}).lean().exec(function(err,aspirasi){
+// 	if(aspirasi!='')
+// 	{ 
+// 		//looping all aspirasi
+// 				each(aspirasi,function(value,key,array)
+// 				{
+// 					// find name, profile picture from user_id
+// 					User.findOne({user_id:aspirasi[key].user_id}).exec(function(err,user){
+// 					aspirasi[key].name=user.name;
+// 					aspirasi[key].picture=user.picture;
+// 					aspirasi[key].time=fromNow(aspirasi[key].datePost);
+// 					aspirasi[key].datePost=moment(aspirasi[key].datePost).format("DD MMMM YYYY hh:mm a");;
+// 					aspirasi[key].total_pendukung=aspirasi[key].pendukung.length;
+// 					//aspirasi[key].datePost= Date.parse('2014-04-03');
+					
+// 					// initial value status voted, for checking which user that already voted an aspirasi
+// 					aspirasi[key].status_voted=false;
+// 					// checking voted logic
+// 					for(var i=0;i<aspirasi[key].pendukung.length;i++)
+// 					{
+// 						if(aspirasi[key].pendukung[i].user_id==req.user_id)
+// 						{
+// 							aspirasi[key].status_voted=true;
+// 						}
+// 						else if(aspirasi[key].pendukung.length==0)
+// 						{
+// 							aspirasi[key].status_voted=false;
+// 						}
+
+// 					}	
+// 					});
+// 				})			
+// 				setTimeout(function()
+// 				{
+// 					res.json({status:200,message:'Get data success',data:aspirasi,token:req.token,next_page:});				
+// 				},100);
+				
+// 		}
+// 		// if there is no aspirasi data 
+// 		else
+// 		{
+// 			res.json({status:204,message:'No data provided'});
+// 		}
+			
+// 	});
+// }
+
+
 var allAspirasi = function(req,res){
-	var page=req.params.page=null ? 0:req.params.page;
-	Aspirasi.find({},'-_id -__v',{sort:{datePost:-1},skip:2*page, limit:2}).lean().exec(function(err,aspirasi){
+	Aspirasi.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){
 	if(aspirasi!='')
 	{ 
 		//looping all aspirasi
@@ -76,6 +125,7 @@ var allAspirasi = function(req,res){
 			
 	});
 }
+
 
 var oneAspirasi = function(req,res){
 	Aspirasi.findOne({aspirasi_id:req.params.aspirasi_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){

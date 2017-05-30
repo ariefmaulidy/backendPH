@@ -200,7 +200,64 @@ var updateUser = function(req,res){
 				res.json({status:400,message:"Update failed, username is already exist"});
 			}
 		});
-}	
+}
+var updateUserPetani = function(req,res){
+	if(req.role==3||req.role==1||req.role==2)
+	{
+		User.findOne({user_id:req.body.user_id},function (err,user){
+			if(user!=null)
+			{
+				if(user.username==req.body.username)
+				{	
+					user.nomor_telepon=req.body.nomor_telepon;
+					user.name=req.body.name;
+					user.save(function(err){
+						if(!err){
+							res.status(200).json({status:200,message:'Update profile success',data:user,token:req.token});
+						}
+						else 
+						{
+							res.status(400).json({status:400,message:'bad request',token:req.token});
+						}
+					});		
+				}
+				else
+				{
+					User.findOne({username:req.body.username},function(err,usernameCheck){
+						if(usernameCheck!=null && usernameCheck.user_id!=req.body.user_id)
+						{
+							res.json({status:400,message:"Update failed, username is already exist"});				
+						}
+						else 
+						{
+							user.username=req.body.username;
+							user.nomor_telepon=req.body.nomor_telepon;
+							user.name=req.body.name;
+							user.save(function(err){
+								if(!err){
+									res.status(200).json({status:200,message:'Update profile success',data:user,token:req.token});
+								}
+								else 
+								{
+									res.status(400).json({status:400,message:'bad request',token:req.token});
+								}
+							});					
+						}
+					})
+				}
+			}
+			else
+			{
+				res.json({"status": "204", "message":"User is not found",token:req.token});						
+			}
+		});	
+	}	
+	else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
+}
+
 var updateAddress = function(req,res){
 	User.findOne({user_id:req.user_id},function(err,user){
 		if(user!=null)
@@ -309,6 +366,7 @@ module.exports = {
 	getAllUser:getAllUser,
 	deleteUser:deleteUser,
 	updateUser:updateUser,
+	updateUserPetani:updateUserPetani,
 	updateAddress:updateAddress,
 	updatePassword:updatePassword,
 	uploadPhoto:uploadPhoto,

@@ -39,7 +39,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, application/pdf");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
 
 // bypass option method
   if('OPTIONS'==req.method) {
@@ -52,13 +52,13 @@ app.use(function(req, res, next) {
 app.use(morgan('dev'));
 // setup keys and certificate, create https server. request example: https://ph.yippytech.com:5000/API.....
 
-// var options = {
-//   ca: fs.readFileSync('keys/agent-ca.pem'),
-//   key: fs.readFileSync('keys/agent-key.pem'),
-//   cert: fs.readFileSync('keys/agent-cert.cert')
-// };
-// https.createServer(options, app).listen(port);
-app.listen(port);
+var options = {
+  ca: fs.readFileSync('keys/agent-ca.pem'),
+  key: fs.readFileSync('keys/agent-key.pem'),
+  cert: fs.readFileSync('keys/agent-cert.cert')
+};
+https.createServer(options, app).listen(port);
+//app.listen(port);
 console.log('Server start at https://ph.yippytech.com:' + port);
 
 // User Login Router

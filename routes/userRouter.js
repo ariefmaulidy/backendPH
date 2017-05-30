@@ -8,6 +8,9 @@ userRouter.route('/delete')
 	.post(userController.deleteUser);
 userRouter.route('/update')
 	.post(userController.updateUser);
+userRouter.route('/update/petani')
+	.post(userController.updateUserPetani);
+
 userRouter.route('/updateAddress')
 	.post(userController.updateAddress);
 userRouter.route('/updatePassword')
