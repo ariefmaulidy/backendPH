@@ -115,39 +115,7 @@ var addUser = function(req,res){
 								}
 								else
 								{
-									if(req.body.login_type==0)
-									{
-										var dt = new Date();
-							            var utcDate = dt.toGMTString();
-										var token = jwt.sign({
-																user_id:user.user_id,
-																username:user.username,
-																time:utcDate,
-																role:user.role,
-																login_type:req.body.login_type
-																},codeSecret.secret,{
-													            expiresIn : 60*20// expires in 24 hours
-							            					});	
-                                        //send to email user to validate account
-                                        mail.getValidate(req,res,user.isValidate,user.email,user.username,user.name);
-										res.json({"status":"200","message": "Create User Success",data:user,token:token});	
-									}
-									else if(req.body.login_type==1)
-									{
-										var dt = new Date();
-							            var utcDate = dt.toGMTString();
-										var token = jwt.sign({
-																user_id:user.user_id,
-																username:user.username,
-																time:utcDate,
-																role:user.role,
-																login_type:req.body.login_type
-																},codeSecret.secret,{
-													        });
-										//when user is created, sending email verification
-										mail.getMailVerify(req,res,user.isValidate,user.email,user.username,user.name,user.user_id);
-										res.json({"status":"200","message": "Create User Success",data:user,token:token});	
-									} 
+									res.json({"status":"200","message": "Create success",data:user});	 
 								}
 							});
 						}		
