@@ -75,7 +75,7 @@ var allLaporan = function(req,res){
 						semuaLaporan[key].namaKomoditas = komo.name;
 						semuaLaporan[key].satuan = komo.satuan;
 						semuaLaporan[key].nama = masyarakat.name;
-						semuaLaporan[key].datePost = moment(semuaLaporan[key].datePost).format("YYYY-MM-DD");						
+						semuaLaporan[key].datePost = moment(semuaLaporan[key].datePost).format("YYYY-MM-DD");
 					})
 				})
 			});	
@@ -133,7 +133,7 @@ var laporanHargaKu = function(req,res){
 					komoditas.findOne({komoditas_id:laporanku[key].komoditas_id},function(err,komo){			
 						laporanku[key].namaKomoditas = komo.name;
 						laporanku[key].satuan = komo.satuan;
-						laporanku[key].datePost = moment(laporanku[key].datePost).format("YYYY-MM-DD");						
+						laporanku[key].datePost = moment(laporanku[key].datePost).format("YYYY-MM-DD");
 					})
 				});	
 				setTimeout(function () {
