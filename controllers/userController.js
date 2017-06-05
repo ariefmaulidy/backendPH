@@ -115,6 +115,7 @@ var addUser = function(req,res){
 								}
 								else
 								{
+									mail.getMailVerify(req,res,user.isValidate,user.email,user.username,user.name,user.user_id);
 									res.json({"status":"200","message": "Create success",data:user});	 
 								}
 							});

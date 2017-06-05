@@ -184,7 +184,7 @@ var validating = function(req, res){
                 user.isValidate=true;
                 user.save(function(err){
                     if(err){
-                        res.json({status:402,message:err,data:"",token:""});
+                        res.send("Link expired");
                     }else{
                         res.send("Have been validated");
                     }
