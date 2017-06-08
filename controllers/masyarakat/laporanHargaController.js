@@ -72,6 +72,7 @@ var allLaporan = function(req,res){
 			each(semuaLaporan,function(value,key,array){	
 				komoditas.findOne({komoditas_id:semuaLaporan[key].komoditas_id},function(err,komo){
 					user.findOne({user_id:semuaLaporan[key].user_id},function(err,masyarakat){
+						//console.log(masyarakat.name);
 						semuaLaporan[key].namaKomoditas = komo.name;
 						semuaLaporan[key].satuan = komo.satuan;
 						semuaLaporan[key].nama = masyarakat.name;
@@ -244,10 +245,13 @@ var dayLaporan = function(req,res){
 				for(var i=0;i<number.length;i++){
 					laporanHarga.findOne({laporanHarga_id:number[i]},'-_id -__v').lean().exec(function(err,laporan){
 						komoditas.findOne({komoditas_id:laporan.komoditas_id}).exec(function(err,komo){
-							laporan.namaKomoditas=komo.name;
-							laporan.satuan = komo.satuan;
-							laporan.datePost = moment(laporan.datePost).format("YYYY-MM-DD");;
-							parsing.push(laporan);
+							user.findOne({user_id:laporan.user_id},function(err,masyarakat){
+								laporan.namaKomoditas=komo.name;
+								laporan.satuan = komo.satuan;
+								laporan.nama = masyarakat.name;
+								laporan.datePost = moment(laporan.datePost).format("YYYY-MM-DD");;
+								parsing.push(laporan);
+							})
 						})						
 					})					
 				}
