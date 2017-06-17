@@ -178,18 +178,18 @@ var validating = function(req, res){
     jwt.verify(req.params.token, config.secretKey, function(err,decode){
         console.log(req.params.token);
         if(err){
-            res.redirect('https://www.google.com');
+            res.redirect('ph.yippytech.com/mobile/validate.php/?failed');
         }else{
             User.findOne({user_id:decode.user_id},function(err,user){
-                if(user.isValidate==false){
-                    res.redirect('https://facebook.com');
+                if(user.isValidate==true){
+                    res.redirect('ph.yippytech.com/mobile/validate.php/?failed');
                 }else{
                     user.isValidate=true;
                     user.save(function(err){
                         if(err){
-                            res.redirect('https://www.google.com');
+                            res.redirect('ph.yippytech.com/mobile/validate.php/?failed');
                         }else{
-                            res.send("Have been validated");
+                            res.redirect('ph.yippytech.com/mobile/validate.php/?success');
                         }
                     })    
                 }
