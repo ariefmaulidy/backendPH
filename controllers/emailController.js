@@ -28,7 +28,7 @@ var forgetPassword = function(req,res ){
         });
         
         //define url
-        var url = 'https://ph.yippytech.com:5000/lokasi/provinsi'// + token;
+        var url = 'https://ph.yippytech.com/mobile/changepassword.php?token=' + token;
 
         //contenct emailnya, mulai dari, tujuan, subjek, html
         var mailOptions = {
