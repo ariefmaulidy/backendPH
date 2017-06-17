@@ -178,13 +178,13 @@ var validating = function(req, res){
     jwt.verify(req.params.token, config.secretKey, function(err,decode){
         console.log(req.params.token);
         if(err){
-            res.json({status:402,message:err,data:"",token:""});
+            res.redirect('https://www.google.com');
         }else{
             User.findOne({user_id:decode.user_id},function(err,user){
                 user.isValidate=true;
                 user.save(function(err){
                     if(err){
-                        res.send("Link expired");
+                        res.redirect('https://www.google.com');
                     }else{
                         res.send("Have been validated");
                     }
