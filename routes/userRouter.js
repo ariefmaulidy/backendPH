@@ -10,6 +10,8 @@ userRouter.route('/update')
 	.post(userController.updateUser);
 userRouter.route('/update/petani')
 	.post(userController.updateUserPetani);
+userRouter.route('/update/admin')
+	.post(userController.updateUserAdmin);
 
 userRouter.route('/updateAddress')
 	.post(userController.updateAddress);

@@ -9,6 +9,8 @@ var fromNow = require('from-now');
 var tz=require('moment-timezone');
 
 var getProduksi = function(req,res){
+	if(req.role==1||req.role==2||req.role==3||req.role==4)
+	{
 	Produksi.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,produksi){
 					if(produksi!='')
 					{ 
@@ -16,8 +18,11 @@ var getProduksi = function(req,res){
 						{
 							
 							User.findOne({user_id:produksi[key].user_id}).exec(function(err,user){
+							if(user!=null)
+							{
 							produksi[key].name=user.name;
 							produksi[key].picture=user.picture;
+							}
 							produksi[key].time=fromNow(produksi[key].datePost);
 							produksi[key].datePost=moment(produksi[key].datePost).format("DD MMMM YYYY hh:mm a");
 							produksi[key].date_panen=moment(produksi[key].date_panen).format("DD MMMM YYYY");
@@ -26,9 +31,11 @@ var getProduksi = function(req,res){
 							
 							Komoditas.findOne({komoditas_id:produksi[key].komoditas_id}).exec(function(err,komoditas)
 							{
+								if(komoditas!=null)
+							{
 								produksi[key].nama_komoditas=komoditas.name;
 								produksi[key].satuan_komoditas=komoditas.satuan;
-				
+							}
 							});
 						})			
 					
@@ -42,8 +49,15 @@ var getProduksi = function(req,res){
 						res.json({status:204,message:'No data provided',token:req.token});
 					}
 			})
+		}
+	else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
 }
 var getProduksiKu = function(req,res){
+	if(req.role==1||req.role==2||req.role==3||req.role==4)
+	{
 	Produksi.find({user_id:req.params.user_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,produksi){
 					if(produksi!='')
 					{ 
@@ -51,8 +65,11 @@ var getProduksiKu = function(req,res){
 						{
 							
 							User.findOne({user_id:produksi[key].user_id}).exec(function(err,user){
+							if(user!=null)
+							{
 							produksi[key].name=user.name;
 							produksi[key].picture=user.picture;
+							}
 							produksi[key].time=fromNow(produksi[key].datePost);
 							produksi[key].datePost=moment(produksi[key].datePost).format("DD MMMM YYYY hh:mm a");
 							produksi[key].date_panen=moment(produksi[key].date_panen).format("DD MMMM YYYY");
@@ -61,9 +78,11 @@ var getProduksiKu = function(req,res){
 
 							Komoditas.findOne({komoditas_id:produksi[key].komoditas_id}).exec(function(err,komoditas)
 							{
+									if(komoditas!=null)
+								{
 								produksi[key].nama_komoditas=komoditas.name;
 								produksi[key].satuan_komoditas=komoditas.satuan;
-				
+								}
 							});
 						})			
 					
@@ -77,15 +96,25 @@ var getProduksiKu = function(req,res){
 						res.json({status:204,message:'No data provided',token:req.token});
 					}
 			})
+		}
+	else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
 }
 
 var getOneProduksi = function(req,res){
+	if(req.role==1||req.role==2||req.role==3||req.role==4)
+	{
 	Produksi.findOne({produksi_id:req.params.produksi_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,produksi){
 					if(produksi!=null)
 					{ 
 							User.findOne({user_id:produksi.user_id}).exec(function(err,user){
+							if(user!=null)
+							{
 							produksi.name=user.name;
 							produksi.picture=user.picture;
+							}
 							produksi.time=fromNow(produksi.datePost);
 							produksi.datePost=moment(produksi.datePost).format("DD MMMM YYYY hh:mm a");
 							produksi.date_panen=moment(produksi.date_panen).format("DD MMMM YYYY");
@@ -94,9 +123,11 @@ var getOneProduksi = function(req,res){
 
 							Komoditas.findOne({komoditas_id:produksi.komoditas_id}).exec(function(err,komoditas)
 							{
+								if(komoditas!=null)
+								{
 								produksi.nama_komoditas=komoditas.name;
 								produksi.satuan_komoditas=komoditas.satuan;
-				
+								}
 							});
 						
 						setTimeout(function()
@@ -109,9 +140,16 @@ var getOneProduksi = function(req,res){
 						res.json({status:204,message:'No data provided',token:req.token});
 					}
 			})
+		}
+	else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
 }
 
 var postProduksi = function(req,res){
+	if(req.role==1||req.role==2||req.role==3||req.role==4)
+	{
 		produksi = new Produksi(req.body);
 		produksi.user_id=req.user_id;
 	  	var time=moment();
@@ -127,12 +165,19 @@ var postProduksi = function(req,res){
 				res.json({status:400,success:false,message:'Input Failed',token:req.token,err:err});
 			}
 		});
+	}
+	else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
 }
 
 var updateProduksi = function(req,res){
+	if(req.role==1||req.role==2||req.role==3||req.role==4)
+	{
 	Produksi.findOne({produksi_id:req.body.produksi_id},function(err,produksi){
 		console.log(req.body);
-		if(produksi!=null)
+		if(produksi!=null && (produksi.user_id==req.user_id || req.role==1||req.role==2||req.role==3))
 		{
 			produksi.komoditas_id 	= req.body.komoditas_id;
 			produksi.date_panen 	= req.body.date_panen;
@@ -159,12 +204,17 @@ var updateProduksi = function(req,res){
 			res.json({status:204,message:'Produksi not found',token:req.token});
 		}
 	});
+	}
+	else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
 }
 
 var delProduksi = function(req,res){
 	Produksi.findOne({produksi_id:req.body.produksi_id},function(err,produksi){
 	//	res.json({aspirasi});
-		if(produksi!='')
+		if(produksi!=null && (produksi.user_id==req.user_id || req.role==1||req.role==2||req.role==3))
 		{
 			produksi.remove(function(err){
 				if(!err){
@@ -175,10 +225,10 @@ var delProduksi = function(req,res){
 				}
 			})
 		}
-		else
-		{
-			res.status(403).json({status:403,message:"Forbidden",token:req.token});
-		}
+			else
+			{
+				res.json({status:403,message:"Forbidden access for this user",token:req.token});
+			}
 	})
 }
 

@@ -14,9 +14,18 @@ var storage = multer.diskStorage({ //multers disk storage settings
         var datetimestamp = Date.now();
         cb(null, file.originalname.split('.')[0] +'_'+ datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1]);
     }
+    
 });
+const pdfFilter = function (req, file, cb) {
+     //accept pdf only
+    if (!file.originalname.match(/\.(pdf)$/)) {
+        return cb(new Error('Only pdf files are allowed!'), false);
+    }
+    cb(null, true);
+};
 var upload = multer({ //multer settings
-                    storage: storage
+                    storage: storage,
+                    fileFilter: pdfFilter
                 }).single('file');
 	 
 var addMateri = function(req,res){
@@ -63,6 +72,10 @@ if(req.role==1||req.role==2||req.role==3)
 	        }		
 		});
 	}
+	else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
 }
 
 
@@ -88,7 +101,7 @@ var getAllMateri = function(req,res){
 		}
 		else
 		{
-			res.json({status:200,success:true,message:'No data provided',data:materi,token:req.token});	
+			res.status(204).json({status:204,success:true,message:'No data provided',data:materi,token:req.token});	
 		}
 	})
 }
@@ -111,7 +124,7 @@ var getOneMateri = function(req,res){
 		}
 		else
 		{
-			res.json({status:200,success:true,message:'No data provided',data:materi,token:req.token});	
+			res.status(204).json({status:204,success:true,message:'No data provided',data:materi,token:req.token});	
 		}
 	})
 }
@@ -137,7 +150,7 @@ var getMateriKu = function(req,res){
 		}
 		else
 		{
-			res.json({status:200,success:true,message:'No data provided',data:materi,token:req.token});	
+			res.status(204).json({status:204,success:true,message:'No data provided',data:materi,token:req.token});	
 		}
 	})
 }
@@ -151,7 +164,7 @@ var updateMateri = function(req,res){
 	        {
 				Materi.findOne({materi_id:req.body.materi_id},function(err,materi){
 					if(materi!=null){
-						if(materi.user_id==req.user_id)
+						if(materi.user_id==req.user_id || req.role==2 || req.role==1)
 						{
 							if(materi.file!=null)
 							{
@@ -194,7 +207,7 @@ var updateMateri = function(req,res){
 	        {
 				Materi.findOne({materi_id:req.body.materi_id},function(err,materi){
 					if(materi!=null){
-						if(materi.user_id==req.user_id)
+						if(materi.user_id==req.user_id || req.role==2 || req.role==1)
 						{
 							var time=moment();
 							materi.judul				=	req.body.judul;
@@ -229,6 +242,10 @@ var updateMateri = function(req,res){
 	        }
 		})	
 	}
+	else
+	{
+		res.status(403).json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
 }
 var delMateri = function(req,res){
 if(req.role==1||req.role==2||req.role==3)
@@ -238,7 +255,7 @@ if(req.role==1||req.role==2||req.role==3)
 	//	console.log(materi);
 		if(materi!=null) 
 		{ 
-			if(materi.user_id==req.user_id || req.role==1)
+			if(materi.user_id==req.user_id || req.role==2 || req.role==1)
 			{
 				if(materi.file!=null)
 				{
@@ -261,11 +278,17 @@ if(req.role==1||req.role==2||req.role==3)
 				res.status(403).json({status:403,message:"Forbidden",token:req.token});
 			}
 		}
-		else if(materi==null)
+		else
 		{
-			res.status(204).json({status:204,message:"Not Found",token:req.token});
+			setTimeout(function() {
+			res.status(204).json({status:204,message:"Not Found",token:req.token});	
+			}, 10);
 		}
 	})
+}
+else
+{
+	res.status(403).json({status:403,message:"Forbidden access for this user",token:req.token});
 }
 }
 

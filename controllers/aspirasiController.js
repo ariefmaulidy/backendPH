@@ -79,98 +79,124 @@ var check = function(role) {
 
 
 var allAspirasi = function(req,res){
-	Aspirasi.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){
-	if(aspirasi!='')
-	{ 
-		//looping all aspirasi
-				each(aspirasi,function(value,key,array)
-				{
-					// find name, profile picture from user_id
-					User.findOne({user_id:aspirasi[key].user_id}).exec(function(err,user){
-					aspirasi[key].name=user.name;
-					aspirasi[key].picture=user.picture;
-					aspirasi[key].time=fromNow(aspirasi[key].datePost);
-					aspirasi[key].datePost=moment(aspirasi[key].datePost).format("DD MMMM YYYY hh:mm a");;
-					aspirasi[key].total_pendukung=aspirasi[key].pendukung.length;
-					//aspirasi[key].datePost= Date.parse('2014-04-03');
-					
-					// initial value status voted, for checking which user that already voted an aspirasi
-					aspirasi[key].status_voted=false;
-					// checking voted logic
-					for(var i=0;i<aspirasi[key].pendukung.length;i++)
+	if(req.role==1||req.role==2||req.role==4)
+	{
+		Aspirasi.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){
+		if(aspirasi!='')
+		{ 
+			//looping all aspirasi
+					each(aspirasi,function(value,key,array)
 					{
-						if(aspirasi[key].pendukung[i].user_id==req.user_id)
+						// find name, profile picture from user_id
+						User.findOne({user_id:aspirasi[key].user_id}).exec(function(err,user){
+						if(user!=null)
 						{
-							aspirasi[key].status_voted=true;
+						aspirasi[key].name=user.name;
+						aspirasi[key].picture=user.picture;
+							
 						}
-						else if(aspirasi[key].pendukung.length==0)
+						aspirasi[key].time=fromNow(aspirasi[key].datePost);
+						aspirasi[key].datePost=moment(aspirasi[key].datePost).format("DD MMMM YYYY hh:mm a");;
+						aspirasi[key].total_pendukung=aspirasi[key].pendukung.length;
+						//aspirasi[key].datePost= Date.parse('2014-04-03');
+						
+						// initial value status voted, for checking which user that already voted an aspirasi
+						aspirasi[key].status_voted=false;
+						// checking voted logic
+						for(var i=0;i<aspirasi[key].pendukung.length;i++)
 						{
-							aspirasi[key].status_voted=false;
-						}
+							if(aspirasi[key].pendukung[i].user_id==req.user_id)
+							{
+								aspirasi[key].status_voted=true;
+							}
+							else if(aspirasi[key].pendukung.length==0)
+							{
+								aspirasi[key].status_voted=false;
+							}
 
-					}	
-					});
-				})			
-				setTimeout(function()
-				{
-					res.json({status:200,message:'Get data success',data:aspirasi,token:req.token});				
-				},100);
+						}	
+						});
+					})	
+					Aspirasi.count({},function(err,c){
+						var count = c;
+						console.log('jumlah '+c);
+					})		
+					setTimeout(function()
+					{
+						res.json({status:200,message:'Get data success',data:aspirasi,token:req.token});				
+					},100);
+					
+			}
+			// if there is no aspirasi data 
+			else
+			{
+				res.json({status:204,message:'No data provided'});
+			}
 				
-		}
-		// if there is no aspirasi data 
-		else
-		{
-			res.json({status:204,message:'No data provided'});
-		}
-			
-	});
+		});
+	}
+	else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
 }
 
 
 var oneAspirasi = function(req,res){
-	Aspirasi.findOne({aspirasi_id:req.params.aspirasi_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){
-	if(aspirasi!=null)
-	{ 
-		//looping all aspirasi
-				
-					// find name, profile picture from user_id
-					User.findOne({user_id:aspirasi.user_id}).exec(function(err,user){
-					aspirasi.name=user.name;
-					aspirasi.picture=user.picture;
-					aspirasi.time=fromNow(aspirasi.datePost);
-					aspirasi.datePost=moment(aspirasi.datePost).format("DD MMMM YYYY hh:mm a");;
-					aspirasi.total_pendukung=aspirasi.pendukung.length;
-					//aspirasi.datePost= Date.parse('2014-04-03');
+	if(req.role==1||req.role==2||req.role==4)
+	{
+		Aspirasi.findOne({aspirasi_id:req.params.aspirasi_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){
+		if(aspirasi!=null)
+		{ 
+			//looping all aspirasi
 					
-					// initial value status voted, for checking which user that already voted an aspirasi
-					aspirasi.status_voted=false;
-					// checking voted logic
-					for(var i=0;i<aspirasi.pendukung.length;i++)
-					{
-						if(aspirasi.pendukung[i].user_id==req.user_id)
+						// find name, profile picture from user_id
+						User.findOne({user_id:aspirasi.user_id}).exec(function(err,user){
+						if(user!=null)
 						{
-							aspirasi.status_voted=true;
-						}
-						else if(aspirasi.pendukung.length==0)
-						{
-							aspirasi.status_voted=false;
-						}
 
-					}	
-					});
-				setTimeout(function()
-				{
-					res.json({status:200,message:'Get data success',data:aspirasi,token:req.token});				
-				},100);
+						aspirasi.name=user.name;
+						aspirasi.picture=user.picture;	
+						}
+						aspirasi.time=fromNow(aspirasi.datePost);
+						aspirasi.datePost=moment(aspirasi.datePost).format("DD MMMM YYYY hh:mm a");;
+						aspirasi.total_pendukung=aspirasi.pendukung.length;
+						//aspirasi.datePost= Date.parse('2014-04-03');
+						
+						// initial value status voted, for checking which user that already voted an aspirasi
+						aspirasi.status_voted=false;
+						// checking voted logic
+						for(var i=0;i<aspirasi.pendukung.length;i++)
+						{
+							if(aspirasi.pendukung[i].user_id==req.user_id)
+							{
+								aspirasi.status_voted=true;
+							}
+							else if(aspirasi.pendukung.length==0)
+							{
+								aspirasi.status_voted=false;
+							}
+
+						}	
+						});
+					setTimeout(function()
+					{
+						res.json({status:200,message:'Get data success',data:aspirasi,token:req.token});				
+					},100);
+					
+			}
+			// if there is no aspirasi data 
+			else
+			{
+				res.json({status:204,message:'No data provided'});
+			}
 				
-		}
-		// if there is no aspirasi data 
-		else
-		{
-			res.json({status:204,message:'No data provided'});
-		}
-			
-	});
+		});
+	}
+	else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
 }
 
 // find all aspirasi from specific user_id
@@ -182,8 +208,11 @@ var aspirasiKu = function(req,res){
 			each(aspirasi,function(value,key,array){
 			// find name, profile picture from user_id
 				User.findOne({user_id:aspirasi[key].user_id}.sort).exec(function(err,user){
+				if(user!=null)
+				{		
 				aspirasi[key].name=user.name;
 				aspirasi[key].picture=user.picture;
+				}
 				// calculate lapse of time when user posted this aspirasi until today
 				aspirasi[key].time=fromNow(aspirasi[key].datePost);
 				aspirasi[key].datePost=moment(aspirasi[key].datePost).format("DD MMMM YYYY hh:mm a");;
@@ -207,6 +236,8 @@ var aspirasiKu = function(req,res){
 // to get pendukung data from one aspirasi document
 var getPendukung = function(req,res)
 {
+	if(req.role==1||req.role==2||req.role==4)
+	{
 	//get one aspirasi document of this aspirasi_id
 	Aspirasi.findOne({aspirasi_id:req.params.aspirasi_id}).lean().exec(function(err,aspirasi){
 	if(aspirasi!=null)
@@ -247,7 +278,12 @@ var getPendukung = function(req,res)
 	}	
 		
 			
-	});	
+	});
+	}
+	else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}	
 }
 
 // to cancel voted or unvote an aspirasi
@@ -277,6 +313,8 @@ var batalDukung = function(req,res){
 // add new aspirasi
 var postAspirasi = function(req,res){
 	//input data for aspirasi model from body request
+	if(req.role==1||req.role==2||req.role==4)
+	{
 	aspirasi = new Aspirasi(req.body);
 	// input user_id from decoded JWT
 	aspirasi.user_id=req.user_id;
@@ -294,12 +332,19 @@ var postAspirasi = function(req,res){
 
 			res.json({status:400,success:false,message:err,token:req.token});
 		}
-	}); 
+	});
+	}
+	else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	} 
 }
 
 // update an aspirasi
 var updateAspirasi = function(req,res)
 {
+	if(req.role==1||req.role==2||req.role==4)
+	{
 	Aspirasi.findOne({aspirasi_id:req.body.aspirasi_id},function(err,aspirasi)
 	{
 		if( aspirasi!=null )
@@ -335,6 +380,11 @@ var updateAspirasi = function(req,res)
 				res.json({status:400,message:"Wrong aspirasi_id",token:req.token});	
 		}
 	})
+	}
+	else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
 }
 
 // delete an aspirasi
@@ -374,6 +424,8 @@ var delAspirasi = function(req,res){
 // vote an aspirasi
 var dukung_aspirasi = function(req,res)
 {
+	if(req.role==1||req.role==2||req.role==4)
+	{
 	Aspirasi.findOne({aspirasi_id:req.body.aspirasi_id}).exec(function(err,aspirasi)
 	{
 		if( aspirasi!=null )
@@ -448,6 +500,11 @@ var dukung_aspirasi = function(req,res)
 			res.json({status:400,message:"Wrong aspirasi_id",token:req.token});	
 		}
 	})
+	}
+	else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
 }
 
 module.exports = {

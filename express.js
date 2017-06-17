@@ -8,6 +8,7 @@ var materiRouter				=	require('./routes/materiRouter.js');
 var userRouter					=	require('./routes/userRouter.js');
 var authRouter					=	require('./routes/auth.js');
 var registerRouter				=	require('./routes/registerRouter.js');
+var dashboardRouter				=	require('./routes/dashboardRouter.js');
 var aspirasiRouter				=	require('./routes/aspirasiRouter.js');
 var produksiRouter				=	require('./routes/produksiRouter.js');
 var komoditasRouter 			= 	require('./routes/komoditasRouter');
@@ -136,6 +137,7 @@ app.use(function(req,res,next){
 
 
 app.use('/user',userRouter);
+app.use('/dashboard',dashboardRouter);
 app.use('/produksi',produksiRouter);
 app.use('/dagangan',daganganRouter);
 app.use('/aspirasi',aspirasiRouter);

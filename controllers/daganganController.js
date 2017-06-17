@@ -125,6 +125,8 @@ var getOneDagangan = function(req,res){
 }
 
 var postDagangan = function(req,res){
+	if(req.role==1||req.role==4||req.role==6)
+	{
 		dagangan = new Dagangan(req.body);
 		dagangan.user_id = req.user_id;
 	  	var time=moment();
@@ -152,6 +154,11 @@ var postDagangan = function(req,res){
 				res.json({status:400,success:false,message:'Input Failed',token:req.token});
 			}
 		});
+	}
+	else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
 }
 	// komoditas:String,
 	// user_id:String,
@@ -162,7 +169,7 @@ var postDagangan = function(req,res){
 var updateDagangan = function(req,res){
 	Dagangan.findOne({dagangan_id:req.body.dagangan_id},function(err,dagangan){
 		if(dagangan!=null){
-			if(dagangan.user_id==req.user_id){
+			if(dagangan.user_id==req.user_id || req.role==1){
 				var time=moment();
 				var imageSaver = new ImageSaver();
 				dagangan.komoditas_id 		=	req.body.komoditas_id;

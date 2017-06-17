@@ -20,6 +20,8 @@ var mail      =     require('./../controllers/emailController');
 
 // get all user data
 var getAllUser = function(req,res){
+	if(req.role==1 || req.role==2)
+	{
 	User.find({},'-_id -__v',function(err,users){
 		if(users=='')
 		{
@@ -32,11 +34,18 @@ var getAllUser = function(req,res){
 		}
 	})
 }
+else
+{
+	res.json({status:403,message:"Forbidden access for this user",token:req.token});
+}
+}
 var getOneUser = function(req,res){
+	if(req.role==1 || req.role==2)
+	{
 	User.findOne({user_id:req.params.user_id},'-_id -__v',function(err,users){
 		if(users==null)
 		{
-			res.json({status:204,message:'No data provided',token:req.token});
+			res.status(204).json({status:204,message:'No data provided',token:req.token});
 		}
 		else
 		{
@@ -44,6 +53,11 @@ var getOneUser = function(req,res){
 			res.json({status:200,message:"Get data success",data:users,token:req.token});
 		}
 	})
+	}
+	else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
 }
 
 var getRoleUser = function(req,res){
@@ -56,7 +70,7 @@ var getRoleUser = function(req,res){
 			}
 			else
 			{
-				res.json({status:204,message:"No data provided",data:user,token:req.token});	
+				res.status(204).json({status:204,message:"No data provided",data:user,token:req.token});	
 			}
 		})
 	}
@@ -65,17 +79,17 @@ var getRoleUser = function(req,res){
 		User.find({role:req.params.role},'-_id -__v',function(err,user){
 			if(user!='')
 			{
-				res.json({status:200,message:"Get data success",data:user,token:req.token});
+				res.status(200).json({status:200,message:"Get data success",data:user,token:req.token});
 			}
 			else
 			{
-				res.json({status:204,message:"No data provided",data:user,token:req.token});	
+				res.status(204).json({status:204,message:"No data provided",data:user,token:req.token});	
 			}
 		})
 	}
 	else if(req.role!=1 || req.role!=2 || req.role!=3)
 	{
-		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+		res.status(403).json({status:403,message:"Forbidden access for this user",token:req.token});
 	}
 }
 var addUser = function(req,res){
@@ -83,14 +97,14 @@ var addUser = function(req,res){
 			if(usernameCheck!=null)
 			{
 				console.log('sini');
-				res.json({status:500,message:"Create failed, username is already exist"});
+				res.status(400).json({status:400,message:"Create failed, username is already exist"});
 			}
 			else
 			{
 				User.findOne({email:req.body.email},function(err,emailCheck){
 					if(emailCheck!=null)
 					{
-						res.json({status:500,message:"Create failed, Email is already exist"});
+						res.status(400).json({status:400,message:"Create failed, Email is already exist"});
 					}
 					else
 					{	
@@ -104,7 +118,7 @@ var addUser = function(req,res){
 						// console.log(req.body);
 						if(req.body.name == "" && req.body.password == "" && req.body.email == "" && req.body.username == "" )
 						{
-							res.json({"status":"400","message":"Bad Request"});
+							res.status(400).json({"status":"400","message":"Bad Request"});
 						}
 						else
 						{
@@ -131,18 +145,31 @@ var addUser = function(req,res){
 
 var deleteUser = function(req,res){
 	
-	User.findOne({'user_id':req.user_id},function(err, user){
-		if(user)
+	User.findOne({'user_id':req.body.user_id},function(err, user){
+	if(req.role==1 || req.role==2 || (req.role==3 && user.role==4))
+	{
+		if(user!=null) 
 		{
-			res.status(204);
+			res.status(200);
 			user.remove();
-			res.json({"status": "200", "message":"Delete Success",token:req.token});	
+			setTimeout(function()
+				{
+ 					res.json({"status": "200", "message":"Delete Success",token:req.token});
+ 				},50);
+					
+				
 		}
 		else
 		{
-			res.json({"status": "204", "message":"User is not found",token:req.token});				
+			res.status(204).json({"status": "204", "message":"User is not found",token:req.token});				
 		}
+	}
+	else
+	{
+		res.status(403).json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
 	});
+	
 };
 
 var updateUser = function(req,res){
@@ -152,7 +179,7 @@ var updateUser = function(req,res){
 				User.findOne({user_id:req.user_id},function (err,user){
 					user.username=req.body.username;
 					user.nomor_telepon=req.body.nomor_telepon;
-					user.name=req.body.name;
+					user.name=req.body.name; 	
 					user.save(function(err){
 						if(!err){
 							res.status(200).json({status:200,message:'Update profile success',data:user,token:req.token});
@@ -166,9 +193,42 @@ var updateUser = function(req,res){
 			}
 			else if(usernameCheck.user_id!=req.user_id)
 			{
-				res.json({status:400,message:"Update failed, username is already exist"});
+				res.status(400).json({status:400,message:"Update failed, username is already exist"});
+			}
+		})
+}
+var updateUserAdmin = function(req,res){
+	if(req.role==1||req.role==2)
+	{
+	User.findOne({email:req.body.email},function(err,emailCheck){
+			if(emailCheck==null || emailCheck.user_id==req.body.user_id)
+			{
+				User.findOne({user_id:req.body.user_id},function (err,user){
+					user.user_id=req.body.user_id;
+					user.address=req.body.address;
+					user.name=req.body.name;
+					user.email=req.body.email;
+					user.save(function(err){
+						if(!err){
+							res.status(200).json({status:200,message:'Update profile success',data:user,token:req.token});
+						}
+						else 
+						{
+							res.status(400).json({status:400,message:'bad request',token:req.token});
+						}
+					});
+				});	
+			}
+			else if(emailCheck.user_id!=req.body.user_id)
+			{
+				res.status(400).json({status:400,message:"Update failed, email is already exist"});
 			}
 		});
+	}
+	else
+	{
+		res.status(403).json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
 }
 var updateUserPetani = function(req,res){
 	if(req.role==3||req.role==1||req.role==2)
@@ -217,13 +277,13 @@ var updateUserPetani = function(req,res){
 			}
 			else
 			{
-				res.json({"status": "204", "message":"User is not found",token:req.token});						
+				res.status(204).json({"status": "204", "message":"User is not found",token:req.token});						
 			}
 		});	
 	}	
 	else
 	{
-		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+		res.status(403).json({status:403,message:"Forbidden access for this user",token:req.token});
 	}
 }
 
@@ -244,7 +304,7 @@ var updateAddress = function(req,res){
 		}
 		else
 		{
-			res.json({status:400,message:"Update failed, not authorize"});
+			res.status(204).json({status:204,message:"user is not found"});
 		}
 	});
 }	
@@ -273,7 +333,7 @@ var updatePassword = function(req,res){
 		}
 		else
 		{
-			res.status(400).json({status:400,message:'Wrong password',token:req.token});
+			res.status(400).json({status:400,message:'Wrong old password',token:req.token});
 		} 	
 	});
 }	
@@ -296,18 +356,18 @@ var uploadPhoto = function(req,res)
     					res.json({status:200,message:'Change profile picture success',picture:user.picture,token:req.token});
 						})
 						.catch((err)=>{
-				        	res.json({status:400,message:err,token:req.token});
+				        	res.status(400).json({status:400,message:err,token:req.token});
 				    	})
 					}
 					else
 					{
-						res.json({status:400,message:err,token:req.token});
+						res.status(400).json({status:400,message:err,token:req.token});
 					}
 				});
 			}
 			else
 			{
-				res.json({status:204,message:'User is not found'});
+				res.status(204).json({status:204,message:'User is not found'});
 			}
 		})
 }
@@ -336,6 +396,7 @@ module.exports = {
 	deleteUser:deleteUser,
 	updateUser:updateUser,
 	updateUserPetani:updateUserPetani,
+	updateUserAdmin:updateUserAdmin,
 	updateAddress:updateAddress,
 	updatePassword:updatePassword,
 	uploadPhoto:uploadPhoto,

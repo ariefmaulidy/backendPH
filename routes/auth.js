@@ -10,7 +10,7 @@ var mail      =     require('./../controllers/emailController');
 authRoutes.post('', function(req, res) {
   if(req.body.login_type==null)
   {
-      res.json({ status:500,success: false, message: 'Please send login_type' });
+      res.status(500).json({ status:500,success: false, message: 'Please send login_type' });
   }
   else
   {
@@ -23,14 +23,14 @@ authRoutes.post('', function(req, res) {
       User.findOne({username: req.body.username}, function(err, user) {
           if (user==null) 
           {
-              res.json({ status:500,success: false, message: 'Authentication failed. User not found.' });
+              res.status(400).json({ status:400,success: false, message: 'Authentication failed. User not found.' });
           } 
           else if(user) 
           {
               // chec if password matches
               if (user.password != generated_hash) 
               {
-                  res.json({ status:500,success: false, message: 'Authentication failed. Wrong password.' });
+                  res.status(400).json({ status:400,success: false, message: 'Authentication failed. Wrong password.' });
               } 
               else 
               {
