@@ -181,14 +181,19 @@ var validating = function(req, res){
             res.redirect('https://www.google.com');
         }else{
             User.findOne({user_id:decode.user_id},function(err,user){
-                user.isValidate=true;
-                user.save(function(err){
-                    if(err){
-                        res.redirect('https://www.google.com');
-                    }else{
-                        res.send("Have been validated");
-                    }
-                })
+                if(user.isValidate==false){
+                    res.redirect('https://facebook.com');
+                }else{
+                    user.isValidate=true;
+                    user.save(function(err){
+                        if(err){
+                            res.redirect('https://www.google.com');
+                        }else{
+                            res.send("Have been validated");
+                        }
+                    })    
+                }
+                
             })
         }
     })
