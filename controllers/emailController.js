@@ -30,6 +30,8 @@ var forgetPassword = function(req,res ){
         //define url
         var url = 'https://ph.yippytech.com/mobile/changepassword.php?token=' + token;
 
+        console.log(url);
+
         //contenct emailnya, mulai dari, tujuan, subjek, html
         var mailOptions = {
             from: '"PORTAL-HARGA" <portalharga.ipb@gmail.com>',
