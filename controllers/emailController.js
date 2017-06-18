@@ -212,7 +212,7 @@ var validating = function(req, res){
         }else{
             User.findOne({user_id:decode.user_id},function(err,user){
                 if(user.isValidate==true){
-                    res.redirect('https://ph.yippytech.com/mobile/validate.php/?failed');
+                    res.redirect('https://ph.yippytech.com/mobile/validate.php/?valid');
                 }else{
                     user.isValidate=true;
                     user.save(function(err){
