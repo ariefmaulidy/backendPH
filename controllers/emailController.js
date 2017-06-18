@@ -28,7 +28,7 @@ var forgetPassword = function(req,res ){
         });
         
         //define url
-        var url = 'https://ph.yippytech.com/mobile/changepassword.php?token=' + token;
+        var url = 'https://ph.yippytech.com/mobile/reset-password.html?' + token;
 
         console.log(url);
 
@@ -38,9 +38,37 @@ var forgetPassword = function(req,res ){
             to: email,
             subject: 'Forget Password',
             html:
-            'Saudara/i '+ user.name + '<br><br>'+
-            'reNew Password at link : '+ '<a href='+ url +'>klick</a>' + '<br> <br>' +
-            'Portal Harga SEIS ILKOM IPB'
+
+            '<div style="width: 100%;height: 10px;background-color: #3c763d;margin: 0px" ></div>'+
+            '<div style="height: 50px;background-color: lightgrey;padding: 5px" >'+
+		        '<p style="padding-left: 10px">' +
+			    '<b>Lupa Kata Sandi</b>' +
+		        '</p>' +
+	        '</div>' +
+
+	        '<div style="width: 100%;background-color: width" >' +
+		        '<img src="https://ph.yippytech.com/mobile/logo.jpg" width="100%" />' +
+		        '<p>Seseorang telah melakukan permintaan pengubahan kata sandi untuk akun :</p>' +
+		        '<b>'+ user.username +'</b>' +
+		        '<p>Untuk reset kata sandi silahkan klik tombol dibawah:</p>' +
+		        '<a href='+ url +'> <button style="background-color: #3c763d;border: none;color: white;padding: 10px 32px;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;" type="button">Reset Kata Sandi</button> </a>'+
+                '<p>Apabila anda tidak melakukan permintaan pengubahan kata sandi abaikan email ini, dan kata sandi anda tidak akan diubah.</p>' +
+	        '</div>' +
+	        '<div style="width: 100%;background-color: lightgrey;padding: 5px" >' +
+		        '<p>' +
+			    '<b>Masalah dengan link ?</b> Copy dan paste URL dibawah ini ke browser:'+
+			    '<a href='+ url +'>LINK</a>'+
+		        '</p>' +
+	        '</div>' +
+	        '<div style="width: 100%;height: 2px;background-color: #3c763d" ></div>'
+	        
+
+            
+
+
+            // 'Saudara/i '+ user.name + '<br><br>'+
+            // 'reNew Password at link : '+ '<a href='+ url +'>klick</a>' + '<br> <br>' +
+            // 'Portal Harga SEIS ILKOM IPB'
         };			
         //function sender
         transporter.sendMail(mailOptions, function(error, info){
