@@ -4,6 +4,7 @@
   "description": "",
   "main": "express.js",
   "dependencies": {
+    "array-sort-by": "^1.0.3-a",
     "async": "^2.1.5",
     "body-parser": "^1.16.1",
     "crypto": "0.0.3",

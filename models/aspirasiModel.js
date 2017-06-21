@@ -13,7 +13,14 @@ var aspirasiModel = new Schema({
 	subjek:String,
 	datePost:Number,
 	isi:String,
-	pendukung:[{user_id:String}]
+	pendukung:[{user_id:String}],
+	tanggapan:[
+				{
+					user_id:String,
+					isi:String,
+					datePost:Number
+				}
+			  ]
 });
 aspirasiModel.plugin(mongoosePaginate);
 aspirasiModel.plugin(autoIncrement.plugin, { model: 'Aspirasi', field: 'aspirasi_id' });

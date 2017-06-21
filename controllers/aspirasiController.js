@@ -8,6 +8,7 @@ var User=require('./../models/userModel');
 var moment=require('moment');
 var tz=require('moment-timezone');
 var fromNow = require('from-now');
+var sortBy = require('array-sort-by');
 
 //looping module
 var each = require('foreach');
@@ -81,7 +82,7 @@ var check = function(role) {
 var allAspirasi = function(req,res){
 	if(req.role==1||req.role==2||req.role==4)
 	{
-		Aspirasi.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){
+		Aspirasi.find({},'-_id -__v',{sort:{ "tanggapan.datePost":-1} }).lean().exec(function(err,aspirasi){
 		if(aspirasi!='')
 		{ 
 			//looping all aspirasi
@@ -96,8 +97,9 @@ var allAspirasi = function(req,res){
 							
 						}
 						aspirasi[key].time=fromNow(aspirasi[key].datePost);
-						aspirasi[key].datePost=moment(aspirasi[key].datePost).format("DD MMMM YYYY hh:mm a");;
+						aspirasi[key].datePost=moment(aspirasi[key].datePost).format("DD MMMM YYYY hh:mm a");
 						aspirasi[key].total_pendukung=aspirasi[key].pendukung.length;
+						aspirasi[key].total_tanggapan=aspirasi[key].tanggapan.length;
 						//aspirasi[key].datePost= Date.parse('2014-04-03');
 						
 						// initial value status voted, for checking which user that already voted an aspirasi
@@ -117,10 +119,7 @@ var allAspirasi = function(req,res){
 						}	
 						});
 					})	
-					Aspirasi.count({},function(err,c){
-						var count = c;
-						console.log('jumlah '+c);
-					})		
+					
 					setTimeout(function()
 					{
 						res.json({status:200,message:'Get data success',data:aspirasi,token:req.token});				
@@ -159,8 +158,9 @@ var oneAspirasi = function(req,res){
 						aspirasi.picture=user.picture;	
 						}
 						aspirasi.time=fromNow(aspirasi.datePost);
-						aspirasi.datePost=moment(aspirasi.datePost).format("DD MMMM YYYY hh:mm a");;
+						aspirasi.datePost=moment(aspirasi.datePost).format("DD MMMM YYYY hh:mm a");
 						aspirasi.total_pendukung=aspirasi.pendukung.length;
+						aspirasi.total_tanggapan=aspirasi.tanggapan.length;
 						//aspirasi.datePost= Date.parse('2014-04-03');
 						
 						// initial value status voted, for checking which user that already voted an aspirasi
@@ -201,7 +201,7 @@ var oneAspirasi = function(req,res){
 
 // find all aspirasi from specific user_id
 var aspirasiKu = function(req,res){
-	Aspirasi.find({user_id:req.params.user_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){
+	Aspirasi.find({user_id:req.params.user_id},'-_id -__v',{sort:{ "tanggapan.datePost":-1} }).lean().exec(function(err,aspirasi){
 		if(aspirasi.length!=0)
 		{ 
 			//looping all aspirasi
@@ -215,9 +215,10 @@ var aspirasiKu = function(req,res){
 				}
 				// calculate lapse of time when user posted this aspirasi until today
 				aspirasi[key].time=fromNow(aspirasi[key].datePost);
-				aspirasi[key].datePost=moment(aspirasi[key].datePost).format("DD MMMM YYYY hh:mm a");;
+				aspirasi[key].datePost=moment(aspirasi[key].datePost).format("DD MMMM YYYY hh:mm a");
 				// count all pendukung from this aspirasi_id
 				aspirasi[key].total_pendukung=aspirasi[key].pendukung.length;
+				aspirasi[key].total_tanggapan=aspirasi[key].tanggapan.length;
 				});
 			})
 			setTimeout(function()
@@ -296,7 +297,6 @@ var batalDukung = function(req,res){
       { $pull: { pendukung : { user_id : req.user_id } } },
       { safe: true },
       function(err, aspirasi) {
-        console.log(err);
         if(!err)
         {
 	        res.json({status:200,message:'Delete vote success',token:req.token});
@@ -475,7 +475,6 @@ var dukung_aspirasi = function(req,res)
 					else
 					{
 						aspirasi.pendukung.push({user_id:req.user_id});
-						console.log(aspirasi);
 							aspirasi.save(function(err)
 							{
 							if(!err)
@@ -506,7 +505,121 @@ var dukung_aspirasi = function(req,res)
 		res.json({status:403,message:"Forbidden access for this user",token:req.token});
 	}
 }
-
+var postTanggapan = function(req,res){
+	if(req.role==1||req.role==2)
+	{
+		Aspirasi.findOne({aspirasi_id:req.body.aspirasi_id}).exec(function(err,aspirasi)
+		{
+			var time=moment();
+			var dateTanggapan = Date.parse(moment(time).tz('Asia/Jakarta')); 	
+			if(aspirasi!=null)
+			{
+				aspirasi.tanggapan.push({user_id:req.user_id,isi:req.body.isi,datePost:dateTanggapan});
+					aspirasi.save(function(err)
+					{
+					if(!err){
+						res.status(200).json({status:200,message:"Post tanggapan success",data:aspirasi,token:req.token});
+					}
+					else
+					{
+						res.status(400).json({status:400,message:err,token:req.token});
+					}
+				});		
+			}
+			else
+			{
+				res.status(400).json({status:400,message:"Wrong aspirasi_id",token:req.token});	
+			}
+		});	
+	}
+	else
+	{
+		res.status(403).json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
+}
+var delTanggapan = function(req,res){
+	if(req.role==1||req.role==2)
+	{
+		//using $pull to erase data inside array JSON
+		Aspirasi.update( 
+      { aspirasi_id: req.body.aspirasi_id },
+      { $pull: { tanggapan : { _id : req.body._id } } },
+      { safe: true },
+      function(err, aspirasi) {
+        if(!err)
+        {
+	        res.json({status:200,message:'Delete tanggapan success',token:req.token});
+        }
+        else
+        {
+        	res.json({status:400,message:err,token:req.token});	
+        }  
+      });
+    }
+    else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}	  				
+}
+var getTanggapan = function(req,res)
+{
+	if(req.role==1||req.role==2||req.role==4)
+	{
+		//get one aspirasi document of this aspirasi_id
+		Aspirasi.findOne({aspirasi_id:req.params.aspirasi_id},'',{sort:{ "tanggapan.datePost":-1} } ).lean().exec(function(err,aspirasi){
+			if(aspirasi!=null)
+			{ 	
+				//initiate an array for collect all pendukung
+				var tanggapanKu=[];
+				//loop all pendukung inside aspirasi model to get their name and profile picture
+				
+				aspirasi.tanggapan.forEach(function(value)
+				{
+					User.findOne({user_id:value.user_id},'name picture -_id',function(err,user)
+					{
+						value.datePost=moment(value.datePost).format("DD MMMM YYYY hh:mm a");
+						if(user!=null)
+						{
+							// input user data to array
+							tanggapanKu.push({
+												name:user.name,
+												picture:user.picture,
+												user_id:value.user_id,
+												_id:value._id,
+												isi:value.isi,
+												datePost:value.datePost
+											});				
+						}
+					});
+				});
+				setTimeout(function()
+				{
+					tanggapanKu=sortBy(tanggapanKu, (o) => "DESC:" + o._id);
+					//if pendukungKu is not empty, show it's values
+					if(tanggapanKu!='')
+					{
+						res.json({status:200,message:'Get data success',data:tanggapanKu
+			,token:req.token});		
+					}
+					//if there is no pendukung
+					else 
+					{
+						res.json({status:204,message:'No data provided',token:req.token});		
+					}				
+				},100);										
+			}
+			//if API consumer give a wrong aspirasi_id (there is no this aspirasi_id in DB)
+			else
+			{
+				res.json({status:403,message:'Wrong aspirasi_id',token:req.token});
+			}			
+		});
+	}
+	else
+	{
+		res.json({status:403,message:"Forbidden access for this user",token:req.token});
+	}	
+}
 module.exports = {
 	allAspirasi:allAspirasi,
 	oneAspirasi:oneAspirasi,
@@ -516,5 +629,8 @@ module.exports = {
 	getPendukung:getPendukung,
 	postAspirasi:postAspirasi,
 	delAspirasi:delAspirasi,
-	dukung_aspirasi:dukung_aspirasi
+	dukung_aspirasi:dukung_aspirasi,
+	postTanggapan:postTanggapan,
+	delTanggapan:delTanggapan,
+	getTanggapan:getTanggapan
 }
