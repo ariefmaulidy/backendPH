@@ -82,7 +82,7 @@ var check = function(role) {
 var allAspirasi = function(req,res){
 	if(req.role==1||req.role==2||req.role==4)
 	{
-		Aspirasi.find({},'-_id -__v',{sort:{ "tanggapan.datePost":-1} }).lean().exec(function(err,aspirasi){
+		Aspirasi.find({},'-_id -__v',{sort:{ sorted:-1} }).lean().exec(function(err,aspirasi){
 		if(aspirasi!='')
 		{ 
 			//looping all aspirasi
@@ -144,7 +144,7 @@ var allAspirasi = function(req,res){
 var oneAspirasi = function(req,res){
 	if(req.role==1||req.role==2||req.role==4)
 	{
-		Aspirasi.findOne({aspirasi_id:req.params.aspirasi_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,aspirasi){
+		Aspirasi.findOne({aspirasi_id:req.params.aspirasi_id},'-_id -__v',{sort:{sorted:-1}}).lean().exec(function(err,aspirasi){
 		if(aspirasi!=null)
 		{ 
 			//looping all aspirasi
@@ -201,7 +201,7 @@ var oneAspirasi = function(req,res){
 
 // find all aspirasi from specific user_id
 var aspirasiKu = function(req,res){
-	Aspirasi.find({user_id:req.params.user_id},'-_id -__v',{sort:{ "tanggapan.datePost":-1} }).lean().exec(function(err,aspirasi){
+	Aspirasi.find({user_id:req.params.user_id},'-_id -__v',{sort:{ sorted:-1} }).lean().exec(function(err,aspirasi){
 		if(aspirasi.length!=0)
 		{ 
 			//looping all aspirasi
@@ -320,7 +320,8 @@ var postAspirasi = function(req,res){
 	aspirasi.user_id=req.user_id;
   	// input datePost with today time, in integer for easy sorting purpose 
   	var time=moment();
-	aspirasi.datePost = Date.parse(moment(time).tz('Asia/Jakarta')); 
+	aspirasi.datePost = Date.parse(moment(time).tz('Asia/Jakarta')); 	
+	aspirasi.sorted = Date.parse(moment(time).tz('Asia/Jakarta')); 
 	aspirasi.save(function(err)
 	{
 		if(!err)
@@ -356,6 +357,7 @@ var updateAspirasi = function(req,res)
 				aspirasi.isi		=	req.body.isi;
 				var time 			=	moment();
 				aspirasi.datePost 	= 	Date.parse(moment(time).tz('Asia/Jakarta')); 
+				aspirasi.sorted = Date.parse(moment(time).tz('Asia/Jakarta')); 
 				aspirasi.save(function(err)
 				{
 					if(!err)
@@ -511,7 +513,9 @@ var postTanggapan = function(req,res){
 		Aspirasi.findOne({aspirasi_id:req.body.aspirasi_id}).exec(function(err,aspirasi)
 		{
 			var time=moment();
-			var dateTanggapan = Date.parse(moment(time).tz('Asia/Jakarta')); 	
+			var dateTanggapan = Date.parse(moment(time).tz('Asia/Jakarta'));
+			aspirasi.sorted = Date.parse(moment(time).tz('Asia/Jakarta')); 
+ 	
 			if(aspirasi!=null)
 			{
 				aspirasi.tanggapan.push({user_id:req.user_id,isi:req.body.isi,datePost:dateTanggapan});

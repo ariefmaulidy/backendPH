@@ -20,7 +20,8 @@ var aspirasiModel = new Schema({
 					isi:String,
 					datePost:Number
 				}
-			  ]
+			  ],
+	sorted:Number
 });
 aspirasiModel.plugin(mongoosePaginate);
 aspirasiModel.plugin(autoIncrement.plugin, { model: 'Aspirasi', field: 'aspirasi_id' });
