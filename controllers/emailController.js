@@ -61,11 +61,7 @@ var forgetPassword = function(req,res ){
 		        '</p>' +
 	        '</div>' +
 	        '<div style="width: 100%;height: 2px;background-color: #3c763d" ></div>'
-	        
-
-            
-
-
+           
             // 'Saudara/i '+ user.name + '<br><br>'+
             // 'reNew Password at link : '+ '<a href='+ url +'>klick</a>' + '<br> <br>' +
             // 'Portal Harga SEIS ILKOM IPB'
@@ -93,7 +89,7 @@ var updatePassword = function(req,res){
 		var token=req.headers.authorization.split(' ')[1];  
         jwt.verify(token, config.secretKey, function(err,decode){
             if(err){
-                res.json({status:402,message:err,data:"",token:token});
+                res.json({status:402,message:err,data:"",token:token}); //ini bagian yang belum di send ke halaman yang expire token
             }else{
                 User.findOne({username:decode.username}, function(err,user){
                     if(err){

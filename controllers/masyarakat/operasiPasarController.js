@@ -20,6 +20,8 @@ var each 				= 			require('foreach');
 var math 				= 			require('mathjs');
 //get address from latitude dan longitude google maps
 var geocoder 			=			require('geocoder');
+//promise
+var Promise 			= 			require('promise');
 
 var addOperasiPasar =function(req,res){
 	var newOperasi = new operasiPasar(req.body);
@@ -67,7 +69,7 @@ var allOperasiPasar = function(req,res){
 						operasi[key].satuan = komo.satuan;
 						operasi[key].nama = masyarakat.name;
 						operasi[key].datePost =moment(operasi[key].datePost).format("DD MMMM YYYY hh:mm a");
-						operasi[key].time=fromNow(operasi[key].datePost);
+						operasi[key].time=fromNow(operasi[key].datePost); //from now dari sekarang
 						operasi[key].status_voted = false;
 						operasi[key].picture = masyarakat.picture;
 						//looping pendukung every operasi pasar and check user have been vote or no
@@ -294,6 +296,82 @@ var getPendukungOperasi = function(req,res){
 	}
 };
 
+
+//post tanggapan operasi pasar
+var addTang = function(req,res){
+	if(req.role==1||req.role==5){
+		operasiPasar.findOne({operasiPasar_id:req.body.operasiPasar_id}).exec(function(err,operasi){
+			var datePost = Date.now();
+			if(operasi!=null){
+				operasi.tanggapan.push({user_id:req.user_id,isi:req.body.isi,datePost:datePost});
+					operasi.save(function(err){
+					if(!err){
+						res.status(200).json({status:200,message:"sukses memberi tanggapan",data:operasi,token:req.token});
+					}else{
+						res.status(400).json({status:400,message:err,token:req.token});
+					}
+				});		
+			}else{
+				res.status(400).json({status:400,message:"Operasi Pasar tidak ada",token:req.token});	
+			}
+		});	
+	}else{
+		res.status(403).json({status:403,message:"role tidak sesuai",token:req.token});
+	}
+}
+
+//delete tanggapan operasi pasar
+var delTang = function(req,res){
+	if(req.role==1||req.role==5){
+		//update tanggapan dengan pull _id tanggapan, _id yang dipakai merupakan _id dari mongo
+		operasiPasar.update( 
+      		{ operasiPasar_id: req.body.operasiPasar_id },
+      		{ $pull: { tanggapan : { _id : req.body._id } } },
+      		{ safe: true },
+			function(err, operasi){
+				if(!err){
+					res.json({status:200,message:'sukses hapus tanggapan',token:req.token});
+				}else{
+					res.json({status:400,message:err,token:req.token});
+				}
+			}
+		);
+    }else{
+		res.json({status:403,message:"role tidak sesuai",token:req.token});
+	}
+}
+
+//view tanggapan operasi pasar
+var getTang = function(req,res){
+	if(req.role==1 || req.role==5){
+		var tanggapan = [];
+        //find operasi pasar
+		operasiPasar.findOne({operasiPasar_id:req.params.operasiPasar_id},function(err,operasi){
+			for(var i=0; i<operasi.tanggapan.length; i++){
+                date_Post=moment(operasi.tanggapan[i].datePost).format("DD MMMM YYYY hh:mm a");
+				var _id = operasi.tanggapan[i]._id;
+				var isi = operasi.tanggapan[i].isi;
+				//find user who was respon operasi pasar
+				user.findOne({user_id:operasi.tanggapan[i].user_id},function(err,user){
+					tanggapan.push({
+						name:user.name,
+						picture:user.picture,
+						user_id:user.user_id,
+						_id:_id,
+						isi:isi,
+						datePost:date_Post
+					});
+				})
+			}
+		})
+		setTimeout(function (){
+			res.json({status:200,message:"sukses dapat tanggapan",data:tanggapan,token:req.token});
+		}, 100);
+	}else{
+		res.json({status:401,message:"role tidak sesuai",data:"",token:req.token});
+	}
+}
+
 module.exports = {
 	add:addOperasiPasar,
 	all:allOperasiPasar,
@@ -301,7 +379,12 @@ module.exports = {
 	update:updateOperasiPasar,
 	delete:deleteOperasiPasar,
 	oneLaporan:oneOperasiPasar,
+	//vote
 	voteOperasi:voteOperasi,
 	unVoteOperasi:unVoteOperasi,
-	pendukungOperasi:getPendukungOperasi
+	pendukungOperasi:getPendukungOperasi,
+	//tanggapan
+	addTang:addTang,
+	delTang:delTang,
+	getTang:getTang
 };

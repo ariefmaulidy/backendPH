@@ -17,5 +17,7 @@ laporanHargaRouter.route('/delete')
 	.post(laporanHargaController.delete);
 laporanHargaRouter.route('/get/day/:day')
 	.get(laporanHargaController.getDay);
+laporanHargaRouter.route('/getMonth')
+	.get(laporanHargaController.getMonth);
 
 module.exports = laporanHargaRouter;

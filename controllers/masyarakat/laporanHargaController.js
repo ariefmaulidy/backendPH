@@ -269,6 +269,58 @@ var dayLaporan = function(req,res){
 	})
 }
 
+//month
+var monthLaporan = function(req,res){
+	//ambil semua laporanHarga di sorting sesuai dengan tanggal post
+	laporanHarga.find({},'-_id -__v',{sort:{datePost:-1}},function(err,all){
+		if(all==null){
+			res.json({status:204,message:err,data:"",token:req.token});
+		}else{
+			//tanggal sekarang
+			var dateNow = new Date();
+			//bulan
+			var getDate = dateFormat(dateNow, "mmmm, yyyy");						
+			//console.log(getDate);
+			//buat variabel parsing yang akan menerima laporanHarga_id pada hari itu
+			var parsing = [];
+			var number = [];
+			var counter = 0;
+				
+			for(var i=0;i<all.length;i++){
+				if(dateFormat(all[i].datePost, "mmmm, yyyy")==getDate){
+					number.push(all[i].laporanHarga_id);					
+				};
+			}
+			//time out 300 miliseconds
+			setTimeout(function () {
+				for(var i=0;i<number.length;i++){
+					laporanHarga.findOne({laporanHarga_id:number[i]},'-_id -__v').lean().exec(function(err,laporan){
+						komoditas.findOne({komoditas_id:laporan.komoditas_id}).exec(function(err,komo){
+							user.findOne({user_id:laporan.user_id},function(err,masyarakat){
+								laporan.namaKomoditas=komo.name;
+								laporan.satuan = komo.satuan;
+								laporan.nama = masyarakat.name;
+								laporan.datePost = moment(laporan.datePost).format("YYYY-MM-DD");;
+								parsing.push(laporan);
+							})
+						})						
+					})					
+				}
+			}, 300);
+			//time out 400 mili seconds
+			setTimeout(function () {
+				res.json({	
+					status:200,
+					message:"sukses mendapat laporan harga " + getDate +"",
+					data:parsing,						
+					token:req.token
+				});
+			}, 400);
+		}
+	})
+}
+
+
 module.exports = {
 	add:addLaporan,
 	all:allLaporan,
@@ -276,5 +328,7 @@ module.exports = {
 	update:updateLaporan,
 	delete:deleteLaporan,
 	getDay:dayLaporan,
-	laporanku:laporanHargaKu
+	laporanku:laporanHargaKu,
+	getMonth:monthLaporan
+
 }

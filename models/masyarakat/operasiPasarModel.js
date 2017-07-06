@@ -17,7 +17,14 @@ var operasiPasarModel = new Schema({
 	//array pendukungnya
 	pendukung:[{
 		user_id:Number
-	}]
+	}],
+	tanggapan:[
+		{
+			user_id:String,
+			isi:String,
+			datePost:Number
+		}
+	]
 });
 
 operasiPasarModel.plugin(autoIncrement.plugin,{model:'operasiPasar',field:'operasiPasar_id',startAt:1});

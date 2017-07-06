@@ -23,6 +23,14 @@ operasiPasarRouter.route('/pendukung/delete')
 	.post(operasiPasarController.unVoteOperasi);
 //get pendukung operasi pasar
 operasiPasarRouter.route('/pendukung/get/:operasiPasar_id')
-	.get(operasiPasarController.pendukungOperasi)
+	.get(operasiPasarController.pendukungOperasi);
+//tanggapan
+operasiPasarRouter.route('/tanggapan/add')
+	.post(operasiPasarController.addTang);
+operasiPasarRouter.route('/tanggapan/delete')
+	.post(operasiPasarController.delTang);
+operasiPasarRouter.route('/tanggapan/get/:operasiPasar_id')
+	.get(operasiPasarController.getTang);
+
 
 module.exports = operasiPasarRouter;
