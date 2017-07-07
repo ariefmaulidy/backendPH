@@ -82,6 +82,7 @@ var allLaporan = function(req,res){
 			});	
 			setTimeout(function () {
 				//kembalian dalam bentuk json
+				//console.log(semuaLaporan);
 				res.json({
 					status:200,
 					message:"sukses ambil semua laporan harga",
