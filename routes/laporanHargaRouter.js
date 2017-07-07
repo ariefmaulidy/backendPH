@@ -19,5 +19,7 @@ laporanHargaRouter.route('/get/day/:day')
 	.get(laporanHargaController.getDay);
 laporanHargaRouter.route('/getMonth')
 	.get(laporanHargaController.getMonth);
+laporanHargaRouter.route('/getWeek')
+	.get(laporanHargaController.getWeek);
 
 module.exports = laporanHargaRouter;
