@@ -261,7 +261,7 @@ var dayLaporan = function(req,res){
 			setTimeout(function () {
 				res.json({	
 					status:200,
-					message:"sukses mendapat laporan harga " + req.params.day + ' sebelumnya',
+					message:"sukses mendapat laporan harga " + req.params.day + ' hari sebelumnya',
 					data:parsing,						
 					token:req.token
 				});
