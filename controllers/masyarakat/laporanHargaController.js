@@ -32,7 +32,7 @@ var check = function(role) {
 //add laporanHarga
 var addLaporan = function(req,res){
 	//cek role user		
-	if(req.role==1 || req.role==2 || req.role==5){				
+	//if(req.role==1 || req.role==2 || req.role==5){				
 		var newLaporan = new laporanHarga(req.body);
 			newLaporan.komoditas_id = req.body.komoditas_id;
 			newLaporan.user_id = req.user_id;
@@ -55,9 +55,9 @@ var addLaporan = function(req,res){
 					});
 				}
 			})
-	}else{
-		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
-	}
+	// }else{
+	// 	res.json({status:401,message:"role tidak sesuai",data:"",token:""});
+	// }
 }
 
 
@@ -126,7 +126,7 @@ var oneLaporan = function(req,res){
 
 //histori laporan ku
 var laporanHargaKu = function(req,res){
-	if(req.role==1 || req.role==2 || req.role==5){
+	// if(req.role==1 || req.role==2 || req.role==5){
 		laporanHarga.find({user_id:req.params.user_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,laporanku){
 			if(laporanku==null){
 				res.json({status:204,message:"laporan tidak ditemukan",data:"",token:req.token});
@@ -149,14 +149,14 @@ var laporanHargaKu = function(req,res){
 				}, 100);		
 			}
 		});
-	}else{
-		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
-	}
+	// }else{
+	// 	res.json({status:401,message:"role tidak sesuai",data:"",token:""});
+	// }
 };
 
 //update laporanHarga yang sesuai dengan laporanHarga_id nya
 var updateLaporan = function(req,res){
-	if(req.role==1 || req.role==2 || req.role==5){
+	// if(req.role==1 || req.role==2 || req.role==5){
 		//ambil laporanHarga yang akan diubah
 		laporanHarga.findOne({laporanHarga_id:req.body.laporanHarga_id},function(err,ubahLaporan){
 			//jika laporanHarga tidak ditemukan
@@ -181,15 +181,15 @@ var updateLaporan = function(req,res){
 				})
 			}
 		})
-	}else{
-		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
-	}	
+	// }else{
+	// 	res.json({status:401,message:"role tidak sesuai",data:"",token:""});
+	// }	
 }
 
 //delete laporanHarga sesuai dengan laporanHarga_id nya
 var deleteLaporan = function(req,res){
 	//cek role user
-	if(req.role==1 || req.role==2 || req.role==5){
+	// if(req.role==1 || req.role==2 || req.role==5){
 		//cari laporan harga yang akan dihapus sesuai dengan laporanHarga_id nya
 		laporanHarga.findOne({laporanHarga_id:req.body.laporanHarga_id},function(err,hapuslaporan){
 			//jika laporanHarga tidak ditemukan
@@ -212,9 +212,9 @@ var deleteLaporan = function(req,res){
 				})
 			}
 		})
-	}else{
-		res.json({status:401,message:"role tidak sesuai",data:"",token:""});
-	}	
+	// }else{
+	// 	res.json({status:401,message:"role tidak sesuai",data:"",token:""});
+	// }	
 }
 
 //mengambil laoranHarga beberapa hari yang lalu, komoditasnya apa aja selama hari itu
