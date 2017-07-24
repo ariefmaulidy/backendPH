@@ -15,6 +15,8 @@ userRouter.route('/update/admin')
 
 userRouter.route('/updateAddress')
 	.post(userController.updateAddress);
+userRouter.route('/updateAddress/petani')
+	.post(userController.updateAddressPetani);
 userRouter.route('/updatePassword')
 	.post(userController.updatePassword);
 userRouter.route('/uploadPhoto')

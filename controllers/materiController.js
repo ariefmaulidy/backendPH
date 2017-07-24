@@ -130,7 +130,7 @@ var getOneMateri = function(req,res){
 }
 
 var getMateriKu = function(req,res){
-	Materi.find({user_id:req.params.user_id},function(err,materi){
+	Materi.find({user_id:req.params.user_id},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,materi){
 		if(materi!='')
 		{			
 			each(materi,function(value,key,array)
@@ -141,7 +141,6 @@ var getMateriKu = function(req,res){
 						materi[key].datePost=moment(materi[key].datePost).format("DD MMMM YYYY hh:mm a");
 					}	
 				})
-				
 			});
 			setTimeout(function()
 			{

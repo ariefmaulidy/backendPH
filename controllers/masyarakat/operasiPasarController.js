@@ -72,6 +72,7 @@ var allOperasiPasar = function(req,res){
 						operasi[key].time=fromNow(operasi[key].datePost); //from now dari sekarang
 						operasi[key].status_voted = false;
 						operasi[key].picture = masyarakat.picture;
+						operasi[key].total_tanggapan=operasi[key].tanggapan.length;
 						//looping pendukung every operasi pasar and check user have been vote or no
 						for(var i=0; i<1; i++){
 							if(operasi[key].pendukung.length==0){

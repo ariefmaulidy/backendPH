@@ -40,7 +40,7 @@ else
 }
 }
 var getOneUser = function(req,res){
-	if(req.role==1 || req.role==2)
+	if(req.role==1 || req.role==2 || req.role==3)
 	{
 	User.findOne({user_id:req.params.user_id},'-_id -__v',function(err,users){
 		if(users==null)
@@ -309,6 +309,34 @@ var updateAddress = function(req,res){
 	});
 }	
 
+var updateAddressPetani = function(req,res){
+	if(req.role==1||req.role==2||req.role==3)
+	{
+		User.findOne({user_id:req.body.user_id},function(err,user){
+			if(user!=null)
+			{
+					user.address=req.body.address;
+					user.save(function(err){
+						if(!err){
+							res.status(200).json({status:200,message:'Update address success',data:user,token:req.token});
+						}
+						else 
+						{
+							res.status(400).json({status:400,message:'bad request',token:req.token});
+						}
+					});	
+			}
+			else
+			{
+				res.status(204).json({status:204,message:"user is not found"});
+			}
+		});	
+	}
+	else
+	{
+		res.status(403).json({status:403,message:"Forbidden access for this user",token:req.token});
+	}
+}	
 var updatePassword = function(req,res){
 	User.findOne({user_id:req.user_id},function (err,user){
 		generated_hash = require('crypto')
@@ -398,6 +426,7 @@ module.exports = {
 	updateUserPetani:updateUserPetani,
 	updateUserAdmin:updateUserAdmin,
 	updateAddress:updateAddress,
+	updateAddressPetani:updateAddressPetani,
 	updatePassword:updatePassword,
 	uploadPhoto:uploadPhoto,
 	logoutUser:logoutUser
