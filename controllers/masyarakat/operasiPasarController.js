@@ -300,7 +300,7 @@ var getPendukungOperasi = function(req,res){
 
 //post tanggapan operasi pasar
 var addTang = function(req,res){
-	if(req.role==1||req.role==5){
+	if(req.role==1||req.role==2||req.role==5){
 		operasiPasar.findOne({operasiPasar_id:req.body.operasiPasar_id}).exec(function(err,operasi){
 			var datePost = Date.now();
 			if(operasi!=null){
@@ -323,7 +323,7 @@ var addTang = function(req,res){
 
 //delete tanggapan operasi pasar
 var delTang = function(req,res){
-	if(req.role==1||req.role==5){
+	if(req.role==1||req.role==2||req.role==5){
 		//update tanggapan dengan pull _id tanggapan, _id yang dipakai merupakan _id dari mongo
 		operasiPasar.update( 
       		{ operasiPasar_id: req.body.operasiPasar_id },
@@ -344,7 +344,7 @@ var delTang = function(req,res){
 
 //view tanggapan operasi pasar
 var getTang = function(req,res){
-	if(req.role==1 || req.role==5){
+	if(req.role==1 || req.role==2 || req.role==5){
 		var tanggapan = [];
         //find operasi pasar
 		operasiPasar.findOne({operasiPasar_id:req.params.operasiPasar_id},function(err,operasi){

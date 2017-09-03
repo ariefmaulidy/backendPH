@@ -81,7 +81,7 @@ app.use(function(req,res,next){
 		Blacklist.findOne({token:req.headers.authorization.split(' ')[1]},function(err,blacklist){
 			if(blacklist!=null)
 			{
-	    		return res.json({ status:403,success: false, message: 'Token is already expired'});
+	    		return res.status(401).json({ status:401,success: false, message: 'Failed to authenticate token, Token is already expired'});
 			}
 			else
 			{
@@ -90,7 +90,7 @@ app.use(function(req,res,next){
 				{
 					    if (err)
 					    {
-			    			return res.json({ success: false, message: 'Failed to authenticate token.' });
+			    			return res.status(401).json({status:401, success: false, message: 'Failed to authenticate token.' });
 				  		}
 				  		else
 				  		{
@@ -131,7 +131,7 @@ app.use(function(req,res,next){
 	}
 	else
     {
-    	return res.status(400).json({ status:400, message: 'Please send token' });
+    	return res.status(401).json({ status:401, message: 'Failed to authenticate token, please send token' });
     }
 });
 
