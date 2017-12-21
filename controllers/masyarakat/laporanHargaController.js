@@ -66,9 +66,9 @@ var allLaporan = function(req,res){
 	//ambil semua laporan
 	laporanHarga.find({},'-_id -__v',{sort:{datePost:-1}}).lean().exec(function(err,semuaLaporan){
 		//ambil satuan_komoditas
-		if(semuaLaporan==null){
+		if(semuaLaporan==null) {
 			res.json({status:204,message:"laporan tidak ditemukan",data:"",token:req.token});
-		}else{
+		} else {
 			each(semuaLaporan,function(value,key,array){	
 				komoditas.findOne({komoditas_id:semuaLaporan[key].komoditas_id},function(err,komo){
 					semuaLaporan[key].namaKomoditas = komo.name;
@@ -83,17 +83,19 @@ var allLaporan = function(req,res){
 					}
 				})
 				semuaLaporan[key].datePost = moment(semuaLaporan[key].datePost).format("YYYY-MM-DD");
+				if(key >= semuaLaporan.length()) {
+					setTimeout(function () {
+						//kembalian dalam bentuk json
+						//console.log(semuaLaporan);
+						res.json({
+							status:200,
+							message:"sukses ambil semua laporan harga",
+							data:semuaLaporan,						
+							token:req.token
+						});
+					}, 100);
+				}
 			});	
-			setTimeout(function () {
-				//kembalian dalam bentuk json
-				//console.log(semuaLaporan);
-				res.json({
-					status:200,
-					message:"sukses ambil semua laporan harga",
-					data:semuaLaporan,						
-					token:req.token
-				});
-			}, 100);
 		}
 	});
 };
