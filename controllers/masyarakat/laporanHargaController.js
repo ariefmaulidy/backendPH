@@ -93,7 +93,7 @@ var allLaporan = function(req,res){
 					data:semuaLaporan,						
 					token:req.token
 				});
-			}, 500);	
+			}, 300);	
 		}
 	});
 };
