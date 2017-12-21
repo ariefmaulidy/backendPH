@@ -83,7 +83,7 @@ var allLaporan = function(req,res){
 					}
 				})
 				semuaLaporan[key].datePost = moment(semuaLaporan[key].datePost).format("YYYY-MM-DD");
-				if(key >= semuaLaporan.length()) {
+				if(key >= semuaLaporan.length {
 					setTimeout(function () {
 						//kembalian dalam bentuk json
 						//console.log(semuaLaporan);
