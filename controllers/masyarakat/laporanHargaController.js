@@ -71,19 +71,18 @@ var allLaporan = function(req,res){
 		}else{
 			each(semuaLaporan,function(value,key,array){	
 				komoditas.findOne({komoditas_id:semuaLaporan[key].komoditas_id},function(err,komo){
-					user.findOne({user_id:semuaLaporan[key].user_id},function(err,masyarakat){
-						//console.log(masyarakat.name);
-						semuaLaporan[key].namaKomoditas = komo.name;
-						semuaLaporan[key].satuan = komo.satuan;
-						if(masyarakat!=null) {
-							semuaLaporan[key].nama = masyarakat.name;
-						} else {
-							semuaLaporan[key].nama = "undefined";
-						}
-						
-						semuaLaporan[key].datePost = moment(semuaLaporan[key].datePost).format("YYYY-MM-DD");
-					})
+					semuaLaporan[key].namaKomoditas = komo.name;
+					semuaLaporan[key].satuan = komo.satuan;
 				})
+				user.findOne({user_id:semuaLaporan[key].user_id},function(err,masyarakat){
+					//console.log(masyarakat.name);
+					if(masyarakat!=null) {
+						semuaLaporan[key].nama = masyarakat.name;
+					} else {
+						semuaLaporan[key].nama = "undefined";
+					}
+				})
+				semuaLaporan[key].datePost = moment(semuaLaporan[key].datePost).format("YYYY-MM-DD");
 			});	
 			setTimeout(function () {
 				//kembalian dalam bentuk json
@@ -108,18 +107,18 @@ var oneLaporan = function(req,res){
 			res.json({status:204,message:"laporan tidak ditemukan",data:"",token:req.token});
 		}else{
 			komoditas.findOne({komoditas_id:satulaporan.komoditas_id},function(err,komo){
-				user.findOne({user_id:satulaporan.user_id},function(err,masyarakat){
-					satulaporan.namaKomoditas = komo.name;
-					satulaporan.satuan = komo.satuan;
-					if(masyarakat!=null) {
-						satulaporan.nama = masyarakat.name;
-					} else {
-						satulaporan.nama = "undefined";
-					}
-					satulaporan.nama = masyarakat.name;
-					satulaporan.datePost = moment(satulaporan.datePost).format("YYYY-MM-DD");						
-				})				
+				satulaporan.namaKomoditas = komo.name;
+				satulaporan.satuan = komo.satuan;		
 			})
+			user.findOne({user_id:satulaporan.user_id},function(err,masyarakat){
+				if(masyarakat!=null) {
+					satulaporan.nama = masyarakat.name;
+				} else {
+					satulaporan.nama = "undefined";
+				}
+				satulaporan.nama = masyarakat.name;
+			})		
+			satulaporan.datePost = moment(satulaporan.datePost).format("YYYY-MM-DD");
 			setTimeout(function () {
 				//kembalian dalam bentuk json
 				res.json({
