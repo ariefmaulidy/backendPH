@@ -75,7 +75,7 @@ var allLaporan = function(req,res){
 						//console.log(masyarakat.name);
 						semuaLaporan[key].namaKomoditas = komo.name;
 						semuaLaporan[key].satuan = komo.satuan;
-						if masyarakat.name != null {
+						if masyarakat != null {
 							semuaLaporan[key].nama = masyarakat.name;
 						} else {
 							semuaLaporan[key].nama = "undefined"
