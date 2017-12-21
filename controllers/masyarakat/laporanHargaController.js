@@ -75,7 +75,12 @@ var allLaporan = function(req,res){
 						//console.log(masyarakat.name);
 						semuaLaporan[key].namaKomoditas = komo.name;
 						semuaLaporan[key].satuan = komo.satuan;
-						semuaLaporan[key].nama = masyarakat.name;
+						if masyarakat.name != null {
+							semuaLaporan[key].nama = masyarakat.name;
+						} else {
+							semuaLaporan[key].nama = "undefined"
+						}
+						
 						semuaLaporan[key].datePost = moment(semuaLaporan[key].datePost).format("YYYY-MM-DD");
 					})
 				})
