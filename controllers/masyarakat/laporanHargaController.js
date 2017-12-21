@@ -75,10 +75,10 @@ var allLaporan = function(req,res){
 						//console.log(masyarakat.name);
 						semuaLaporan[key].namaKomoditas = komo.name;
 						semuaLaporan[key].satuan = komo.satuan;
-						if masyarakat != null {
+						if(masyarakat!=null) {
 							semuaLaporan[key].nama = masyarakat.name;
 						} else {
-							semuaLaporan[key].nama = "undefined"
+							semuaLaporan[key].nama = "undefined";
 						}
 						
 						semuaLaporan[key].datePost = moment(semuaLaporan[key].datePost).format("YYYY-MM-DD");
@@ -111,6 +111,11 @@ var oneLaporan = function(req,res){
 				user.findOne({user_id:satulaporan.user_id},function(err,masyarakat){
 					satulaporan.namaKomoditas = komo.name;
 					satulaporan.satuan = komo.satuan;
+					if(masyarakat!=null) {
+						satulaporan.nama = masyarakat.name;
+					} else {
+						satulaporan.nama = "undefined";
+					}
 					satulaporan.nama = masyarakat.name;
 					satulaporan.datePost = moment(satulaporan.datePost).format("YYYY-MM-DD");						
 				})				
