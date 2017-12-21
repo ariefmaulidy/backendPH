@@ -83,19 +83,17 @@ var allLaporan = function(req,res){
 					}
 				})
 				semuaLaporan[key].datePost = moment(semuaLaporan[key].datePost).format("YYYY-MM-DD");
-				if(key >= semuaLaporan.length) {
-					setTimeout(function () {
-						//kembalian dalam bentuk json
-						//console.log(semuaLaporan);
-						res.json({
-							status:200,
-							message:"sukses ambil semua laporan harga",
-							data:semuaLaporan,						
-							token:req.token
-						});
-					}, 100);
-				}
-			});	
+			});
+			setTimeout(function () {
+				//kembalian dalam bentuk json
+				//console.log(semuaLaporan);
+				res.json({
+					status:200,
+					message:"sukses ambil semua laporan harga",
+					data:semuaLaporan,						
+					token:req.token
+				});
+			}, 500);	
 		}
 	});
 };
