@@ -20,10 +20,18 @@ var getDaganganKu = function(req,res){
 				//lookup user data in user model, append them to the model
 				User.findOne({user_id:dagangan[key].user_id}).exec(function(err,user)
 				{
-					dagangan[key].user_picture=user.picture;
-					dagangan[key].nama=user.name;
-					dagangan[key].address=user.address;
-					dagangan[key].user_nomor_telepon=user.nomor_telepon;
+					if(user!=null) {
+						dagangan[key].user_picture=user.picture;
+						dagangan[key].nama=user.name;
+						dagangan[key].address=user.address;
+						dagangan[key].user_nomor_telepon=user.nomor_telepon;
+					} else {
+						dagangan[key].user_picture="";
+						dagangan[key].nama="undefined";
+						dagangan[key].address="undefined";
+						dagangan[key].user_nomor_telepon="undefined";
+					}
+					
 					dagangan[key].time=fromNow(dagangan[key].datePost);
 					dagangan[key].datePost=moment(dagangan[key].datePost).format("DD MMMM YYYY hh:mm a");;
 
@@ -59,10 +67,17 @@ var getAll = function(req,res){
 					//lookup user data in user model, append them to the model
 						User.findOne({user_id:dagangan[key].user_id}).exec(function(err,user)
 						{
-							dagangan[key].nama=user.name;
-							dagangan[key].address=user.address;
-							dagangan[key].user_picture=user.picture;
-							dagangan[key].user_nomor_telepon=user.nomor_telepon;	
+							if(user!=null) {
+								dagangan[key].user_picture=user.picture;
+								dagangan[key].nama=user.name;
+								dagangan[key].address=user.address;
+								dagangan[key].user_nomor_telepon=user.nomor_telepon;
+							} else {
+								dagangan[key].user_picture="";
+								dagangan[key].nama="undefined";
+								dagangan[key].address="undefined";
+								dagangan[key].user_nomor_telepon="undefined";
+							}
 							dagangan[key].time=fromNow(dagangan[key].datePost);
 							dagangan[key].datePost=moment(dagangan[key].datePost).format("DD MMMM YYYY hh:mm a");
 						});
@@ -95,10 +110,17 @@ var getOneDagangan = function(req,res){
 					//lookup user data in user model, append them to the model
 						User.findOne({user_id:dagangan.user_id}).exec(function(err,user)
 						{
-							dagangan.nama=user.name;
-							dagangan.address=user.address;
-							dagangan.user_picture=user.picture;
-							dagangan.user_nomor_telepon=user.nomor_telepon;	
+							if(user!=null) {
+								dagangan.nama=user.name;
+								dagangan.address=user.address;
+								dagangan.user_picture=user.picture;
+								dagangan.user_nomor_telepon=user.nomor_telepon;	
+							} else {
+								dagangan.user_picture="";
+								dagangan.nama="undefined";
+								dagangan.address="undefined";
+								dagangan.user_nomor_telepon="undefined";
+							}
 							dagangan.time=fromNow(dagangan.datePost);
 							dagangan.datePost=moment(dagangan.datePost).format("DD MMMM YYYY hh:mm a");
 						});
