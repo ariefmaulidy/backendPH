@@ -22,4 +22,7 @@ laporanHargaRouter.route('/getMonth')
 laporanHargaRouter.route('/getWeek')
 	.get(laporanHargaController.getWeek);
 
+laporanHargaRouter.get('/getProvMarker', (req, res, next) => {
+	laporanHargaController.class.getKomoditas(req, res);
+})
 module.exports = laporanHargaRouter;

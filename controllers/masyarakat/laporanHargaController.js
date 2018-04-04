@@ -4,6 +4,12 @@ var laporanHarga		=			require('./../../models/masyarakat/laporanHargaModel');
 var komoditas			=			require('./../../models/komoditasModel');
 //user
 var user				=			require('./../../models/userModel');
+var provninsi			=			require('./../../models/lokasi/provinsiModel');
+var kabupaten			= 			require('./../../models/lokasi/kabupatenModel');
+var kecamatan			=			require('./../../models/lokasi/kecamatanModel');
+var kelurahan			=			require('./../../models/lokasi/kelurahanModel');
+var summary				=			require('./../../models/summaryModel');
+var summaryWeek			=			require('./../../models/summaryWeekModel');
 //security, crypto, jwt, dan secretCodenya ada dalam config
 var crypto 				= 			require('crypto');
 var jwt 				=			require('jsonwebtoken');
@@ -28,36 +34,72 @@ var check = function(role) {
 	else return false;
 }
 
-
 //add laporanHarga
 var addLaporan = function(req,res){
-	//cek role user		
-	//if(req.role==1 || req.role==2 || req.role==5){				
-		var newLaporan = new laporanHarga(req.body);
-			newLaporan.komoditas_id = req.body.komoditas_id;
-			newLaporan.user_id = req.user_id;
-			newLaporan.harga = req.body.harga;
-			newLaporan.alamat =  req.body.alamat;
-			newLaporan.latitude= req.body.latitude;
-			newLaporan.longitude = req.body.longitude;
-			//create date add laporanHarga
-			newLaporan.datePost = Date.now();
-			newLaporan.save(function(err){
-				if(err){
-					res.json({status:402,message:err,data:"",token:req.token});
-				}else{
+	var newLaporan = new laporanHarga(req.body);
+	var newSummary = new summary(req.body);
+	var alamat = req.body.alamat.split(', ');
+	newLaporan.komoditas_id = req.body.komoditas_id;
+	newLaporan.user_id = req.user_id;
+	newLaporan.harga = req.body.harga;
+	newLaporan.alamat =  req.body.alamat;
+	newLaporan.latitude= req.body.latitude;
+	newLaporan.longitude = req.body.longitude;
+	newLaporan.datePost = Date.now();
+	newLaporan.save(function(err){
+		if(err){
+			res.json({status:402,message:err,data:"",token:req.token});
+		} else {
+			kecamatan
+				.findOne({
+					nama: alamat[2]
+				})
+				.then((result) => {
 					//kembalian dalam bentuk json
-					res.json({
-						status:200,
-						message:"sukses tambah laporan harga",
-						data:newLaporan,						
-						token:req.token
-					});
-				}
-			})
-	// }else{
-	// 	res.json({status:401,message:"role tidak sesuai",data:"",token:""});
-	// }
+					// Summary provinsi
+					summaryWeek
+						.findOne({
+							komoditas_id: req.body.komoditas_id,
+							provinsiid: result.id_kec[0] + result.id_kec[1],
+							date: moment(new Date()).format("YYYY/MM/DD"),
+						})
+						.then((hasil) => {
+							var harga = hasil.averageHarga * hasil.quantity + parseInt(req.body.harga);
+							hasil.quantity += 1;
+							hasil.averageHarga = harga / hasil.quantity;
+							hasil.save((err) => {
+							});
+						})
+						.catch((err) => {
+							console.log('err', err);
+						})
+					// Summary kecamatan
+					summary
+						.findOne({
+							komoditas_id: req.body.komoditas_id,
+							kecamatanid: result.id_kec,
+							date: moment(new Date()).format("YYYY/MM/DD"),
+						})
+						.then((hasil) => {
+							var harga = hasil.averageHarga * hasil.quantity + parseInt(req.body.harga);
+							hasil.quantity += 1;
+							hasil.averageHarga = harga / hasil.quantity;
+							hasil.save(function(err) {
+								if(err) {
+									res.json({status:402,message:err,data:"",token:req.token});
+								} else {
+									res.json({status:200, message:"sukses tambah laporan harga", data:newLaporan, token:req.token});
+								}
+							});
+						})
+						.catch((err) => {
+						});
+				})
+				.catch((err) => {
+					res.json({status:402,message:err,data:"",token:req.token});
+				})
+		}
+	});
 }
 
 
@@ -380,6 +422,79 @@ var weekLaporan = function(req,res){
 	})
 }
 
+class LaporanHargaController {
+	constructor() {
+
+	}
+
+	getKomoditas(req, res) {
+		var datakomoditas = [];
+		var lokasi = [];
+		provninsi
+			.find()
+			.sort({
+				id_prov: 1
+			})
+			.then((result) => {
+				for(let i=0; i<result.length; i++) {
+					lokasi.push({lat: result[i].lat, lng: result[i].lng, name: result[i].nama });
+				}
+			})
+			.catch((err) => {
+				console.log('provinsi', err);
+			})
+		komoditas
+			.find()
+			.sort({
+				komoditas_id: 1
+			})
+			.then((result) => {
+				for(let i=0; i<result.length; i++) {
+					datakomoditas[i] = result[i].komoditas_id;
+				}
+			})
+			.catch((err) => {
+				console.log('komoditas', err);
+			})
+		summaryWeek
+			.find({
+				date: moment(new Date()).format('YYYY/MM/DD'),
+			})
+			.sort({
+				provinsiid: 1,
+				komoditas_id: 1
+			})
+			.then((result) => {
+				var dataprov = [];
+				let j = 0;
+				let k = 0;
+				var idbefore = result[0].provinsiid;
+				var object = {};
+				for(let i=0; i<result.length; i++) {
+					if(idbefore != result[i].provinsiid) {
+						idbefore = result[i].provinsiid;
+						object['lat'] = lokasi[k].lat;
+						object['lng'] = lokasi[k].lng;
+						object['nama'] = lokasi[k].name
+						dataprov.push(object);
+						object = {};
+						j = 0;
+						k++;
+					}
+					object[datakomoditas[j]] = result[i].averageHarga;
+					j++;
+				}
+				object['lat'] = lokasi[k].lat;
+				object['lng'] = lokasi[k].lng;
+				object['nama'] = lokasi[k].name
+				dataprov.push(object);
+				res.json({ status: 200, message: "sukses mendapat laporan harga", data: dataprov, token: req.token });
+			})
+			.catch((err) => {
+				res.json({status: 204, message: err, data: "", token: req.token});
+			})
+	}
+}
 
 module.exports = {
 	add:addLaporan,
@@ -390,6 +505,7 @@ module.exports = {
 	getDay:dayLaporan,
 	laporanku:laporanHargaKu,
 	getMonth:monthLaporan,
-	getWeek:weekLaporan
+	getWeek:weekLaporan,
+	class : new LaporanHargaController
 
 }

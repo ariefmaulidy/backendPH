@@ -17,6 +17,7 @@ var emailRouter         		= 	require('./routes/emailRouter');
 var operasiPasarRouter			= 	require('./routes/operasiPasarRouter');
 var trendHargaRouter			= 	require('./routes/trendHargaRouter');
 var locationRouter  			= 	require('./routes/lokasiRouter');
+var kebijakanRouter				= 	require('./routes/kebijakanRouter');
 var multer	 					= 	require('multer');
 var mongoose					=	require('mongoose');
 var bodyParser					=	require('body-parser');
@@ -29,6 +30,13 @@ var tz 							=	require('moment-timezone');
 var now 						=	require("date-now")
 var fromNow						= 	require('from-now');
 var dateFormat 					= 	require('dateformat');
+var cors 						=	require('cors');
+var CronJob 					= 	require('cron').CronJob;
+var summary						=	require('./models/summaryModel');
+var summaryWeek					=	require('./models/summaryWeekModel');
+var kecamatan					=	require('./models/lokasi/kecamatanModel');
+var provinsi					=	require('./models/lokasi/provinsiModel');
+var komoditas					=	require('./models/komoditasModel');
 
 
 var port = process.env.PORT || 5000; // used to create, sign, and verify tokens
@@ -36,19 +44,62 @@ var port = process.env.PORT || 5000; // used to create, sign, and verify tokens
 mongoose.connect(config.connect);
 
 // setup allowed headers for web services
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-
-// bypass option method
-  if('OPTIONS'==req.method) {
-	  res.send(200);
-  }else{
-	  next();
-  }
-});
+var job = new CronJob({
+	cronTime: '00 00 00 * * *',
+	onTick: () => {
+		var idkom = [];
+		komoditas
+			.find()
+			.then((id) => {
+				for(let i=0; i<id.length; i++) {
+					idkom.push(id[i].komoditas_id);
+				}
+			})
+			.catch((err) => {
+				console.log('ada err', err);
+			})
+		provinsi
+			.find()
+			.then((hasil) => {
+				for(let i=0; i<hasil.length; i++) {
+					for(let j=0; j<idkom.length; j++) {
+						var newSummary = new summaryWeek();
+						newSummary.komoditas_id = idkom[j];
+						newSummary.provinsiid = hasil[i].id_prov;
+						newSummary.date = moment(new Date()).format("YYYY/MM/DD");
+						newSummary.month = moment(new Date()).format("MM");
+						newSummary.year = moment(new Date()).format("YYYY");
+						newSummary.averageHarga = 0;
+						newSummary.quantity = 0;
+						newSummary.save();
+					}
+				}
+			});
+		kecamatan
+			.find()
+			.then((hasil) => {
+				for(let i=0; i<hasil.length; i++) {
+					for(let j=0; j<idkom.length; j++) {
+						var newSummary = new summary();
+						newSummary.komoditas_id = idkom[j];
+						newSummary.kecamatanid = hasil[i].id_kec;
+						newSummary.date = moment(new Date()).format("YYYY/MM/DD");
+						newSummary.month = moment(new Date()).format("MM");
+						newSummary.year = moment(new Date()).format("YYYY");
+						newSummary.averageHarga = 0;
+						newSummary.quantity = 0;
+						newSummary.save();
+					}
+				}
+			});
+	},
+	start: true,
+	timeZone: 'Asia/Jakarta'
+})
+job.start();
 
 app.use(morgan('dev'));
 // setup keys and certificate, create https server. request example: https://ph.yippytech.com:5000/API.....
@@ -59,7 +110,7 @@ var options = {
   cert: fs.readFileSync('keys/agent-cert.cert')
 };
 https.createServer(options, app).listen(port);
-//app.listen(port);
+// app.listen(port);
 console.log('Server start at https://ph.yippytech.com:' + port);
 
 // User Login Router
@@ -158,3 +209,4 @@ app.use('/komoditas',komoditasRouter);
 app.use('/laporanHarga',laporanHargaRouter);
 app.use('/operasiPasar',operasiPasarRouter);
 app.use('/trendHarga',trendHargaRouter);
+app.use('/kebijakan', kebijakanRouter);

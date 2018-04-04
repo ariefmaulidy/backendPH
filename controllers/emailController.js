@@ -169,7 +169,6 @@ var reSendGetValidate = function(req, res){
         });
 
         var url = 'https://ph.yippytech.com:5000/user/email/validate/' + token;
-        var url2 = 'www.google.com';
 
         //contenct emailnya, mulai dari, tujuan, subjek, html
         var mailOptions = {
@@ -225,6 +224,145 @@ var validating = function(req, res){
     })
 };
 
+class EmailController {
+    constructor() {
+        this.mailOptions;
+        this.email;
+        this.token;
+    }
+
+    //function sender
+    sendMail(req, res, email) {
+        transporter.sendMail(this.mailOptions, (error, info) => {
+            if(error){
+                return console.log(error);
+            }else{
+                console.log('Message sent: ' + info.response);
+                res.json({
+                    status:200,
+                    message:"succes",
+                    data:email,
+                    token:this.token
+                });
+            }
+        });
+    }
+
+    //create token as params
+    setToken(data) {
+        this.token = jwt.sign({
+            user_id: data,
+        }, 
+        config.secretKey, {
+            expiresIn:60*60
+        })
+    }
+    
+    forgetPassword(req, res) {
+        User.findOne({username:req.body.username},function (err,user){
+            if(!user){
+                res.json({
+                    message:"user not found"
+                });
+            }		
+            //email user
+            this.email 	= user.email;
+            this.setToken(user.user_id);
+            //define url
+            var url = 'https://ph.yippytech.com/mobile/reset-password.html?' + this.token;
+            //contenct emailnya, mulai dari, tujuan, subjek, html
+            this.mailOptions = {
+                from: '"PORTAL-HARGA" <portalharga.ipb@gmail.com>',
+                to: this.email,
+                subject: 'Forget Password',
+                html:   
+                '<div style="width: 100%;height: 10px;background-color: #3c763d;margin: 0px" ></div>'+
+                '<div style="height: 50px;background-color: lightgrey;padding: 5px" >'+
+                    '<p style="padding-left: 10px">' +
+                    '<b>Lupa Kata Sandi</b>' +
+                    '</p>' +
+                '</div>' +   
+                '<div style="width: 100%;background-color: width" >' +
+                    '<img src="https://ph.yippytech.com/mobile/logo.jpg" width="100%" />' +
+                    '<p>Seseorang telah melakukan permintaan pengubahan kata sandi untuk akun :</p>' +
+                    '<b>'+ user.username +'</b>' +
+                    '<p>Untuk reset kata sandi silahkan klik tombol dibawah:</p>' +
+                    '<a href='+ url +'> <button style="background-color: #3c763d;border: none;color: white;padding: 10px 32px;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;" type="button">Reset Kata Sandi</button> </a>'+
+                    '<p>Apabila anda tidak melakukan permintaan pengubahan kata sandi abaikan email ini, dan kata sandi anda tidak akan diubah.</p>' +
+                '</div>' +
+                '<div style="width: 100%;background-color: lightgrey;padding: 5px" >' +
+                    '<p>' +
+                    '<b>Masalah dengan link ?</b> Copy dan paste URL dibawah ini ke browser:'+
+                    '<a href='+ url +'>LINK</a>'+
+                    '</p>' +
+                '</div>' +
+                '<div style="width: 100%;height: 2px;background-color: #3c763d" ></div>'              
+                // 'Saudara/i '+ user.name + '<br><br>'+
+                // 'reNew Password at link : '+ '<a href='+ url +'>klick</a>' + '<br> <br>' +
+                // 'Portal Harga SEIS ILKOM IPB'
+            };			
+            this.sendMail(req, res);
+        });
+    }
+
+    getValidate(req, res) {
+        User.findOne({username:req.body.username},'-_id -__v',function(err,user){
+            //create token as params
+            this.setToken(user.user_id);
+            var url = 'https://ph.yippytech.com:5000/user/email/validate/' + token;
+            //contenct emailnya, mulai dari, tujuan, subjek, html
+            this.mailOptions = {
+                from: '"PORTAL-HARGA" <portalharga.ipb@gmail.com>',
+                to: user.email,
+                subject: 'Validate account',
+                html:
+                'Saudara/i '+ user.name + '<br> <br>' +
+                'Validate account at link : '+ '<a href='+ url +'>klick</a>' + '<br> <br>' +
+                'Portal Harga SEIS ILKOM IPB'
+            };
+            //function sender
+            this.sendMail(req, res);
+        })
+    }
+    // prototype broadcast kebijakan
+    sendBroadcast(req, res, data) {
+        var role = [];
+        if(req.body.role.Petani) {
+            role.push(4);
+        }
+        if(req.body.role.Penyuluh) {
+            role.push(3);
+        }
+        if(req.body.role.Pedagang) {
+            role.push(6)
+        }
+        if(req.body.role.Masyarakat) {
+            role.push(5);
+        }
+        User.find({role:{ $in: role}})
+            .then((result) => {
+                var email = [];
+                var attachments = [];
+                attachments.push({filename: data.file, path: __dirname + '/../public/kebijakanfile/' + data.file})
+                for(let i=0; i<result.length; i++) {
+                    email.push(result[i].email);
+                }
+                this.mailOptions = {
+                    from: '"Digital Tani" <portalharga.ipb@gmail.com>',
+                    to: email,
+                    subject: data.judul,
+                    html: data.isi,
+                    attachments: attachments
+                }
+                // this.sendMail(req, res, email);
+            })
+            .catch((err) => {
+                console.log(err);
+                res.json({message: 'gagal untuk membroadcast kebijakan'});
+            })
+    }
+}
+
 //export modul
 module.exports = {
     //password
@@ -233,6 +371,6 @@ module.exports = {
     //validate
     getMailVerify:getValidate,
     verify:validating,
-    reSendGetMailVerify:reSendGetValidate
-    
+    reSendGetMailVerify:reSendGetValidate,
+    EmailController: new EmailController
 }
